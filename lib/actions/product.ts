@@ -2,7 +2,7 @@
 
 import { db } from "@/db/drizzle";
 import { Product, products } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { unstable_cache } from 'next/cache';
 import { sql, ilike, or, and } from 'drizzle-orm';
 import { SlowBuffer } from "buffer";
@@ -38,20 +38,29 @@ export const getAllProducts = async ({
   try {
     const offset = (page - 1) * pageSize;
    
-    // Строим условия фильтрации
     const conditions = [];
    
     if (search) {
-      // Поиск по названию и описанию
-      conditions.push(
-        or(
-          ilike(products.title, `%${search}%`),
-          ilike(products.description, `%${search}%`),
-          ilike(products.slug, `%${search}%`)
-        )
-      );
-    }
-   
+  const searchConditions = [
+    ilike(products.title, `%${search}%`),
+    ilike(products.description, `%${search}%`),
+    ilike(products.slug, `%${search}%`),
+    ilike(products.sku, `%${search}%`),
+    sql`CAST(${products.id} AS TEXT) ILIKE ${`%${search}%`}`, 
+     // Приводим UUID к тексту
+
+  ];
+  
+  // Только если у тебя есть числовое поле, например orderNumber
+  if (!isNaN(Number(search))) {
+    searchConditions.push(
+      eq(products.price, Number(search)) // Замени orderNumber на реальное числовое поле
+    );
+  }
+  
+  conditions.push(or(...searchConditions));
+}
+    
     if (category) {
       conditions.push(eq(products.categoryId, category));
     }
@@ -60,31 +69,32 @@ export const getAllProducts = async ({
       conditions.push(eq(products.manufacturerId, manufacturer));
     }
    
-    // Базовый запрос
+    // Базовые запросы
     let query = db
       .select()
       .from(products)
       .$dynamic();
-    
+   
     let countQuery = db
       .select({ count: sql<number>`count(*)` })
       .from(products)
       .$dynamic();
    
-    // Применяем фильтры если есть
+    // Применяем фильтры
     if (conditions.length > 0) {
-      query = query.where(and(...conditions));
-      countQuery = countQuery.where(and(...conditions));
+      const whereClause = and(...conditions);
+      query = query.where(whereClause);
+      countQuery = countQuery.where(whereClause);
     }
    
-    // Получаем продукты с пагинацией
-    const allProducts = await query
-      .limit(pageSize)
-      .offset(offset)
-      .orderBy(products.createdAt);
-   
-    // Получаем общее количество с учетом фильтров
-    const [{ count }] = await countQuery;
+    // Выполняем запросы параллельно для скорости
+    const [allProducts, [{ count }]] = await Promise.all([
+      query
+        .limit(pageSize)
+        .offset(offset)
+        .orderBy(desc(products.createdAt)), // DESC для новых товаров первыми
+      countQuery
+    ]);
    
     return {
       products: allProducts,
@@ -100,13 +110,12 @@ export const getAllProducts = async ({
     throw new Error("Failed to fetch products");
   }
 };
-
 // Функция для инвалидации кеша при изменении продуктов
 export async function revalidateProducts() {
   const { revalidateTag } = await import('next/cache');
   revalidateTag('products');
 }
-export async function createProduct(product: Omit<Product, "id" | "createdAt" | "updatedAt">) {
+export async function createProduct(product: Omit<Product, "id" | "createdAt" | "updatedAt" | "sku">) {
   try {
    await db.insert(products).values(product).returning();
   } catch (error) {
@@ -115,7 +124,7 @@ export async function createProduct(product: Omit<Product, "id" | "createdAt" | 
   }
     
 }
-export async function updateProduct( product: Omit<Product, "createdAt" | "updatedAt">) {
+export async function updateProduct( product: Omit<Product, "createdAt" | "updatedAt" | "sku">) {
  try { 
     await db.update(products).set(product).where(eq(products.id, product.id))
  }

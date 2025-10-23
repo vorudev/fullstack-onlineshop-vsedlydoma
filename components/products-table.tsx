@@ -51,12 +51,17 @@ export default function ProductsTable({ products, categories, manufacturers }: {
               
               <TableRow className="flex items-center justify-center" key={product.id} >
                 <Link  href={`/dashboard/products/${product.slug}`} className='border-r w-full '>
-                <TableCell className="font-medium" >{product.title}</TableCell>
+                <TableCell className="font-medium" >{product.sku}</TableCell>
+                
+                
                 </Link>
+
+                <TableCell className="inline border-r ">{product.title}</TableCell>
                 <TableCell className="inline border-r ">{product.price} руб</TableCell> 
 
                
-                <TableCell className="text-right">{product.slug}</TableCell>
+                <TableCell className="text-right border-r ">{product.slug}</TableCell>
+                <TableCell className="text-right">{product.id}</TableCell>
                 <TableCell className="text-right">
                   <Dialog>
                     <DialogTrigger asChild>

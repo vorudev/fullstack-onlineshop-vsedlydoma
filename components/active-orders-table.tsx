@@ -72,17 +72,7 @@ export function ActiveOrdersTable({
 
       <Table>
         <TableCaption>A list of your products</TableCaption>
-        <TableHeader>
-          <TableRow className="flex justify-between">
-            <TableHead >Title</TableHead>
-            <TableHead>Price</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead className="">Image</TableHead>
-            <TableHead className="">BG Image</TableHead>
-            <TableHead className="text-right">Slug</TableHead>
-            <TableHead className="text-right">Controls</TableHead>
-          </TableRow>
-        </TableHeader>
+  
         <TableBody className="grid grid-cols-3 " >
           {filteredOrders.length === 0 ? (
             <TableRow className="w-full h-full border-r border-gray-200">

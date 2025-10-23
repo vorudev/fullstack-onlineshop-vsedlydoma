@@ -7,7 +7,7 @@ import { products, Product } from "@/db/schema";
 import { orderItems, OrderItem } from "@/db/schema";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
-import { relations } from 'drizzle-orm';
+import { and, ilike, or, relations, sql } from 'drizzle-orm';
 import { desc } from "drizzle-orm";
 
 import { eq, ne } from "drizzle-orm";
@@ -110,59 +110,180 @@ export async function getOrders() {
         throw new Error("Failed to get orders");
     }
 }
-export async function getComplitedOrders () {
+interface GetComplitedOrdersParams {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+}
+export const getAllComplitedOrders = async ({
+    page = 1,
+    pageSize = 20,
+    search = ''
+  }: GetComplitedOrdersParams = {}) => {
+ 
      try {
-        const allOrders = await db
+      const offset = (page - 1) * pageSize;
+      const conditions = [];
+      
+      // Базовое условие - статус completed
+      conditions.push(eq(orders.status, 'completed'));
+      
+      // Добавляем условия поиска если есть
+      if (search) {
+  const searchConditions = [
+    ilike(orders.customerName, `%${search}%`),
+    ilike(orders.customerEmail, `%${search}%`),
+    ilike(orders.customerPhone, `%${search}%`),
+    sql`CAST(${orders.id} AS TEXT) ILIKE ${`%${search}%`}` // Приводим UUID к тексту
+  ];
+  
+  // Только если у тебя есть числовое поле, например orderNumber
+  if (!isNaN(Number(search))) {
+    searchConditions.push(
+      eq(orders.total, Number(search)) // Замени orderNumber на реальное числовое поле
+    );
+  }
+  
+  conditions.push(or(...searchConditions));
+}
+      
+      // Получаем общее количество для пагинации
+      const [totalResult] = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(orders)
+        .where(and(...conditions));
+      
+      const total = Number(totalResult.count);
+      
+      // Получаем заказы с пагинацией
+      const allOrders = await db
         .select()
         .from(orders)
-        .where(eq(orders.status, 'completed'));
-        
-        const ordersWithDetails = await Promise.all(
-            allOrders.map(async (order) => {
-                const items = await db
-                    .select()
-                    .from(orderItems)
-                    .where(eq(orderItems.orderId, order.id));
-
-                const orderUser = order.userId 
-                    ? await db
-                        .select()
-                        .from(user)
-                        .where(eq(user.id, order.userId))
-                        .limit(1)
-                    : null;
-
-                const itemsWithProducts = await Promise.all(
-                    items.map(async (item) => {
-                        const product = item.productId
-                            ? await db
-                                .select()
-                                .from(products)
-                                .where(eq(products.id, item.productId))
-                                .limit(1)
-                            : null;
-
-                        return {
-                            ...item,
-                            product: product?.[0] || null
-                        };
-                    })
-                );
-
-                return {
-                    ...order,
-                    user: orderUser?.[0] || null,
-                    orderItems: itemsWithProducts
-                };
-            })
-        );
-
-        return ordersWithDetails;
+        .where(and(...conditions))
+        .limit(pageSize)
+        .offset(offset)
+        .orderBy(desc(orders.createdAt)); // Сортировка по дате создания
+       
+   
+      
+      return {
+        orders: allOrders,
+        pagination: {
+          page,
+          pageSize,
+          total,
+          totalPages: Math.ceil(total / pageSize)
+        }
+      };
     } catch (error) {
         console.error("Error getting orders:", error);
         throw new Error("Failed to get orders");
     }
 }
+export const getComplitedOrders = async ({
+    page = 1,
+    pageSize = 20,
+    search = ''
+  }: GetComplitedOrdersParams = {}) => {
+ 
+     try {
+      const offset = (page - 1) * pageSize;
+      const conditions = [];
+      
+      // Базовое условие - статус completed
+      conditions.push(eq(orders.status, 'completed'));
+      
+      // Добавляем условия поиска если есть
+      if (search) {
+  const searchConditions = [
+    ilike(orders.customerName, `%${search}%`),
+    ilike(orders.customerEmail, `%${search}%`),
+    ilike(orders.customerPhone, `%${search}%`),
+    sql`CAST(${orders.id} AS TEXT) ILIKE ${`%${search}%`}` // Приводим UUID к тексту
+  ];
+  
+  // Только если у тебя есть числовое поле, например orderNumber
+  if (!isNaN(Number(search))) {
+    searchConditions.push(
+      eq(orders.total, Number(search)) // Замени orderNumber на реальное числовое поле
+    );
+  }
+  
+  conditions.push(or(...searchConditions));
+}
+      
+      // Получаем общее количество для пагинации
+      const [totalResult] = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(orders)
+        .where(and(...conditions));
+      
+      const total = Number(totalResult.count);
+      
+      // Получаем заказы с пагинацией
+      const allOrders = await db
+        .select()
+        .from(orders)
+        .where(and(...conditions))
+        .limit(pageSize)
+        .offset(offset)
+        .orderBy(desc(orders.createdAt)); // Сортировка по дате создания
+       
+      const ordersWithDetails = await Promise.all(
+        allOrders.map(async (order) => {
+          const items = await db
+            .select()
+            .from(orderItems)
+            .where(eq(orderItems.orderId, order.id));
+            
+          const orderUser = order.userId
+            ? await db
+                .select()
+                .from(user)
+                .where(eq(user.id, order.userId))
+                .limit(1)
+            : null;
+            
+          const itemsWithProducts = await Promise.all(
+            items.map(async (item) => {
+              const product = item.productId
+                ? await db
+                    .select()
+                    .from(products)
+                    .where(eq(products.id, item.productId))
+                    .limit(1)
+                : null;
+                
+              return {
+                ...item,
+                product: product?.[0] || null
+              };
+            })
+          );
+          
+          return {
+            ...order,
+            user: orderUser?.[0] || null,
+            orderItems: itemsWithProducts
+          };
+        })
+      );
+      
+      return {
+        orders: ordersWithDetails,
+        pagination: {
+          page,
+          pageSize,
+          total,
+          totalPages: Math.ceil(total / pageSize)
+        }
+      };
+    } catch (error) {
+        console.error("Error getting orders:", error);
+        throw new Error("Failed to get orders");
+    }
+}
+
 export async function createOrder(orderInput: CreateOrderData, orderItemsInput: CreateOrderItemData[]) {
     const session = await auth.api.getSession({
             headers: await headers()

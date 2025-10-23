@@ -1,39 +1,59 @@
 
-import { getComplitedOrders } from "@/lib/actions/orders";
+import { getAllComplitedOrders } from "@/lib/actions/orders";
 import ExportToExcel from "@/components/exceljs-download";
 import { getProducts } from "@/lib/actions/product";
+import SearchBar from "@/components/searchbar";
+import Pagination from "@/components/pagination";
+import OrdersTable from "@/components/orders-table-archive";
 
+interface PageProps {
+  searchParams: Promise<{ // Добавляем Promise
+    page?: string;
+    search?: string;
 
-export default async function OrderPage() {
-    const orders = await getComplitedOrders();
-    const products = await getProducts();
+  }>;
+
+}
+export default async function OrderPage( { searchParams }: PageProps) {
+    const { page, search} = await searchParams;
+      const currentPage = Number(page) || 1;
+  const searchQuery = search || '';
+    const { orders, pagination} = await getAllComplitedOrders(
+ { 
+  page: currentPage,
+  pageSize: 21,
+  search: searchQuery
+ }
+    );
+
 
     return (
-        <div>
-            {orders.map((order) => (
-                <div key={order.id} className="bg-white p-4 text-black border border-gray-300">
-                    <h2>Order ID: {order.id}</h2>
-                    <p>User ID: {order.userId}</p>
-                    <p>Status: {order.status}</p>
-                    <p>customer name: {order.customerName}</p>
-                    <p>customer email: {order.customerEmail}</p>
-                    <p>customer phone: {order.customerPhone}</p>
-                    <p>notes: {order.notes}</p>
-                    <ExportToExcel  orders={[order]}
-                    fileName={`order_${order.id}`} buttonText={"Скачать Excel"}/>
+         <div className="w-full p-4">
+      <h1 className="text-2xl font-bold mb-4">Архив заказов</h1>
+      
 
-                    <p>Total: ${order.total}</p>
-                    {order.orderItems.map((orderItem) => (
-                        <div key={orderItem.id}>
-                            <p>Product ID: {orderItem.productId}</p>
-                            <p>Product Name: {orderItem.title}</p>
-                            <p>Quantity: {orderItem.quantity}</p>
-                            <p>Price: ${orderItem.price}</p>
 
-                        </div>
-                    ))}
-                </div>
-            ))}
+      {/* Панель фильтров */}
+      <div className="flex gap-4 my-4 items-center">
+        <SearchBar />
+      </div>
+
+      {/* Показываем активные фильтры */}
+      {(searchQuery ) && (
+        <div className="mb-4 text-gray-600">
+          {searchQuery && <span>Поиск: "{searchQuery}"</span>}
+         
+          <span className="ml-2">({pagination.total} найдено)</span>
         </div>
+      )}
+
+      <OrdersTable orders={orders}  />   
+      
+      <Pagination
+        currentPage={pagination.page}
+        totalPages={pagination.totalPages}
+        total={pagination.total}
+      />
+    </div>
     );
 }

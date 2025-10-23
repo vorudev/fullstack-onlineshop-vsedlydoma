@@ -51,7 +51,7 @@ export default function SearchBar() {
             type="text"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
-            placeholder="Поиск товаров..."
+            placeholder="Поиск"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 "
           />
           

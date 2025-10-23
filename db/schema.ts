@@ -1,4 +1,4 @@
-import { desc, or, relations } from "drizzle-orm";
+import { desc, or, relations, sql } from "drizzle-orm";
 import { integer, text, boolean, pgTable, uuid, real, timestamp, varchar, pgEnum, AnyPgColumn, index} from "drizzle-orm/pg-core";
 
 export const roleEnum = pgEnum('role', ['admin', 'user']);
@@ -87,7 +87,31 @@ description: text("description").notNull(),
 manufacturerId: uuid("manufacturer_id").references(() => manufacturers.id),
 createdAt: timestamp("created_at").defaultNow(),
 updatedAt: timestamp("updated_at").defaultNow(),
-});
+ sku: varchar("sku", { length: 16 })
+    .unique()
+    .default(sql`'PRD-' || upper(to_hex(floor(random() * 4294967295)::int))`),
+}, (table) => ({
+  // Индекс для поиска по title
+  titleIdx: index("products_title_idx").on(table.title),
+  
+  // Индекс для фильтрации по категории
+  categoryIdx: index("products_category_idx").on(table.categoryId),
+  
+  // Индекс для фильтрации по производителю
+  manufacturerIdx: index("products_manufacturer_idx").on(table.manufacturerId),
+  
+  // Составной индекс для фильтрации и сортировки
+  categoryCreatedIdx: index("products_category_created_idx")
+    .on(table.categoryId, table.createdAt),
+  
+  // Уникальный индекс на slug (если нужно)
+  slugIdx: index("products_slug_idx").on(table.slug),
+  
+  // Уникальный индекс на sku (если нужно)
+  skuIdx: index("products_sku_idx").on(table.sku),
+
+  priceIdx: index("products_price_idx").on(table.price),
+}));
 export const productImages = pgTable("product_images", {
   id: uuid("id").primaryKey().defaultRandom(),
   productId: uuid("product_id")

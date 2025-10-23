@@ -206,23 +206,27 @@ export function ProductForm({product, categories: initialCategories, manufacture
 
           {/* Price */}
           <FormField
-            control={form.control}
-            name="price"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Цена</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="number" 
-                    placeholder="0" 
-                    {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+  control={form.control}
+  name="price"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Цена</FormLabel>
+      <FormControl>
+        <Input
+          type="number"
+          placeholder="0"
+          {...field}
+          value={field.value || ''}
+          onChange={(e) => {
+            const value = e.target.value;
+            field.onChange(value === '' ? '' : Number(value));
+          }}
+        />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
 
           {/* Category Combobox */}
           <FormField
