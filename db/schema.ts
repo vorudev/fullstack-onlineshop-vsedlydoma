@@ -1,0 +1,220 @@
+import { desc, or, relations } from "drizzle-orm";
+import { integer, text, boolean, pgTable, uuid, real, timestamp, varchar, pgEnum, AnyPgColumn, index} from "drizzle-orm/pg-core";
+
+export const roleEnum = pgEnum('role', ['admin', 'user']);
+
+export const user = pgTable("user", {
+id: text('id').primaryKey(),
+name: text('name').notNull(),
+role: roleEnum('role').default('user').notNull(), // добавляем это поле
+ email: text('email').notNull().unique(),
+ emailVerified: boolean('email_verified').$defaultFn(() => false).notNull(),
+ image: text('image'),
+ createdAt: timestamp('created_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull(),
+ updatedAt: timestamp('updated_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull(),
+banned: boolean("banned").notNull().default(false), // Добавьте эту строку
+
+                });
+
+                export const session = pgTable("session", {
+                    id: text('id').primaryKey(),
+                    expiresAt: timestamp('expires_at').notNull(),
+ token: text('token').notNull().unique(),
+ createdAt: timestamp('created_at').notNull(),
+ updatedAt: timestamp('updated_at').notNull(),
+ ipAddress: text('ip_address'),
+ userAgent: text('user_agent'),
+ userId: text('user_id').notNull().references(()=> user.id, { onDelete: 'cascade' })
+                });
+
+export const account = pgTable("account", {
+                    id: text('id').primaryKey(),
+                    accountId: text('account_id').notNull(),
+ providerId: text('provider_id').notNull(),
+ userId: text('user_id').notNull().references(()=> user.id, { onDelete: 'cascade' }),
+ accessToken: text('access_token'),
+ refreshToken: text('refresh_token'),
+ idToken: text('id_token'),
+ accessTokenExpiresAt: timestamp('access_token_expires_at'),
+ refreshTokenExpiresAt: timestamp('refresh_token_expires_at'),
+ scope: text('scope'),
+ password: text('password'),
+ createdAt: timestamp('created_at').notNull(),
+ updatedAt: timestamp('updated_at').notNull()
+                });
+
+export const verification = pgTable("verification", {
+                    id: text('id').primaryKey(),
+                    identifier: text('identifier').notNull(),
+ value: text('value').notNull(),
+ expiresAt: timestamp('expires_at').notNull(),
+ createdAt: timestamp('created_at').$defaultFn(() => /* @__PURE__ */ new Date()),
+ updatedAt: timestamp('updated_at').$defaultFn(() => /* @__PURE__ */ new Date())
+                });
+
+export const categories = pgTable("categories", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name", { length: 255 }).notNull().unique(),
+  slug: varchar("slug", { length: 255 }).notNull().unique(),
+  description: text("description"),
+  parentId: uuid("parent_id").references((): AnyPgColumn => categories.id, {
+    onDelete: "cascade",
+  }),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+export const filterCategories = pgTable("filtersCategories", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name", { length: 255 }).notNull().unique(),
+  slug: varchar("slug", { length: 255 }).notNull().unique(),
+  displayOrder: integer("display_order").default(0),
+  productCategory: uuid("product_category").references(() => categories.id),
+});
+export const filters = pgTable("filters", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name", { length: 255 }).notNull(),
+  slug: varchar("slug", { length: 255 }).notNull(),
+  displayOrder: integer("display_order").default(0),
+  categoryId: uuid("category_id").references(() => filterCategories.id),
+});
+export const products = pgTable("products", {
+id: uuid("id").primaryKey().defaultRandom(),
+categoryId: uuid("category_id").references(() => categories.id),
+price: real("price").notNull(),
+slug: varchar("slug", { length: 255 }).notNull().unique(),
+title: text("title").notNull(),
+description: text("description").notNull(),
+manufacturerId: uuid("manufacturer_id").references(() => manufacturers.id),
+createdAt: timestamp("created_at").defaultNow(),
+updatedAt: timestamp("updated_at").defaultNow(),
+});
+export const productImages = pgTable("product_images", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  productId: uuid("product_id")
+    .references(() => products.id, { onDelete: "cascade" })
+    .notNull(),
+  imageUrl: text("image_url").notNull(),
+  order: integer("order").default(0), // для сортировки
+  isFeatured: boolean("is_featured").default(false), // основное фото
+  createdAt: timestamp("created_at").defaultNow(),
+});
+export const reviews = pgTable("reviews", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  product_id: uuid("product_id").references(() => products.id, { onDelete: 'cascade' }).notNull(),
+  user_id: text("user_id").references(() => user.id, { onDelete: 'cascade' }),
+  rating: real("rating").notNull(), // или можешь использовать integer, если рейтинг только целые числа
+  comment: text("comment"),
+  status: varchar("status", { length: 255 }).notNull(),
+  author_name: varchar("author_name", { length: 255 }), // для анонимных отзывов
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+export const manufacturers = pgTable("manufacturers", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name", { length: 255 }).notNull().unique(),
+  slug: varchar("slug", { length: 255 }).notNull().unique(),
+  description: text("description"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+export const productAttributes = pgTable("product_attributes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  productId: uuid("product_id")
+    .references(() => products.id, { onDelete: "cascade" })
+    .notNull(),
+  categoryId: uuid("category_id")
+    .references(() => attributeCategories.id, { onDelete: "cascade" })
+    .notNull(),
+  name: varchar("name", { length: 255 }).notNull(), // например, "Процессор", "RAM"
+  value: text("value").notNull(), // например, "Intel i7", "16 GB"
+  order: integer("order").default(0), // для сортировки
+  createdAt: timestamp("created_at").defaultNow(),
+});
+export const attributeCategories = pgTable("attribute_categories", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    name: varchar("name", { length: 100 }).notNull(),
+    slug: varchar("slug", { length: 100 }).notNull().unique(), 
+    displayOrder: integer("display_order").default(0)
+});
+
+export const orders = pgTable("orders", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: text("user_id").references(() => user.id),
+  status: varchar("status", { length: 255 }).notNull(),
+  notes: text("notes"),
+  total: real("total").notNull(),
+  customerName: varchar("customer_name", { length: 255 }),
+  customerEmail: varchar("customer_email", { length: 255 }),
+  customerPhone: varchar("customer_phone", { length: 50 }),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+
+}, (table) => ({
+  // Индекс на status
+  statusIdx: index("orders_status_idx").on(table.status),
+  
+  // Опционально: составной индекс для сортировки по дате
+  statusCreatedIdx: index("orders_status_created_idx").on(table.status, table.createdAt),
+}));
+export const orderItems = pgTable("order_items", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  orderId: uuid("order_id").references(() => orders.id),
+  productId: uuid("product_id").references(() => products.id),
+  price: real("price").notNull(),
+title: text("title").notNull(),
+  quantity: integer("quantity").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+})
+export const schema = {
+                
+                    products, 
+                    categories, 
+                    user, 
+                    session, 
+                    account, 
+                    verification,
+                    orders,
+                    orderItems,
+                    productAttributes,
+                    attributeCategories,
+                    manufacturers,
+                    filters,
+                    filterCategories, 
+                    reviews, 
+                    productImages
+
+                  
+                }
+
+export type Product = typeof products.$inferSelect 
+export type Category = typeof categories.$inferSelect
+export type User = typeof user.$inferSelect
+export type Order = typeof orders.$inferSelect
+export type OrderItem = typeof orderItems.$inferSelect
+export type ProductAttribute = typeof productAttributes.$inferSelect
+export type AttributeCategory = typeof attributeCategories.$inferSelect
+export type Manufacturer = typeof manufacturers.$inferSelect
+export type Filter = typeof filters.$inferSelect
+export type FilterCategory = typeof filterCategories.$inferSelect
+export type Review = typeof reviews.$inferSelect
+export type ProductImage = typeof productImages.$inferSelect
+
+export const ordersRelations = relations(orders, ({ one, many }) => ({
+  user: one(user, {
+    fields: [orders.userId],
+    references: [user.id],
+  }),
+  orderItems: many(orderItems),
+}));
+
+export const orderItemsRelations = relations(orderItems, ({ one }) => ({
+  order: one(orders, {
+    fields: [orderItems.orderId],
+    references: [orders.id],
+  }),
+  product: one(products, {
+    fields: [orderItems.productId],
+    references: [products.id],
+  }),
+}));

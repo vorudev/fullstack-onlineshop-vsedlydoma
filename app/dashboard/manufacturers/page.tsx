@@ -1,0 +1,69 @@
+'use server';
+import Image from "next/image";
+import { PlusIcon, UserPlusIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ManufacturerForm} from "@/components/forms/create-manufacturert-form";
+import { getCategories } from "@/lib/actions/product-categories";
+import ManufacturersTable from "@/components/manufacturers-table";
+import Pagination  from "@/components/pagination";
+
+import { getAllManufacturers } from "@/lib/actions/manufacturer";
+import { getAttributeCategories } from "@/lib/actions/attributes-categories";
+import SearchBar from "@/components/searchbar";
+import { get } from "http";
+interface PageProps {
+  searchParams: Promise<{ // Добавляем Promise
+    page?: string;
+    search?: string;
+    category?: string;
+  }>;
+
+}
+export default async function Home({ searchParams }: PageProps) {
+  const { page, search, category } = await searchParams;
+  const currentPage = Number(page) || 1;
+  const searchQuery = search || '';
+  const { manufacturers, pagination } = await getAllManufacturers({
+    page: currentPage,
+    pageSize: 21,
+    search: searchQuery,
+
+  });
+  return (
+     <div className=" w-full  p-4  ">
+
+      <h1 className="text-2xl font-bold mb-4">Производители</h1> 
+      <div className="flex justify-end ">
+      <Dialog>
+  <DialogTrigger asChild><Button>Добавить Производителя<PlusIcon /></Button></DialogTrigger>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Добавить Производителя</DialogTitle>
+
+      <ManufacturerForm />
+    </DialogHeader>
+  </DialogContent>
+</Dialog>
+ 
+    </div>
+   
+    <SearchBar />
+      
+      {/* Показываем что ищем */}
+      {searchQuery && (
+        <p className="mb-4 text-gray-600">
+          Результаты поиска: "{searchQuery}" ({pagination.total} найдено)
+        </p>
+      )}
+
+      <ManufacturersTable manufacturers={manufacturers} />
+ <Pagination 
+        currentPage={pagination.page}
+        totalPages={pagination.totalPages}
+        total={pagination.total}
+      />
+
+    </div>
+  );
+}
