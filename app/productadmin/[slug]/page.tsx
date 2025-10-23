@@ -4,9 +4,10 @@ import Link from "next/link";
 export default async function ProductPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const data = await getProductWithCategoryChain(params.slug);
+  const { slug } = await params;
+  const data = await getProductWithCategoryChain(slug);
 
   if (!data) {
     return <div>Product not found</div>;
