@@ -62,15 +62,7 @@ export const getAllProducts = async ({
    
     // Базовый запрос
     let query = db
-      .select(
-        {
-          id: products.id,
-          title: products.title,
-          description: products.description,
-          price: products.price,
-          slug: products.slug,
-        }
-      )
+      .select()
       .from(products)
       .$dynamic();
     
