@@ -12,7 +12,7 @@ import { desc } from "drizzle-orm";
 
 import { eq, ne } from "drizzle-orm";
 import { custom } from "zod";
-type CreateOrderData = Omit<Order, "id" | "createdAt" | "updatedAt">;
+type CreateOrderData = Omit<Order, "id" | "createdAt" | "updatedAt" | "userId" | "total">;
 
 export type CreateOrderItemData = Omit<OrderItem, "id" | "createdAt" | "updatedAt" | "orderId">;
 

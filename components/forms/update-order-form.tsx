@@ -25,12 +25,12 @@ interface UpdateOrderFormProps {
     
 }
 const formSchema = z.object({
-    status: z.string().optional(),
+    status: z.string(),
     customerName: z.string().min(2, { message: "Name must be at least 2 characters." }).max(50, { message: "Name must be at most 50 characters." }),
     customerEmail: z.string().email({ message: "Invalid email address." }),
     customerPhone: z.string().min(10, { message: "Phone number must be at least 10 characters." }).max(15, { message: "Phone number must be at most 15 characters." }),
     notes: z.string().nullable(),
-    total: z.number().min(0, { message: "Total must be a positive number." }).optional(),
+    total: z.number().min(0, { message: "Total must be a positive number." }),
 
 });
 export function UpdateOrderForm({ order }: UpdateOrderFormProps) {
@@ -49,6 +49,10 @@ export function UpdateOrderForm({ order }: UpdateOrderFormProps) {
         },
     });
     async function onSubmit(values: z.infer<typeof formSchema>) {
+        if (!order) {
+        console.error("Order not found");
+        return;
+    }
         setIsLoading(true);
         try {
             await updateOrder({ ...values, id: order.id } );
@@ -130,7 +134,7 @@ export function UpdateOrderForm({ order }: UpdateOrderFormProps) {
                         <FormItem>
                             <FormLabel>Заметки к заказу</FormLabel>
                             <FormControl>
-                                <Input {...field} />
+                                <Input {...field} value={field.value ?? ""}/>
                             </FormControl>
                             <FormMessage />
                         </FormItem>

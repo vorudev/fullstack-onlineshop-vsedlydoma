@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { createOrder } from "@/lib/actions/orders";
+import { user } from "@/db/schema";
 
 interface OrderFormProps {
    items:{
@@ -32,11 +33,12 @@ interface OrderFormProps {
 
 }
 const formSchema = z.object({
-  status: z.string().optional(),
+  status: z.string(),
   customerName: z.string().min(2, { message: "Name must be at least 2 characters." }).max(50, { message: "Name must be at most 50 characters." }),
   customerEmail: z.string().email({ message: "Invalid email address." }),
   customerPhone: z.string().min(10, { message: "Phone number must be at least 10 characters." }).max(15, { message: "Phone number must be at most 15 characters." }),
-  notes: z.string().optional(),
+  notes: z.string().nullable(),
+
 });
 export default function OrderForm( {items}: OrderFormProps) {
     const [isLoading, setIsLoading] = useState(false);
@@ -48,6 +50,9 @@ export default function OrderForm( {items}: OrderFormProps) {
             customerName: "",
             customerEmail: "",
             customerPhone: "",
+            
+          
+
         }
         });
     async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -57,7 +62,8 @@ export default function OrderForm( {items}: OrderFormProps) {
             productId: item.id,
             title: item.title,
             price: item.price,
-            quantity: item.quantity
+            quantity: item.quantity, 
+            
         }))
          ;
    { /*   productId: "prod_123", */ }
@@ -146,7 +152,7 @@ export default function OrderForm( {items}: OrderFormProps) {
             <FormItem>
               <FormLabel>notes</FormLabel>
               <FormControl>
-                <Input placeholder="notes" {...field} />
+                <Input placeholder="notes" {...field}  value={field.value ?? ""}/>
               </FormControl>
               <FormMessage />
             </FormItem>

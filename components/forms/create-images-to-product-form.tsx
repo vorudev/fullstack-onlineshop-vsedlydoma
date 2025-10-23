@@ -95,6 +95,7 @@ return (
                 <Input 
                   type="number" 
                   {...field} 
+                  value={field.value === null ? "" : field.value}
                   onChange={(e) => field.onChange(parseInt(e.target.value))}
                   disabled={isLoading} 
                 />
@@ -114,7 +115,7 @@ return (
             <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
               <FormControl>
                 <Checkbox
-                  checked={field.value}
+                  checked={field.value ?? false}
                   onCheckedChange={field.onChange}
                   disabled={isLoading}
                 />
