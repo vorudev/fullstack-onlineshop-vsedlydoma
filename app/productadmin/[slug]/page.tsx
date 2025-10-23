@@ -22,7 +22,7 @@ export default async function ProductPage({
   <h1 className="text-3xl font-bold mb-4">{product.title}</h1>
   <p className="mb-4">{product.description}</p>
   <p className="text-xl font-semibold mb-4">${product.price}</p>
-  <img src={product.image} alt={product.title} className="w-64 h-64 object-cover mb-4" />
+
 </div>
   {categoryChain.map((category, index) => (
           <span key={category.id} className="flex items-center gap-2">
