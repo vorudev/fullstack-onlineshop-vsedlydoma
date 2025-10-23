@@ -58,7 +58,7 @@ export async function getCategoryWithNavigation(
     .where(eq(categories.parentId, currentCategory.id));
 
   // Если нет подкатегорий, получаем продукты
-  let categoryProducts = undefined;
+  let categoryProducts: typeof products.$inferSelect[] | undefined = undefined;
   if (subcategories.length === 0) {
     categoryProducts = await db
       .select()
