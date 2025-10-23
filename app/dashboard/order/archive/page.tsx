@@ -26,7 +26,6 @@ export default async function OrderPage() {
                     {order.orderItems.map((orderItem) => (
                         <div key={orderItem.id}>
                             <p>Product ID: {orderItem.productId}</p>
-                            <img src={orderItem.product?.bgImage} alt={orderItem.title} className="w-12" /> 
                             <p>Product Name: {orderItem.title}</p>
                             <p>Quantity: {orderItem.quantity}</p>
                             <p>Price: ${orderItem.price}</p>

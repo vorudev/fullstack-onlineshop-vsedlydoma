@@ -21,7 +21,6 @@ export default function Section2({ title, price, id }: Section1Props) {
            
            
 <AddToCart  id={id} price={price} title={title} />
-<OrderForm id={id} title={title} price={price} quantity={1}/>
     </div>       
 </div>
             </div>
