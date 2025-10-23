@@ -8,7 +8,7 @@ import { getCategories } from "@/lib/actions/product-categories";
 
 
 interface PageProps {
-  params: { category: string };
+  params: Promise<{ category: string }>;
   searchParams: { [key: string]: string | string[] | undefined };
 }
 
