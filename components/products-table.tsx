@@ -33,7 +33,7 @@ import AttributesTable from './attributes-table';
 import { Pencil } from 'lucide-react';
 import DeleteUserButton from './delete-product-button';
 
-export default function ProductsTable({ products, categories, manufacturers }: { products: Omit <Product, "createdAt" | "updatedAt" | "image" | "bgImage" | "manufacturerId" | "categoryId">[]; categories: any, manufacturers: Manufacturer[] }) {
+export default function ProductsTable({ products, categories, manufacturers }: { products: Product[]; categories: any, manufacturers: Manufacturer[] }) {
   return (
     <div className="space-y-4">
       {/* Поле поиска */}
