@@ -4,29 +4,48 @@ import { Download } from 'lucide-react';
 import ExcelJS from 'exceljs';
 
 interface OrderItem {
+  id: string;
   product: {
+    id: string;
     title: string;
     price: number;
+    slug: string;
+    description: string;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+    categoryId: string | null;
+    manufacturerId: string | null;
   } | null;
   quantity: number;
   price: number;
   title: string;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  productId: string | null;
+  orderId: string | null;
 }
 
 interface Order {
-  id?: string;
-  user?: {
+  id: string;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  userId: string | null;
+  status: string;
+  notes: string | null;
+  total: number; // Было totalPrice
+  customerName: string | null;
+  customerEmail: string | null;
+  customerPhone: string | null;
+  user: {
+    id: string;
     name: string;
     email: string;
   } | null;
-  orderItems: OrderItem[];
-  createdAt?: Date | null;
-  totalPrice?: number;
-  status?: string;
+  orderItems: OrderItem[] | null;
 }
 
 interface ExportOrdersToExcelProps {
-  orders: Order[];
+  orders: Order[] | undefined;
   fileName?: string;
   sheetName?: string;
   buttonText?: string;
@@ -79,7 +98,7 @@ const ExportToExcel: React.FC<ExportOrdersToExcelProps> = ({
         });
 
         // Добавляем товары из заказа
-        order.orderItems.forEach((item) => {
+        order.orderItems?.forEach((item) => {
           worksheet.addRow({
             invoice: item.product?.title || item.title || 'Без названия',
             price: item.price,
@@ -88,14 +107,14 @@ const ExportToExcel: React.FC<ExportOrdersToExcelProps> = ({
         });
 
         // Добавляем итого
-        const total = order.orderItems.reduce(
+        const total = order.orderItems?.reduce(
           (sum, item) => sum + item.price * item.quantity,
           0
         );
         const totalRow = worksheet.addRow({
           invoice: 'ИТОГО:',
           price: total,
-          quantity: order.orderItems.reduce((sum, item) => sum + item.quantity, 0),
+          quantity: order.orderItems?.reduce((sum, item) => sum + item.quantity, 0),
         });
         totalRow.font = { bold: true };
         

@@ -77,7 +77,13 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                 </DialogHeader>
               </DialogContent>
             </Dialog>
-             <ExportToExcel orders={[order]} fileName={`order_${order?.id}`} buttonText={"Скачать Excel"}/>
+          {order && (
+  <ExportToExcel 
+    orders={[order]} 
+    fileName={`order_${order.id}`} 
+    buttonText="Скачать Excel"
+  />
+)}
           </div>
         </div>
 
