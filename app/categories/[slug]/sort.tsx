@@ -10,6 +10,7 @@ interface Product {
   slug: string;
   title: string;
   price: number;
+ 
 }
 
 export default function ProductList({ products }: { products: Product[] }) {

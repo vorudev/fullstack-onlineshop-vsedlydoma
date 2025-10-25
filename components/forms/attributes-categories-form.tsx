@@ -72,9 +72,9 @@ export function AttributeCategoryForm({ category }: AttributeCategoryFormProps) 
                     name="name"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Name</FormLabel>
+                            <FormLabel>Название категории Характеристик</FormLabel>
                             <FormControl>
-                                <Input placeholder="Attribute Category Name" {...field} />
+                                <Input placeholder="Например, Общее" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -85,9 +85,10 @@ export function AttributeCategoryForm({ category }: AttributeCategoryFormProps) 
                     name="slug"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>slug</FormLabel>
+                            <FormLabel>Это символьный идентификатор категории</FormLabel>
+                            <FormDescription>Только на английском, без пробелов, без спецсимволов, можно использовать цифры и тире </FormDescription>
                             <FormControl>
-                                <Input placeholder="Attribute Category Slug" {...field} />
+                                <Input placeholder="Например, general или general-characteristics" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -99,7 +100,7 @@ export function AttributeCategoryForm({ category }: AttributeCategoryFormProps) 
                     name="displayOrder"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Display Order</FormLabel>
+                            <FormLabel>Порядковый номер</FormLabel>
                             <FormControl>
                                 <Input 
                     placeholder="Order" 
@@ -118,7 +119,7 @@ export function AttributeCategoryForm({ category }: AttributeCategoryFormProps) 
                 />
                 <Button disabled={isLoading} type="submit">
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {category ? "Update Category" : "Create Category"}
+                    {category ? "Обновить категорию" : "Создать категорию"}
                 </Button>
             </form>
         </Form>

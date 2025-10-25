@@ -35,6 +35,7 @@ const formSchema = z.object({
     value: z.string().min(1, "Value is required"),
     order: z.number().nullable(),
     productId: z.string().uuid("Product ID is required"),
+    slug: z.string().min(1, "Slug is required"),
    categoryId: z.string().uuid("Attribute Category ID is required"),
 })
 
@@ -80,9 +81,10 @@ export default function AttributeForm({ attribute, product, categories, category
                     name="name"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Name</FormLabel>
+                          <FormLabel>Название характеристики    </FormLabel>
+                            <FormDescription>Это название характеристики, например "цвет".</FormDescription>
                             <FormControl>
-                                <Input placeholder="Name" {...field} />
+                                <Input placeholder="Например, цвет" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -93,9 +95,24 @@ export default function AttributeForm({ attribute, product, categories, category
                     name="value"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>value</FormLabel>
+                          <FormLabel>Значение</FormLabel>
+                            <FormDescription>Это значения для характеристики, например "красный".</FormDescription>
                             <FormControl>
-                                <Input placeholder="Value" {...field} />
+                                <Input placeholder="Например, красный" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="slug"
+                    render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>SLUG (Название характеристики для фильтрации)</FormLabel>
+                            <FormDescription>Это значения именно для фильтрации, оно не видно пользователю, но нужно для правильной работы системы фильтров. Оно тесно связано с полем "Slug" при создании фильтров. Например, если создаем характеристику "цвет" со значением "красный", то slug будет "Color". Обязательно на английском, без пробелов</FormDescription>
+                            <FormControl>
+                                <Input placeholder="Например, Color" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -106,7 +123,7 @@ export default function AttributeForm({ attribute, product, categories, category
     name="order"
     render={({ field }) => (
         <FormItem>
-            <FormLabel>Name</FormLabel>
+            <FormLabel>Порядок отображения</FormLabel>
             <FormControl>
                 <Input 
                     placeholder="Order" 
@@ -129,11 +146,11 @@ export default function AttributeForm({ attribute, product, categories, category
     name="categoryId"
     render={({ field }) => (
         <FormItem>
-            <FormLabel>Category</FormLabel>
+            <FormLabel>Категория</FormLabel>
             <Select onValueChange={field.onChange}>
                 <FormControl>
                     <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
+                        <SelectValue placeholder="Выберите категорию" />
                     </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -151,7 +168,7 @@ export default function AttributeForm({ attribute, product, categories, category
 
                 <Button disabled={isLoading} type="submit">
                     {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                    {attribute ? "Update Attribute" : "Create Attribute"}
+                    {attribute ? "Обновить характеристику" : "Создать характеристику"}
                 </Button>
             </form>
         </Form>

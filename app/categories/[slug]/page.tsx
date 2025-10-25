@@ -28,6 +28,10 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
       selectedFilters[key] = Array.isArray(value) ? value : value.split(',');
     }
   });
+  const selectedPriceRange = {
+    min: Number(resolvedSearchParams.price_min) || 0,
+    max: Number(resolvedSearchParams.price_max) || 10000
+  };
 
   // Шаг 2: Получаем категорию (нужна для следующих запросов)
   const data = await getCategoryWithNavigation(slug);
@@ -39,15 +43,15 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
   const { category, breadcrumbs, subcategories} = data;
 
   // ✅ Шаг 3: ПАРАЛЛЕЛЬНАЯ загрузка зависимых данных
-  const [result, filterCategoriesWithFilters] = await Promise.all([
-    getFilteredProducts(category.id, selectedFilters),
+  const [{products, totalCount, availableManufacturers}, filterCategoriesWithFilters] = await Promise.all([
+    getFilteredProducts(category.id, selectedFilters, 1, 20),
     getFilterCategoriesWithFiltersByProductCategory(category.id),
   ]);
 
 
   return (
     <div className="p-6 flex">
-      <FilterSidebar filterCategories={filterCategoriesWithFilters}/>
+      <FilterSidebar filterCategories={filterCategoriesWithFilters} avaliableManufacturers={availableManufacturers}/>
       <div className="flex-1 ml-6">
 
         <nav className="mb-6 text-sm text-gray-600">
@@ -96,7 +100,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
           </div>
         ) : (
           /* Продукты */
-          <ProductList products={result} />
+          <ProductList products={products} />
         )}
       </div>
     </div>

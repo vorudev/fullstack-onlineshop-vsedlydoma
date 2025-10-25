@@ -33,11 +33,11 @@ interface FilterCategoryWithFilters {
 
 interface FilterSidebarProps {
 filterCategories: FilterCategoryWithFilters[];
-
+avaliableManufacturers: { id: string; name: string }[]
 
 }
 
-export default function FilterSidebar({ filterCategories }: FilterSidebarProps) {
+export default function FilterSidebar({ filterCategories, avaliableManufacturers }: FilterSidebarProps) {
   const router = useRouter();
     const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -125,6 +125,19 @@ export default function FilterSidebar({ filterCategories }: FilterSidebarProps) 
                 <label htmlFor={filter.id}>{filter.name}</label>
               </div>
             ))}
+        </div>
+      ))}
+      <h3 className="text-lg font-semibold mb-2">Производители</h3>
+      {avaliableManufacturers.map(manufacturer => (
+        <div key={manufacturer.id} className="mb-1">
+          <input
+            type="checkbox"
+            id={manufacturer.id}
+            checked={selectedFilters.manufacturer?.includes(manufacturer.id) || false}
+            onChange={(e) => handleFilterChange('manufacturer', manufacturer.id, e.target.checked)}
+            className="mr-2"
+          />
+          <label htmlFor={manufacturer.id}>{manufacturer.name}</label>
         </div>
       ))}
 

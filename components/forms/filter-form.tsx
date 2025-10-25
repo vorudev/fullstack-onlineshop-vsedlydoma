@@ -69,6 +69,7 @@ export function FilterForm({ filter, categoryId }: FilterFormProps) {
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Значение</FormLabel>
+                            <FormDescription>Это значения для категории фильтрования, например "красный" к slug "color".</FormDescription>
                             <FormControl>
                                 <Input placeholder="Значение" {...field} />
                             </FormControl>
@@ -82,6 +83,7 @@ export function FilterForm({ filter, categoryId }: FilterFormProps) {
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Slug</FormLabel>
+                             <FormDescription>Это значения именно для фильтрации, оно не видно пользователю, но нужно для правильной работы системы фильтров. Оно тесно связано с полем "Slug" при создании характеристики. Например, "color" Обязательно на английском, без пробелов</FormDescription>
                             <FormControl>
                                 <Input placeholder="Slug" {...field} />
                             </FormControl>

@@ -1,8 +1,8 @@
 'use server';
 
 import { db } from "@/db/drizzle";
-import { categories, Category, filters } from "@/db/schema";
-import { eq, ilike, or } from "drizzle-orm";
+import { categories, Category, filters, manufacturers } from "@/db/schema";
+import { eq, ilike, or  } from "drizzle-orm";
 import { products } from "@/db/schema";
 import { isNull } from "drizzle-orm";
 import { productAttributes } from "@/db/schema";
@@ -29,12 +29,23 @@ interface CategoryParams {
 }
 export async function getFilteredProducts(
   categoryId: string,
-  selectedFilters?: FilterParams, // { "processor": ["filter-id-1", "filter-id-2"] }
+  selectedFilters?: FilterParams,
   page: number = 1,
   limit: number = 20
 ) {
   try {
-    // Если фильтры не выбраны
+    // 1. Получаем всех уникальных производителей в категории (до фильтрации)
+    const availableManufacturers = await db
+      .selectDistinct({
+        id: manufacturers.id,
+        name: manufacturers.name,
+        slug: manufacturers.slug,
+      })
+      .from(products)
+      .innerJoin(manufacturers, eq(products.manufacturerId, manufacturers.id))
+      .where(eq(products.categoryId, categoryId));
+
+    // 2. Если фильтры не выбраны - возвращаем все продукты
     if (!selectedFilters || Object.keys(selectedFilters).length === 0) {
       const result = await db
         .select()
@@ -43,67 +54,114 @@ export async function getFilteredProducts(
         .limit(limit)
         .offset((page - 1) * limit);
       
-      return result;
+      const totalCount = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(products)
+        .where(eq(products.categoryId, categoryId));
+      
+      return {
+        products: result,
+        availableManufacturers,
+        totalCount: totalCount[0].count,
+      };
     }
 
-    // Получаем данные выбранных фильтров (slug и name)
-    const allFilterIds = Object.values(selectedFilters).flat();
-    
-    const selectedFilterData = await db
-      .select({
-        id: filters.id,
-        slug: filters.slug,
-        name: filters.name
-      })
-      .from(filters)
-      .where(inArray(filters.id, allFilterIds));
+    // 3. Разделяем фильтры на производителей и атрибуты
+    const { manufacturer: manufacturerIds, ...attributeFilters } = selectedFilters;
 
-    // Группируем по slug: { "processor": ["intel i7", "amd ryzen"], "ram": ["16gb"] }
-    const filtersBySlug: Record<string, string[]> = {};
+    // 4. Получаем данные выбранных фильтров атрибутов
+    const allFilterIds = Object.values(attributeFilters).flat();
     
-    for (const [slug, filterIds] of Object.entries(selectedFilters)) {
-      const filterNames = selectedFilterData
-        .filter(f => filterIds.includes(f.id))
-        .map(f => f.name);
-      
-      if (filterNames.length > 0) {
-        filtersBySlug[slug] = filterNames;
+    let filtersBySlug: Record<string, string[]> = {};
+    
+    if (allFilterIds.length > 0) {
+      const selectedFilterData = await db
+        .select({
+          id: filters.id,
+          slug: filters.slug,
+          name: filters.name
+        })
+        .from(filters)
+        .where(inArray(filters.id, allFilterIds));
+
+      // Группируем по slug
+      for (const [slug, filterIds] of Object.entries(attributeFilters)) {
+        const filterNames = selectedFilterData
+          .filter(f => filterIds.includes(f.id))
+          .map(f => f.name);
+        
+        if (filterNames.length > 0) {
+          filtersBySlug[slug] = filterNames;
+        }
       }
     }
 
     console.log("Filters by slug:", filtersBySlug);
+    console.log("Manufacturer IDs:", manufacturerIds);
 
-    // Теперь фильтруем товары
-    // product_attributes.name должен совпадать со slug фильтра
-    // product_attributes.value должен совпадать с filters.name
+    // 5. Строим условия для WHERE
+    const hasAttributeFilters = Object.keys(filtersBySlug).length > 0;
+    const hasManufacturerFilter = manufacturerIds && manufacturerIds.length > 0;
 
-    const subquery = db
-      .select({ 
-        productId: productAttributes.productId,
-        filterCount: sql<number>`COUNT(DISTINCT ${productAttributes.name})`.as('filter_count')
-      })
-      .from(productAttributes)
-      .where(
-        sql`(${productAttributes.name}, ${productAttributes.value}) IN (${sql.join(
-          Object.entries(filtersBySlug).map(([slug, names]) =>
-            names.map(name => sql`(${slug}, ${name})`)
-          ).flat(),
-          sql`, `
-        )})`
-      )
-      .groupBy(productAttributes.productId)
-      .having(sql`COUNT(DISTINCT ${productAttributes.name}) = ${Object.keys(filtersBySlug).length}`)
-      .as('filtered_products');
+    // Случай 1: Есть фильтры по атрибутам
+    if (hasAttributeFilters) {
+      const subquery = db
+        .select({ 
+          productId: productAttributes.productId,
+          filterCount: sql<number>`COUNT(DISTINCT ${productAttributes.slug})`.as('filter_count')
+        })
+        .from(productAttributes)
+        .where(
+          sql`(${productAttributes.slug}, ${productAttributes.value}) IN (${sql.join(
+            Object.entries(filtersBySlug).flatMap(([slug, names]) =>
+              names.map(name => sql`(${slug}, ${name})`)
+            ),
+            sql`, `
+          )})`
+        )
+        .groupBy(productAttributes.productId)
+        .having(sql`COUNT(DISTINCT ${productAttributes.slug}) = ${Object.keys(filtersBySlug).length}`)
+        .as('filtered_products');
+
+      // Строим условия WHERE
+      const whereConditions = [eq(products.categoryId, categoryId)];
+      if (hasManufacturerFilter) {
+        whereConditions.push(inArray(products.manufacturerId, manufacturerIds));
+      }
+
+      const result = await db
+        .select()
+        .from(products)
+        .innerJoin(subquery, eq(products.id, subquery.productId))
+        .where(and(...whereConditions))
+        .limit(limit)
+        .offset((page - 1) * limit);
+
+      return {
+        products: result.map(r => r.products),
+        availableManufacturers,
+        totalCount: result.length,
+      };
+    }
+
+    // Случай 2: Только фильтр по производителям (без атрибутов)
+    const whereConditions = [eq(products.categoryId, categoryId)];
+    if (hasManufacturerFilter) {
+      whereConditions.push(inArray(products.manufacturerId, manufacturerIds));
+    }
 
     const result = await db
       .select()
       .from(products)
-      .innerJoin(subquery, eq(products.id, subquery.productId))
-      .where(eq(products.categoryId, categoryId))
+      .where(and(...whereConditions))
       .limit(limit)
       .offset((page - 1) * limit);
 
-    return result.map(r => r.products);
+    return {
+      products: result,
+      availableManufacturers,
+      totalCount: result.length,
+    };
 
   } catch (error) {
     console.error("Error filtering products:", error);

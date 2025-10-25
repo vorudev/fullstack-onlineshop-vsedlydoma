@@ -152,6 +152,7 @@ export const productAttributes = pgTable("product_attributes", {
   name: varchar("name", { length: 255 }).notNull(), // например, "Процессор", "RAM"
   value: text("value").notNull(), // например, "Intel i7", "16 GB"
   order: integer("order").default(0), // для сортировки
+  slug: varchar("slug", { length: 255 }).notNull().unique(), // для фильтрации, например "Color"
   createdAt: timestamp("created_at").defaultNow(),
 });
 export const attributeCategories = pgTable("attribute_categories", {
