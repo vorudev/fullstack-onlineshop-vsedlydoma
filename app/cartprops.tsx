@@ -75,6 +75,7 @@ export const CartItemComponent = ({ item }: CartItemProps) => {
 <div className="flex-col flex">
     <h1 className="md:text-[12px] text-[11px] bdog uppercase">{item.title}</h1>
     <p className="md:text-[12px] text-[11px] bdog uppercase">$ {item.price} USD</p>
+    <p className="md:text-[12px] text-[11px] bdog uppercase">sku {item.sku}</p>
     </div>
                 <button className="md:text-[12px] text-[11px] bdog uppercase text-[rgb(133,112,106)] cursor-pointer" onClick={() => removeFromCart(item.id)}>Remove</button>
                 </div>

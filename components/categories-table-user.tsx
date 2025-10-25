@@ -66,7 +66,7 @@ export default function CategoriesTable({ categories }: CategoriesTableProps) {
     if (children.length === 0) return null;
 
     return (
-      <div className="absolute left-full top-0 min-w-[250px] border border-gray-200 rounded-lg shadow-xl z-[100]">
+      <div className="absolute left-full top-0 min-w-[250px] border border-gray-200 text-black rounded-lg shadow-xl z-[100]">
         {children.map((child) => (
           <div
             key={child.id}
@@ -98,49 +98,19 @@ export default function CategoriesTable({ categories }: CategoriesTableProps) {
     return (
       <div key={category.id} className="relative group/child">
         <div 
-          className="flex items-center justify-between px-4 py-3  border-b cursor-pointer"
+          className="flex items-center justify-between px-4 py-3  text-black border-b border-black cursor-pointer"
           onMouseEnter={() => setHoveredCategory(category.id)}
         >
           <Link href={`/dashboard/categories/${category.slug}`} className="flex items-center gap-2 flex-1">
-            <span className="text-sm font-medium">{category.name}</span>
+            <span className="text-sm ">{category.name}</span>
             {hasSubcategories && (
               <ChevronRight className="h-4 w-4 text-gray-400" />
             )}
           </Link>
           <div className="flex gap-1 ml-2">
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button size="sm" variant="ghost" className="h-7 w-7 p-0">
-                  <Pencil className="h-3 w-3" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Edit Category</DialogTitle>
-                  <DialogDescription>
-                    Edit a category in the Database
-                  </DialogDescription>
-                  <CategoryForm category={category} categories={categories} />
-                </DialogHeader>
-              </DialogContent>
-            </Dialog>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button size="sm" variant="ghost" className="h-7 w-7 p-0">
-                  <Pencil className="h-3 w-3" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Make Filter Category</DialogTitle>
-                  <DialogDescription>
-                    Edit a category in the Database
-                  </DialogDescription>
-                  <FilterCategoryForm productCategoryId={category.id} />
-                </DialogHeader>
-              </DialogContent>
-            </Dialog>
-            <DeleteCategoryButton categoryId={category.id} />
+            
+          
+
           </div>
         </div>
 
@@ -162,30 +132,15 @@ export default function CategoriesTable({ categories }: CategoriesTableProps) {
     const children = buildCategoryTree(categories, parent.id);
 
     return (
-      <div key={parent.id} className="mb-6">
+      <div key={parent.id} >
         {/* Родительская категория */}
-        <div className="px-4 py-3  bg-gray-500 border-b-2 border-gray-300">
+        <div className="px-4 py-3   text-black border-b-2 border-gray-300">
           <Link href={`/dashboard/categories/${parent.slug}`}>
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-base">{parent.name}</h3>
               <div className="flex gap-1">
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button size="sm" variant="ghost" className="h-7 w-7 p-0">
-                      <Pencil className="h-3 w-3" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Edit Category</DialogTitle>
-                      <DialogDescription>
-                        Edit a category in the Database
-                      </DialogDescription>
-                      <CategoryForm category={parent} categories={categories} />
-                    </DialogHeader>
-                  </DialogContent>
-                </Dialog>
-                <DeleteCategoryButton categoryId={parent.id} />
+                
+
               </div>
             </div>
           </Link>
@@ -203,15 +158,15 @@ export default function CategoriesTable({ categories }: CategoriesTableProps) {
   const rootCategories = buildCategoryTree(categories, null);
 
   return (
-    <div className="relative">
+    <div className="relative ">
       {/* Кнопка для открытия меню */}
-      <Button 
+      <button
         onClick={() => setIsMenuOpen(!isMenuOpen)}
-        variant="outline"
-        className="mb-4"
+
+        className="mb-4 bg-blue-500 text-white cursor-pointer px-4 py-2 rounded-md hover:bg-blue-600"
       >
         {isMenuOpen ? 'Скрыть категории' : 'Показать категории'}
-      </Button>
+      </button>
 
       {/* Меню категорий */}
       {isMenuOpen && (

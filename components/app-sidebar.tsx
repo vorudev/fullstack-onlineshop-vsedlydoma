@@ -101,7 +101,14 @@ export async function AppSidebar() {
                   <SidebarMenuSubItem>
                     <SidebarMenuSubButton asChild>
                       <Link href="/dashboard/order/archive">
-                        <span>Архив</span>
+                        <span>Выполненные</span>
+                      </Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuSubItem>
+                  <SidebarMenuSubItem>
+                    <SidebarMenuSubButton asChild>
+                      <Link href="/dashboard/order/cancelled">
+                        <span>Отмененные</span>
                       </Link>
                     </SidebarMenuSubButton>
                   </SidebarMenuSubItem>

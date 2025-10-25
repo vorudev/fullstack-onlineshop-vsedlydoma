@@ -176,6 +176,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                     <div className="flex-1">
                       <h3 className="font-medium text-neutral-100 mb-1">{item.title}</h3>
                       <p className="text-sm text-neutral-400">ID: {item.productId}</p>
+                      <p className="text-sm text-neutral-400">Артикул: {item.productSku}</p>
                     </div>
 
                     <div className="text-center px-4">

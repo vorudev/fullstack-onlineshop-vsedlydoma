@@ -36,6 +36,16 @@ export async function updateUser(id: string, data: Partial<User>) {
     throw new Error("Failed to update user");
   }
 }
+
+export async function getUserById(id: string) {
+  try {
+    const userInfo = await db.select().from(user).where(eq(user.id, id));
+    return userInfo;
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    throw new Error("Failed to fetch user");
+  }
+}
 export const getAllUsers = unstable_cache(
   async ({
     page = 1,

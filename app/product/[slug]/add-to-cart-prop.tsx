@@ -6,14 +6,16 @@ interface AddToCartProps {
 id: string;
 price: number;
 title: string;
+sku: string | null;
 
  } 
-export const AddToCart: React.FC<AddToCartProps> = ({ id, price, title, }) => {
+export const AddToCart: React.FC<AddToCartProps> = ({ id, price, title, sku }) => {
     const { addToCart, cart } = useCart();
     const product = {
         id,
         title,
         price,
+        sku
 
     };
     

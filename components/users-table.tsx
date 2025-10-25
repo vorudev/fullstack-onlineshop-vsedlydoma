@@ -3,6 +3,7 @@ import { getUsers } from "@/lib/actions/admin";
 import { ChangeUserForm } from "@/components/forms/change-user-form";
 import { Button } from "@/components/ui/button";
 import type { User } from "@/db/schema";
+import Link from "next/link";
 import { Pencil } from "lucide-react";
 
 import {
@@ -49,7 +50,8 @@ export function GetAllUsers( { users }: GetAllUsersProps) {
         <TableBody>
           {users.map((user) => (
             <TableRow key={user.id}>
-              <TableCell className="font-medium">{user.name}</TableCell>
+              <TableCell className="font-medium">
+                <Link href={`/dashboard/users/${user.id}`}>{user.name}</Link></TableCell>
               <TableCell>{user.email}</TableCell>
               <TableCell>{user.role}</TableCell>
               

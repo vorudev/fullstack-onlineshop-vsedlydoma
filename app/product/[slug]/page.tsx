@@ -21,8 +21,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     <>
      <div className="flex flex-col lg:flex-row lg:pt-[70px] pt-[60px] ">
             <div className="lg:w-1/3 w-full"> </div>
-            <div className="lg:w-1/3 w-full"> <Section1 title={product.title} description={product.description} price={product.price}  id={product.id} /></div>
-            <div className="lg:w-1/3 w-full hidden lg:block"> <Section2 title={product.title} price={product.price}  id={product.id} /></div>
+            <div className="lg:w-1/3 w-full"> <Section1 title={product.title} description={product.description} price={product.price}  id={product.id} sku={product.sku} /></div>
+            <div className="lg:w-1/3 w-full hidden lg:block"> <Section2 title={product.title} price={product.price}  id={product.id}  sku={product.sku}/></div>
         </div>
         <ReviewsTable productId={product.id} />
     

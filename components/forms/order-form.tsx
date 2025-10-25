@@ -26,6 +26,7 @@ interface OrderFormProps {
    items:{
     id: string,
     title: string,
+    sku: string | null,
     price: number,
     quantity: number
    }[]
@@ -38,6 +39,7 @@ const formSchema = z.object({
   customerEmail: z.string().email({ message: "Invalid email address." }),
   customerPhone: z.string().min(10, { message: "Phone number must be at least 10 characters." }).max(15, { message: "Phone number must be at most 15 characters." }),
   notes: z.string().nullable(),
+
 
 });
 export default function OrderForm( {items}: OrderFormProps) {
@@ -62,6 +64,7 @@ export default function OrderForm( {items}: OrderFormProps) {
             productId: item.id,
             title: item.title,
             price: item.price,
+            productSku: item.sku,
             quantity: item.quantity, 
             
         }))

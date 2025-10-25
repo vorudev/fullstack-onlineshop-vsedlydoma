@@ -12,6 +12,7 @@ import React, {
 
 export interface CartItem {
   id: string;
+  sku: string | null;
   title: string;
   price: number;
   quantity: number;

@@ -7,7 +7,7 @@ import { products, Product } from "@/db/schema";
 import { orderItems, OrderItem } from "@/db/schema";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
-import { and, ilike, or, relations, sql } from 'drizzle-orm';
+import { and, gte, ilike, lte, or, relations, sql } from 'drizzle-orm';
 import { desc } from "drizzle-orm";
 
 import { eq, ne } from "drizzle-orm";
@@ -52,7 +52,12 @@ export async function getActiveOrders() {
       }
     )
     .from(orders)
-    .where(ne(orders.status, 'completed'))
+    .where(and
+      (
+        ne(orders.status, 'completed'), 
+        ne(orders.status, 'cancelled')
+      )
+    )
     .orderBy(desc(orders.createdAt));
 }
 
@@ -283,7 +288,71 @@ export const getComplitedOrders = async ({
         throw new Error("Failed to get orders");
     }
 }
-
+export const getAllCancelledOrders = async ({
+    page = 1,
+    pageSize = 20,
+    search = ''
+  }: GetComplitedOrdersParams = {}) => {
+ 
+     try {
+      const offset = (page - 1) * pageSize;
+      const conditions = [];
+      
+      // Базовое условие - статус completed
+      conditions.push(eq(orders.status, 'cancelled'));
+      
+      // Добавляем условия поиска если есть
+      if (search) {
+  const searchConditions = [
+    ilike(orders.customerName, `%${search}%`),
+    ilike(orders.customerEmail, `%${search}%`),
+    ilike(orders.customerPhone, `%${search}%`),
+    sql`CAST(${orders.id} AS TEXT) ILIKE ${`%${search}%`}` // Приводим UUID к тексту
+  ];
+  
+  // Только если у тебя есть числовое поле, например orderNumber
+  if (!isNaN(Number(search))) {
+    searchConditions.push(
+      eq(orders.total, Number(search)) // Замени orderNumber на реальное числовое поле
+    );
+  }
+  
+  conditions.push(or(...searchConditions));
+}
+      
+      // Получаем общее количество для пагинации
+      const [totalResult] = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(orders)
+        .where(and(...conditions));
+      
+      const total = Number(totalResult.count);
+      
+      // Получаем заказы с пагинацией
+      const allOrders = await db
+        .select()
+        .from(orders)
+        .where(and(...conditions))
+        .limit(pageSize)
+        .offset(offset)
+        .orderBy(desc(orders.createdAt)); // Сортировка по дате создания
+       
+   
+      
+      return {
+        orders: allOrders,
+        pagination: {
+          page,
+          pageSize,
+          total,
+          totalPages: Math.ceil(total / pageSize)
+        }
+      };
+    } catch (error) {
+        console.error("Error getting orders:", error);
+        throw new Error("Failed to get orders");
+    }
+}
 export async function createOrder(orderInput: CreateOrderData, orderItemsInput: CreateOrderItemData[]) {
     const session = await auth.api.getSession({
             headers: await headers()
@@ -345,6 +414,34 @@ return { order, orderItem };
                 };
             })
         );
+
+        return ordersWithItems;
+    } catch (error) {
+        console.error("Error fetching orders:", error);
+        throw new Error("Failed to fetch orders");
+    }
+}
+
+export async function getOrderByUserId(userId: string) {
+    try {
+        const userOrders = await db
+            .select()
+            .from(orders)
+            .where(eq(orders.userId, userId));
+
+            const ordersWithItems = await Promise.all(
+                userOrders.map(async (order) => {
+                    const items = await db
+                        .select()
+                        .from(orderItems)
+                        .where(eq(orderItems.orderId, order.id));
+                    
+                    return {
+                        ...order,
+                        orderItems: items
+                    };
+                })
+            )
 
         return ordersWithItems;
     } catch (error) {
@@ -431,4 +528,78 @@ export async function addItemsToOrder(
     console.error("Error adding items to order:", error);
     throw new Error("Failed to add items to order");
   }
+}
+
+export async function getMonthlyOrderStats(year: number, month: number) {
+  // Определяем границы текущего месяца
+  const startDate = new Date(year, month - 1, 1);
+  const endDate = new Date(year, month, 0, 23, 59, 59);
+
+  // Определяем границы предыдущего месяца
+  const previousMonth = month === 1 ? 12 : month - 1;
+  const previousYear = month === 1 ? year - 1 : year;
+  const previousStartDate = new Date(previousYear, previousMonth - 1, 1);
+  const previousEndDate = new Date(previousYear, previousMonth, 0, 23, 59, 59);
+
+  // Один запрос для обоих месяцев с условной агрегацией
+  const stats = await db
+    .select({
+      // Текущий месяц
+      currentTotalOrders: sql<number>`count(*) filter (where ${orders.createdAt} >= ${startDate} and ${orders.createdAt} <= ${endDate})::int`,
+      currentTotalRevenue: sql<number>`sum(case when ${orders.createdAt} >= ${startDate} and ${orders.createdAt} <= ${endDate} and ${orders.status} not in ('cancelled', 'pending') then ${orders.total} else 0 end)::float`,
+      currentAverageOrderValue: sql<number>`avg(case when ${orders.createdAt} >= ${startDate} and ${orders.createdAt} <= ${endDate} and ${orders.status} not in ('cancelled', 'pending') then ${orders.total} else null end)::float`,
+      currentCompletedOrders: sql<number>`count(*) filter (where ${orders.createdAt} >= ${startDate} and ${orders.createdAt} <= ${endDate} and ${orders.status} = 'completed')::int`,
+      currentPendingOrders: sql<number>`count(*) filter (where ${orders.createdAt} >= ${startDate} and ${orders.createdAt} <= ${endDate} and ${orders.status} = 'pending')::int`,
+      currentCancelledOrders: sql<number>`count(*) filter (where ${orders.createdAt} >= ${startDate} and ${orders.createdAt} <= ${endDate} and ${orders.status} = 'cancelled')::int`,
+      
+      // Предыдущий месяц
+      previousTotalOrders: sql<number>`count(*) filter (where ${orders.createdAt} >= ${previousStartDate} and ${orders.createdAt} <= ${previousEndDate})::int`,
+      previousTotalRevenue: sql<number>`sum(case when ${orders.createdAt} >= ${previousStartDate} and ${orders.createdAt} <= ${previousEndDate} and ${orders.status} not in ('cancelled', 'pending') then ${orders.total} else 0 end)::float`,
+      previousAverageOrderValue: sql<number>`avg(case when ${orders.createdAt} >= ${previousStartDate} and ${orders.createdAt} <= ${previousEndDate} and ${orders.status} not in ('cancelled', 'pending') then ${orders.total} else null end)::float`,
+      previousCompletedOrders: sql<number>`count(*) filter (where ${orders.createdAt} >= ${previousStartDate} and ${orders.createdAt} <= ${previousEndDate} and ${orders.status} = 'completed')::int`,
+      previousPendingOrders: sql<number>`count(*) filter (where ${orders.createdAt} >= ${previousStartDate} and ${orders.createdAt} <= ${previousEndDate} and ${orders.status} = 'pending')::int`,
+      previousCancelledOrders: sql<number>`count(*) filter (where ${orders.createdAt} >= ${previousStartDate} and ${orders.createdAt} <= ${previousEndDate} and ${orders.status} = 'cancelled')::int`,
+    })
+    .from(orders)
+    .where(
+      and(
+        gte(orders.createdAt, previousStartDate),
+        lte(orders.createdAt, endDate)
+      )
+    );
+
+  const result = stats[0];
+
+  // Функция для безопасного расчета процента изменения
+  const calculateGrowth = (current: number, previous: number): number | null => {
+    if (!previous || previous === 0) return current > 0 ? 100 : 0;
+    return Number(((current - previous) / previous * 100).toFixed(2));
+  };
+
+  return {
+    current: {
+      totalOrders: result.currentTotalOrders,
+      totalRevenue: result.currentTotalRevenue || 0,
+      averageOrderValue: result.currentAverageOrderValue || 0,
+      completedOrders: result.currentCompletedOrders,
+      pendingOrders: result.currentPendingOrders,
+      cancelledOrders: result.currentCancelledOrders,
+    },
+    previous: {
+      totalOrders: result.previousTotalOrders,
+      totalRevenue: result.previousTotalRevenue || 0,
+      averageOrderValue: result.previousAverageOrderValue || 0,
+      completedOrders: result.previousCompletedOrders,
+      pendingOrders: result.previousPendingOrders,
+      cancelledOrders: result.previousCancelledOrders,
+    },
+    growth: {
+      totalOrders: calculateGrowth(result.currentTotalOrders, result.previousTotalOrders),
+      totalRevenue: calculateGrowth(result.currentTotalRevenue || 0, result.previousTotalRevenue || 0),
+      averageOrderValue: calculateGrowth(result.currentAverageOrderValue || 0, result.previousAverageOrderValue || 0),
+      completedOrders: calculateGrowth(result.currentCompletedOrders, result.previousCompletedOrders),
+      pendingOrders: calculateGrowth(result.currentPendingOrders, result.previousPendingOrders),
+      cancelledOrders: calculateGrowth(result.currentCancelledOrders, result.previousCancelledOrders),
+    }
+  };
 }

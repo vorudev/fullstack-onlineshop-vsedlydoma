@@ -81,6 +81,7 @@ export function UpdateOrderForm({ order }: UpdateOrderFormProps) {
                 <SelectContent>
                     <SelectItem value="pending">Pending</SelectItem>
                     <SelectItem value="completed">Completed</SelectItem>
+                    <SelectItem value="cancelled">Cancelled</SelectItem>
                 </SelectContent>
             </Select>
             <FormMessage />

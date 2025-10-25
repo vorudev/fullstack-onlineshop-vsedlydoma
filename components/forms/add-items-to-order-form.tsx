@@ -11,6 +11,7 @@ Products: Array<{
     id: string;
     price: number;
     slug: string;
+    sku: string | null;
     title: string;
     description: string;
   }>;
@@ -44,6 +45,7 @@ export default function AddOrderItemForm({
     const newItems: CreateOrderItemData[] = [{
       title: selectedProductData?.title || '',
       productId: formData.get('productId') as string,
+      productSku: selectedProductData?.sku || '',
       quantity: parseInt(formData.get('quantity') as string),
       price: parseFloat(formData.get('price') as string)
     }];

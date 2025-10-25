@@ -184,6 +184,7 @@ export const orderItems = pgTable("order_items", {
   id: uuid("id").primaryKey().defaultRandom(),
   orderId: uuid("order_id").references(() => orders.id),
   productId: uuid("product_id").references(() => products.id),
+ productSku: varchar("product_sku", { length: 16 }).references(() => products.sku),
   price: real("price").notNull(),
 title: text("title").notNull(),
   quantity: integer("quantity").notNull(),

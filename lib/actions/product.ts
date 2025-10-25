@@ -1,8 +1,8 @@
 'use server';
 
 import { db } from "@/db/drizzle";
-import { Product, products } from "@/db/schema";
-import { desc, eq } from "drizzle-orm";
+import { Product, products, productAttributes, orderItems, orders, categories } from "@/db/schema";
+import { desc, eq, gte, lte, notInArray } from "drizzle-orm";
 import { unstable_cache } from 'next/cache';
 import { sql, ilike, or, and } from 'drizzle-orm';
 import { SlowBuffer } from "buffer";
@@ -152,3 +152,140 @@ try {
   }
 }
  
+export async function getTopCategoriesByMonth(year: number, month: number, limit: number = 10) {
+  // Определяем границы месяца
+  const startDate = new Date(year, month - 1, 1);
+  const endDate = new Date(year, month, 0, 23, 59, 59);
+
+  const topCategories = await db
+    .select({
+      categoryId: categories.id,
+      categoryName: categories.name, // предполагаю, что у вас есть поле name
+      totalQuantity: sql<number>`sum(${orderItems.quantity})::int`,
+      totalOrders: sql<number>`count(distinct ${orders.id})::int`,
+      totalRevenue: sql<number>`sum(${orderItems.price} * ${orderItems.quantity})::float`,
+      uniqueProducts: sql<number>`count(distinct ${products.id})::int`,
+    })
+    .from(orderItems)
+    .innerJoin(orders, eq(orderItems.orderId, orders.id))
+    .innerJoin(products, eq(orderItems.productId, products.id))
+    .innerJoin(categories, eq(products.categoryId, categories.id))
+    .where(
+      and(
+        gte(orders.createdAt, startDate),
+        lte(orders.createdAt, endDate),
+        notInArray(orders.status, ['cancelled', 'pending'])
+      )
+    )
+    .groupBy(categories.id, categories.name)
+    .orderBy(desc(sql`sum(${orderItems.quantity})`))
+    .limit(limit);
+
+  return topCategories;
+}
+
+// Вариант с сравнением с предыдущим месяцем
+export async function getTopCategoriesWithComparison(year: number, month: number, limit: number = 10) {
+  // Определяем границы текущего месяца
+  const startDate = new Date(year, month - 1, 1);
+  const endDate = new Date(year, month, 0, 23, 59, 59);
+
+  // Определяем границы предыдущего месяца
+  const previousMonth = month === 1 ? 12 : month - 1;
+  const previousYear = month === 1 ? year - 1 : year;
+  const previousStartDate = new Date(previousYear, previousMonth - 1, 1);
+  const previousEndDate = new Date(previousYear, previousMonth, 0, 23, 59, 59);
+
+  const categoriesStats = await db
+    .select({
+      categoryId: categories.id,
+      categoryName: categories.name,
+      
+      // Текущий месяц
+      currentTotalQuantity: sql<number>`sum(case when ${orders.createdAt} >= ${startDate} and ${orders.createdAt} <= ${endDate} then ${orderItems.quantity} else 0 end)::int`,
+      currentTotalOrders: sql<number>`count(distinct case when ${orders.createdAt} >= ${startDate} and ${orders.createdAt} <= ${endDate} then ${orders.id} else null end)::int`,
+      currentTotalRevenue: sql<number>`sum(case when ${orders.createdAt} >= ${startDate} and ${orders.createdAt} <= ${endDate} then ${orderItems.price} * ${orderItems.quantity} else 0 end)::float`,
+      
+      // Предыдущий месяц
+      previousTotalQuantity: sql<number>`sum(case when ${orders.createdAt} >= ${previousStartDate} and ${orders.createdAt} <= ${previousEndDate} then ${orderItems.quantity} else 0 end)::int`,
+      previousTotalOrders: sql<number>`count(distinct case when ${orders.createdAt} >= ${previousStartDate} and ${orders.createdAt} <= ${previousEndDate} then ${orders.id} else null end)::int`,
+      previousTotalRevenue: sql<number>`sum(case when ${orders.createdAt} >= ${previousStartDate} and ${orders.createdAt} <= ${previousEndDate} then ${orderItems.price} * ${orderItems.quantity} else 0 end)::float`,
+    })
+    .from(orderItems)
+    .innerJoin(orders, eq(orderItems.orderId, orders.id))
+    .innerJoin(products, eq(orderItems.productId, products.id))
+    .innerJoin(categories, eq(products.categoryId, categories.id))
+    .where(
+      and(
+        gte(orders.createdAt, previousStartDate),
+        lte(orders.createdAt, endDate),
+        notInArray(orders.status, ['cancelled', 'pending'])
+      )
+    )
+    .groupBy(categories.id, categories.name)
+    .orderBy(desc(sql`sum(case when ${orders.createdAt} >= ${startDate} and ${orders.createdAt} <= ${endDate} then ${orderItems.quantity} else 0 end)`))
+    .limit(limit);
+
+  // Функция для безопасного расчета процента изменения
+  const calculateGrowth = (current: number, previous: number): number | null => {
+    if (!previous || previous === 0) return current > 0 ? 100 : 0;
+    return Number(((current - previous) / previous * 100).toFixed(2));
+  };
+
+  return categoriesStats.map(cat => ({
+    categoryId: cat.categoryId,
+    categoryName: cat.categoryName,
+    current: {
+      totalQuantity: cat.currentTotalQuantity,
+      totalOrders: cat.currentTotalOrders,
+      totalRevenue: cat.currentTotalRevenue || 0,
+    },
+    previous: {
+      totalQuantity: cat.previousTotalQuantity,
+      totalOrders: cat.previousTotalOrders,
+      totalRevenue: cat.previousTotalRevenue || 0,
+    },
+    growth: {
+      quantity: calculateGrowth(cat.currentTotalQuantity, cat.previousTotalQuantity),
+      orders: calculateGrowth(cat.currentTotalOrders, cat.previousTotalOrders),
+      revenue: calculateGrowth(cat.currentTotalRevenue || 0, cat.previousTotalRevenue || 0),
+    }
+  }));
+}
+
+// Топ товаров в категории за месяц
+export async function getTopProductsInCategory(
+  categoryId: string, 
+  year: number, 
+  month: number, 
+  limit: number = 10
+) {
+  const startDate = new Date(year, month - 1, 1);
+  const endDate = new Date(year, month, 0, 23, 59, 59);
+
+  const topProducts = await db
+    .select({
+      productId: products.id,
+      productTitle: products.title,
+      productSku: products.sku,
+      totalQuantity: sql<number>`sum(${orderItems.quantity})::int`,
+      totalRevenue: sql<number>`sum(${orderItems.price} * ${orderItems.quantity})::float`,
+      totalOrders: sql<number>`count(distinct ${orders.id})::int`,
+    })
+    .from(orderItems)
+    .innerJoin(orders, eq(orderItems.orderId, orders.id))
+    .innerJoin(products, eq(orderItems.productId, products.id))
+    .where(
+      and(
+        eq(products.categoryId, categoryId),
+        gte(orders.createdAt, startDate),
+        lte(orders.createdAt, endDate),
+        notInArray(orders.status, ['cancelled', 'pending'])
+      )
+    )
+    .groupBy(products.id, products.title, products.sku)
+    .orderBy(desc(sql`sum(${orderItems.quantity})`))
+    .limit(limit);
+
+  return topProducts;
+}

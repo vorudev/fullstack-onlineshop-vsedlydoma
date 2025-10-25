@@ -41,7 +41,32 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
   ])
   // Получаем продукт по slug
 
-    
+    const getStatusConfig = (status: string | undefined) => {
+  switch (status) {
+    case 'pending':
+      return {
+        label: 'В обработке',
+        className: 'text-yellow-500 bg-yellow-500/10 px-2 py-1 rounded-md text-sm font-medium'
+      };
+    case 'completed':
+      return {
+        label: 'Завершен',
+        className: 'text-green-500 bg-green-500/10 px-2 py-1 rounded-md text-sm font-medium'
+      };
+    case 'cancelled':
+      return {
+        label: 'Отменен',
+        className: 'text-red-500 bg-red-500/10 px-2 py-1 rounded-md text-sm font-medium'
+      };
+    default:
+      return {
+        label: status,
+        className: 'text-neutral-400 bg-neutral-400/10 px-2 py-1 rounded-md text-sm font-medium'
+      };
+  }
+};
+
+const statusConfig = getStatusConfig(order?.status);
     return (
 <>      
          <div className=" bg-neutral-950 p-6">
@@ -54,6 +79,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
               <div>
                 <h1 className="text-2xl font-bold text-neutral-100">Заказ #{order?.id}</h1>
                 <p className="text-sm text-neutral-400">{order?.createdAt?.toDateString()}</p>
+ <p className={statusConfig.className}>{statusConfig.label}</p>
               </div>
             </div>
             
@@ -188,7 +214,15 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                     </span>
                   </div>
                   <div className="flex justify-between text-lg font-bold pt-2 border-t border-neutral-800">
-                    <span className="text-neutral-100">Получен</span>
+<span className="text-neutral-100">
+  {order?.status === 'pending' 
+    ? 'В обработке' 
+    : order?.status === 'completed'
+    ? 'Получен'
+    : order?.status === 'cancelled'
+    ? 'Отменен'
+    : 'Обновлен'}
+</span>
                     <span className="text-white">
                       {order?.updatedAt?.toLocaleString('ru-RU',)}
                     </span>

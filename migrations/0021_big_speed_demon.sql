@@ -1,0 +1,2 @@
+ALTER TABLE "order_items" ADD COLUMN "product_sku" varchar(16);--> statement-breakpoint
+ALTER TABLE "order_items" ADD CONSTRAINT "order_items_product_sku_products_sku_fk" FOREIGN KEY ("product_sku") REFERENCES "public"."products"("sku") ON DELETE no action ON UPDATE no action;

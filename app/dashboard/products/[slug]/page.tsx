@@ -115,6 +115,10 @@ const [attributeCategories, attributes, images, {pagination, manufacturers}, cat
 
               <div className="space-y-4">
                 <div>
+                  <label className="text-sm font-medium text-gray-400 mb-1 block">Артикул</label>
+                  <p className="text-xl font-semibold text-white">{product.sku}</p>
+                </div>
+                <div>
                   <label className="text-sm font-medium text-gray-400 mb-1 block">Название</label>
                   <p className="text-xl font-semibold text-white">{product.title}</p>
                 </div>
