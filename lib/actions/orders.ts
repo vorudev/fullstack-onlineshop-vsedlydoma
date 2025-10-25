@@ -354,34 +354,36 @@ export const getAllCancelledOrders = async ({
     }
 }
 export async function createOrder(orderInput: CreateOrderData, orderItemsInput: CreateOrderItemData[]) {
+    // Получаем сессию, но не требуем её обязательно
     const session = await auth.api.getSession({
-            headers: await headers()
-        })
-        if (!session) {
-            throw new Error("Unauthorized");
-        }
-    const userId = session?.user.id
-   try { 
-    const total = orderItemsInput.reduce((acc, item) => acc + item.price * item.quantity, 0);
-const order = await db.insert(orders).values({
-    ...orderInput,
-    total,
-    userId
-}).returning();
+        headers: await headers()
+    });
+    
+    // userId будет либо ID пользователя, либо null для гостевых заказов
+    const userId = session?.user?.id ?? null;
+    
+    try { 
+        const total = orderItemsInput.reduce((acc, item) => acc + item.price * item.quantity, 0);
+        
+        const order = await db.insert(orders).values({
+            ...orderInput,
+            total,
+            userId // может быть null для гостей
+        }).returning();
 
-const orderItemsWithOrderId = orderItemsInput.map((item) => ({
-    ...item,
-    orderId: order[0].id
-}));
+        const orderItemsWithOrderId = orderItemsInput.map((item) => ({
+            ...item,
+            orderId: order[0].id
+        }));
 
-const orderItem = await db.insert(orderItems).values(orderItemsWithOrderId).returning();
+        const orderItem = await db.insert(orderItems).values(orderItemsWithOrderId).returning();
 
-return { order, orderItem };
-   } catch (error) {
-      console.error("Error creating order:", error);
-      throw new Error("Failed to create order");
-   }
-   }
+        return { order, orderItem };
+    } catch (error) {
+        console.error("Error creating order:", error);
+        throw new Error("Failed to create order");
+    }
+}
 
 
    export async function getUserOrders() {

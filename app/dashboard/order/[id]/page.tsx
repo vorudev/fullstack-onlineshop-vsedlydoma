@@ -109,6 +109,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                     <p className="text-sm font-medium text-neutral-100">{order?.customerEmail}</p>
                   </div>
                 </div>
+                
 
                 <div className="flex items-start gap-3">
                   <Phone className="w-5 h-5 text-neutral-500 mt-0.5" />
@@ -117,7 +118,15 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                     <p className="text-sm font-medium text-neutral-100">{order?.customerPhone}</p>
                   </div>
                 </div>
-
+ <div className="flex items-start gap-3">
+                  <Mail className="w-5 h-5 text-neutral-500 mt-0.5" />
+                  <div>
+                    <p className="text-xs text-neutral-400 uppercase tracking-wide">Авторизация на сайте</p>
+                    <p className="text-sm font-medium text-neutral-100">{order?.user?.name ?? 'Нет'}</p>
+                    <p className="text-sm font-medium text-neutral-100">{order?.user?.email ?? ''}</p>
+                                         <p className="text-sm font-medium text-neutral-100">{order?.user?.id ?? ''}</p>
+                  </div>
+                </div>
                 <div className="pt-4 border-t border-neutral-800">
                   <div className="flex items-start gap-3">
                     <FileText className="w-5 h-5 text-neutral-500 mt-0.5" />
