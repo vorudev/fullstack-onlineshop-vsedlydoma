@@ -636,6 +636,7 @@ export async function getMonthlyOrderStats(year: number, month: number) {
     },
     growth: {
       totalOrders: calculateGrowth(result.currentTotalOrders, result.previousTotalOrders),
+      totalRevenue: calculateGrowth(result.currentTotalRevenue || 0, result.previousTotalRevenue || 0),
       averageOrderValue: calculateGrowth(result.currentAverageOrderValue || 0, result.previousAverageOrderValue || 0),
       completedOrders: calculateGrowth(result.currentCompletedOrders, result.previousCompletedOrders),
       pendingOrders: calculateGrowth(result.currentPendingOrders, result.previousPendingOrders),
