@@ -72,7 +72,7 @@ export const getAllUsers = (
       headers: await headers()
     })
     if (!session || session.user.role !== 'admin') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      throw NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
       const offset = (page - 1) * pageSize;
       const conditions = [];
