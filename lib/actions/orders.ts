@@ -3,6 +3,9 @@
 import { db } from "@/db/drizzle";
 import { orders, Order } from "@/db/schema";
 import { user, User } from "@/db/schema";
+import { NextResponse } from "next/server";
+
+
 import { products, Product } from "@/db/schema";
 import { orderItems, OrderItem } from "@/db/schema";
 import { headers } from "next/headers";
@@ -454,6 +457,12 @@ export async function getOrderByUserId(userId: string) {
 
 export async function updateOrder(order: Omit<Order, "createdAt" | "updatedAt" | "userId">) {
 try { 
+  const session = await auth.api.getSession({
+        headers: await headers()
+      })
+      if (!session || session.user.role !== 'admin') {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
 await db.update(orders).set(order).where(eq(orders.id, order.id));
 } catch (error) {
     console.error("Error updating order:", error);
@@ -466,6 +475,12 @@ export async function addItemsToOrder(
   newItems: CreateOrderItemData[]
 ) {
   try {
+    const session = await auth.api.getSession({
+          headers: await headers()
+        })
+        if (!session || session.user.role !== 'admin') {
+          return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
     // Проверяем заказ
     const [existingOrder] = await db
       .select()
@@ -532,6 +547,30 @@ export async function addItemsToOrder(
   }
 }
 
+export async function deleteItemFromOrder(orderId: string, itemId: string) {
+  try {
+    const session = await auth.api.getSession({
+          headers: await headers()
+        })
+        if (!session || session.user.role !== 'admin') {
+          return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+    const [deletedItem] = await db
+      .delete(orderItems)
+      .where(and(eq(orderItems.orderId, orderId), eq(orderItems.id, itemId)))
+      .returning();
+    
+    // Проверка: была ли удалена запись
+    if (!deletedItem) {
+      throw new Error("Item not found in order");
+    }
+    
+    return deletedItem;
+  } catch (error) {
+    console.error("Error deleting item from order:", error);
+    throw new Error("Failed to delete item from order");
+  }
+}
 export async function getMonthlyOrderStats(year: number, month: number) {
   // Определяем границы текущего месяца
   const startDate = new Date(year, month - 1, 1);
@@ -597,7 +636,6 @@ export async function getMonthlyOrderStats(year: number, month: number) {
     },
     growth: {
       totalOrders: calculateGrowth(result.currentTotalOrders, result.previousTotalOrders),
-      totalRevenue: calculateGrowth(result.currentTotalRevenue || 0, result.previousTotalRevenue || 0),
       averageOrderValue: calculateGrowth(result.currentAverageOrderValue || 0, result.previousAverageOrderValue || 0),
       completedOrders: calculateGrowth(result.currentCompletedOrders, result.previousCompletedOrders),
       pendingOrders: calculateGrowth(result.currentPendingOrders, result.previousPendingOrders),

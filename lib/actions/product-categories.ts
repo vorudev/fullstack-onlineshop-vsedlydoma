@@ -3,6 +3,9 @@
 import { db } from "@/db/drizzle";
 import { categories, Category, filters, manufacturers } from "@/db/schema";
 import { eq, ilike, or  } from "drizzle-orm";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
+import { NextResponse } from "next/server";
 import { products } from "@/db/schema";
 import { isNull } from "drizzle-orm";
 import { productAttributes } from "@/db/schema";
@@ -477,6 +480,12 @@ export const getAllCategories = async ({
 };
 export async function createCategory(category: Omit<Category, "id" | "createdAt" | "updatedAt">) {
     try {
+      const session = await auth.api.getSession({
+            headers: await headers()
+          })
+          if (!session || session.user.role !== 'admin') {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+          }
         await db.insert(categories).values(category).returning();
     } catch (error) {
         console.error("Error creating category:", error);
@@ -486,6 +495,12 @@ export async function createCategory(category: Omit<Category, "id" | "createdAt"
 
 export async function updateCategory(category: Omit<Category, "createdAt" | "updatedAt">) {
     try {
+      const session = await auth.api.getSession({
+            headers: await headers()
+          })
+          if (!session || session.user.role !== 'admin') {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+          }
         await db.update(categories).set(category).where(eq(categories.id, category.id))
     } catch (error) {
         console.error("Error updating category:", error);
@@ -495,6 +510,12 @@ export async function updateCategory(category: Omit<Category, "createdAt" | "upd
 
 export async function deleteCategory(id: string) {
     try {
+      const session = await auth.api.getSession({
+            headers: await headers()
+          })
+          if (!session || session.user.role !== 'admin') {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+          }
         await db.delete(categories).where(eq(categories.id, id));
     } catch (error) {
         console.error("Error deleting category:", error);

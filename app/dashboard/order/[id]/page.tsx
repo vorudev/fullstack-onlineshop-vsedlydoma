@@ -6,6 +6,7 @@ import ExportToExcel from "@/components/exceljs-download";
 import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SearchBar from "../../../../components/searchbar";
+import { DeleteItemFromOrderButton } from "@/components/delete-item-from-order-button";
 import { Package } from "lucide-react";
 import { User } from "lucide-react";
 import { Users } from "lucide-react";
@@ -206,6 +207,12 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                         {(item.price * item.quantity).toLocaleString('ru-RU', { minimumFractionDigits: 2 })}
                       </p>
                     </div>
+                    {item.id && (
+  <DeleteItemFromOrderButton 
+    orderId={order.id} 
+    itemId={item.id} 
+  />
+)}
                   </div>
                 ))}
               </div>

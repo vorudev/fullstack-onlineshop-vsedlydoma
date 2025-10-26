@@ -4,6 +4,9 @@ import { db } from "@/db/drizzle";
 import { Product, products, productAttributes, orderItems, orders, categories } from "@/db/schema";
 import { desc, eq, gte, lte, notInArray } from "drizzle-orm";
 import { unstable_cache } from 'next/cache';
+import { NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import { sql, ilike, or, and } from 'drizzle-orm';
 import { SlowBuffer } from "buffer";
 import { sl } from "zod/v4/locales";
@@ -117,6 +120,12 @@ export async function revalidateProducts() {
 }
 export async function createProduct(product: Omit<Product, "id" | "createdAt" | "updatedAt" | "sku">) {
   try {
+    const session = await auth.api.getSession({
+          headers: await headers()
+        })
+        if (!session || session.user.role !== 'admin') {
+          return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
    await db.insert(products).values(product).returning();
   } catch (error) {
     console.error("Error creating product:", error);
@@ -126,6 +135,12 @@ export async function createProduct(product: Omit<Product, "id" | "createdAt" | 
 }
 export async function updateProduct( product: Omit<Product, "createdAt" | "updatedAt" | "sku">) {
  try { 
+  const session = await auth.api.getSession({
+        headers: await headers()
+      })
+      if (!session || session.user.role !== 'admin') {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
     await db.update(products).set(product).where(eq(products.id, product.id))
  }
     catch (error) {
@@ -136,6 +151,12 @@ export async function updateProduct( product: Omit<Product, "createdAt" | "updat
  }
 export async function deleteProduct(id: string) {
   try {
+    const session = await auth.api.getSession({
+          headers: await headers()
+        })
+        if (!session || session.user.role !== 'admin') {
+          return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
     await db.delete(products).where(eq(products.id, id));
   } catch (error) {
     console.error("Error deleting product:", error);

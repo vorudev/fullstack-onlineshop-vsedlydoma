@@ -117,9 +117,11 @@ export const productImages = pgTable("product_images", {
   productId: uuid("product_id")
     .references(() => products.id, { onDelete: "cascade" })
     .notNull(),
-  imageUrl: text("image_url").notNull(),
-  order: integer("order").default(0), // для сортировки
-  isFeatured: boolean("is_featured").default(false), // основное фото
+  imageUrl: text("image_url").notNull(), // URL для доступа к изображению
+  storageType: text("storage_type").notNull().default("url"), // 'url' | 'upload'
+  storageKey: text("storage_key"), // ключ файла в хранилище (если upload)
+  order: integer("order").default(0),
+  isFeatured: boolean("is_featured").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 export const reviews = pgTable("reviews", {

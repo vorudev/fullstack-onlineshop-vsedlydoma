@@ -4,6 +4,9 @@ import { db } from "@/db/drizzle";
 import { productAttributes, ProductAttribute } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { attributeCategories } from "@/db/schema";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { NextResponse } from "next/server";
 export async function getProductAttributes() {
     try {
         const allProductAttributes = await db.select().from(productAttributes);
@@ -59,6 +62,12 @@ export async function getProductAttributesWithCategories(productId: string) {
 }
 export async function createProductAttribute(attribute: Omit<ProductAttribute, "id" | "createdAt" | "updatedAt">) {
     try {
+        const session = await auth.api.getSession({
+              headers: await headers()
+            })
+            if (!session || session.user.role !== 'admin') {
+              return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+            }
         await db.insert(productAttributes).values(attribute).returning();
     } catch (error) {
         console.error("Error creating product attribute:", error);
@@ -68,6 +77,12 @@ export async function createProductAttribute(attribute: Omit<ProductAttribute, "
 
 export async function updateProductAttribute(attribute: Omit<ProductAttribute, "createdAt" | "updatedAt">) {
     try {
+        const session = await auth.api.getSession({
+              headers: await headers()
+            })
+            if (!session || session.user.role !== 'admin') {
+              return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+            }
         await db.update(productAttributes).set(attribute).where(eq(productAttributes.id, attribute.id))
     } catch (error) {
         console.error("Error updating product attribute:", error);
@@ -76,6 +91,12 @@ export async function updateProductAttribute(attribute: Omit<ProductAttribute, "
 }
 export async function deleteProductAttribute(id: string) {
     try {
+        const session = await auth.api.getSession({
+              headers: await headers()
+            })
+            if (!session || session.user.role !== 'admin') {
+              return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+            }
         await db.delete(productAttributes).where(eq(productAttributes.id, id));
     } catch (error) {
         console.error("Error deleting product attribute:", error);

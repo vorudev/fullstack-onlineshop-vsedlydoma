@@ -3,10 +3,19 @@ import { db } from "@/db/drizzle";
 import { filters, Filter } from "@/db/schema";
 import { filterCategories, FilterCategory } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { NextResponse } from "next/server";
 import { inArray } from "drizzle-orm";
 
 export async function createFilter(category: Omit<Filter, "id" | "createdAt" | "updatedAt">) {
     try {
+        const session = await auth.api.getSession({
+              headers: await headers()
+            })
+            if (!session || session.user.role !== 'admin') {
+              return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+            }
         await db.insert(filters).values(category).returning();
     } catch (error) {
         console.error("Error creating filter:", error);

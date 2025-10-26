@@ -3,7 +3,10 @@
 import { db } from "@/db/drizzle";
 import { user, User } from "@/db/schema";
 import { eq, ilike, or,  } from "drizzle-orm";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import { unstable_cache } from "next/cache";
+import { NextResponse } from "next/server";
 import { sql, and } from "drizzle-orm";
 interface GetUsersParams {
   page?: number;
@@ -22,6 +25,12 @@ export async function getUsers() {
 
 export async function deleteUser(id: string) {
   try {
+    const session = await auth.api.getSession({
+      headers: await headers()
+    })
+    if (!session || session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     await db.delete(user).where(eq(user.id, id));
   } catch (error) {
     console.error("Error deleting user:", error);
@@ -30,6 +39,12 @@ export async function deleteUser(id: string) {
 }
 export async function updateUser(id: string, data: Partial<User>) {
   try {
+const session = await auth.api.getSession({
+      headers: await headers()
+    })
+    if (!session || session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     await db.update(user).set(data).where(eq(user.id, id));
   } catch (error) {
     console.error("Error updating user:", error);
@@ -46,13 +61,19 @@ export async function getUserById(id: string) {
     throw new Error("Failed to fetch user");
   }
 }
-export const getAllUsers = unstable_cache(
+export const getAllUsers = (
   async ({
     page = 1,
     pageSize = 20,
     search = '',
   }: GetUsersParams = {}) => {
     try {
+      const session = await auth.api.getSession({
+      headers: await headers()
+    })
+    if (!session || session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
       const offset = (page - 1) * pageSize;
       const conditions = [];
       
@@ -107,10 +128,7 @@ export const getAllUsers = unstable_cache(
       console.error("Error fetching users:", error);
       throw new Error("Failed to fetch users");
     }
-  },
-  ['users-list'],
-  {
-    revalidate: 3600,
-    tags: ['users'],
   }
 );
+ 
+

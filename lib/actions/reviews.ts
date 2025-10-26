@@ -2,6 +2,9 @@
 
 import { db } from "@/db/drizzle";
 import { reviews, Review } from "@/db/schema";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
+import { NextResponse } from "next/server";
 import { eq, and, ne, sql } from "drizzle-orm";
 import { stat } from "fs";
 
@@ -90,6 +93,12 @@ export async function updateReview(id: string, data: Partial<Review>) {
 }
 export async function deleteReview(id: string) {
   try {
+    const session = await auth.api.getSession({
+          headers: await headers()
+        })
+        if (!session || session.user.role !== 'admin') {
+          return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
     await db.delete(reviews).where(eq(reviews.id, id));
   } catch (error) {
     console.error("Error deleting review:", error);

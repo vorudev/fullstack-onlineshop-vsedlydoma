@@ -3,6 +3,9 @@ import { db } from "@/db/drizzle";
 import { manufacturers, Manufacturer } from "@/db/schema";
 import { eq, ilike, or, and, sql } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
+import { NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 interface ManufacturerParams {
 page?: number;
 pageSize?: number;
@@ -12,6 +15,12 @@ search?: string;
 
 export async function createManufacturer(manufacturer: Omit<Manufacturer, "id" | "createdAt" | "updatedAt">) {
     try {
+        const session = await auth.api.getSession({
+              headers: await headers()
+            })
+            if (!session || session.user.role !== 'admin') {
+              return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+            }
         return await db.insert(manufacturers).values(manufacturer);
     } catch (error) {
         console.error("Error creating manufacturer:", error);
@@ -20,6 +29,12 @@ export async function createManufacturer(manufacturer: Omit<Manufacturer, "id" |
 }
 export async function updateManufacturer(manufacturer: Omit<Manufacturer, "createdAt" | "updatedAt">) {
     try {
+        const session = await auth.api.getSession({
+              headers: await headers()
+            })
+            if (!session || session.user.role !== 'admin') {
+              return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+            }
         return await db.update(manufacturers).set(manufacturer).where(eq(manufacturers.id, manufacturer.id));
     } catch (error) {
         console.error("Error updating manufacturer:", error);
@@ -28,6 +43,12 @@ export async function updateManufacturer(manufacturer: Omit<Manufacturer, "creat
 }
 export async function deleteManufacturer(id: string) {
     try {
+        const session = await auth.api.getSession({
+              headers: await headers()
+            })
+            if (!session || session.user.role !== 'admin') {
+              return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+            }
         return await db.delete(manufacturers).where(eq(manufacturers.id, id));
     } catch (error) {
         console.error("Error deleting manufacturer:", error);

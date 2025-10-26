@@ -3,6 +3,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Thumbs, Zoom } from 'swiper/modules';
 import { useState, useMemo } from 'react';
 import type { Swiper as SwiperType } from 'swiper';
+import { DeleteImageFromProductButton } from './forms/delete-image-from-product';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -12,9 +13,13 @@ import 'swiper/css/zoom';
 
 interface ProductImage {
   id: string;
-  imageUrl: string;
-  order: number | null;
-  isFeatured: boolean | null;
+    createdAt: Date | null;
+    productId: string;
+    imageUrl: string;
+    storageType: string;
+    storageKey: string | null;
+    order: number | null;
+    isFeatured: boolean | null
 }
 
 export default function ProductImages({ images, productTitle }: { 
@@ -59,7 +64,8 @@ export default function ProductImages({ images, productTitle }: {
                 src={image.imageUrl}
                 alt={`${productTitle}${image.isFeatured ? ' - главное фото' : ''}`}
                 className="w-full h-full object-cover"
-              />
+              /> 
+              <DeleteImageFromProductButton image={image} />
               {/* Опционально: значок для главного фото */}
               {image.isFeatured && (
                 <div className="absolute top-2 left-2 bg-black/60 text-white px-2 py-1 rounded text-xs">
