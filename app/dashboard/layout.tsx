@@ -15,7 +15,7 @@ const session = await auth.api.getSession({
   return (
     <SidebarProvider>
       <AppSidebar/>
-      <main className="dark w-full">
+      <main className="dark w-full bg-background">
         <SidebarTrigger />
         {children}
       </main>

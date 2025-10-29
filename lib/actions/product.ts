@@ -30,7 +30,42 @@ interface GetProductsParams {
   category?: string;
   manufacturer?: string; 
 }
-
+export const getRandomProductsFast = async ({
+  limit = 20,
+  category,
+  manufacturer,
+}: {
+  limit?: number;
+  category?: string;
+  manufacturer?: string;
+} = {}) => {
+  try {
+    let query = db.select().from(products);
+    
+    const conditions = [];
+    
+    if (category) {
+      conditions.push(eq(products.categoryId, category));
+    }
+    
+    if (manufacturer) {
+      conditions.push(eq(products.manufacturerId, manufacturer));
+    }
+    
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions)) as any;
+    }
+    
+    const result = await query
+      .orderBy(sql`RANDOM()`)
+      .limit(limit);
+    
+    return result;
+  } catch (error) {
+    console.error("Error fetching random products:", error);
+    throw new Error("Failed to fetch random products");
+  }
+};
 export const getAllProducts = async ({
   page = 1,
   pageSize = 20,

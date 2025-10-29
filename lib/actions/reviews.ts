@@ -21,6 +21,25 @@ export async function getReviewsByProductId(productId: string) {
     throw new Error("Failed to fetch reviews by product ID");
   }
 }
+export async function getAverageRatingByProductId(productId: string) {
+  try {
+    const productReviews = await db
+      .select({
+        averageRating: sql<number>`AVG(${reviews.rating})`,
+        reviewCount: sql<number>`COUNT(${reviews.id})`,
+      })
+      .from(reviews)
+      .where(eq(reviews.product_id, productId));
+    
+    return {
+      averageRating: productReviews[0].averageRating,
+      reviewCount: productReviews[0].reviewCount,
+    };
+  } catch (error) {
+    console.error("Error fetching average rating by product ID:", error);
+    throw new Error("Failed to fetch average rating by product ID");
+  }
+}
 export async function createReview(review: Omit<typeof reviews.$inferInsert, 'id' | 'createdAt' | 'updatedAt'>) {
   try {
     const newReview = await db.insert(reviews).values(review).returning();

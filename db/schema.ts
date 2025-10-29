@@ -62,7 +62,12 @@ export const categories = pgTable("categories", {
   }),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
-});
+}, (table) => ({
+  slugIndex: index("slug_index").on(table.slug),
+  nameIndex: index("name_index").on(table.name),
+  idxParentId: index("idx_parent_id").on(table.parentId),
+  
+}));
 export const filterCategories = pgTable("filtersCategories", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 255 }).notNull().unique(),

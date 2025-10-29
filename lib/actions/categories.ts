@@ -1,6 +1,6 @@
 import { db } from "@/db/drizzle";
 import { categories, products } from "@/db/schema";
-import { eq, isNull, sql } from "drizzle-orm";
+import { eq, isNull, sql, and, inArray } from "drizzle-orm";
 
 export type Category = {
   id: string;
@@ -23,7 +23,7 @@ export type CategoryWithChain = {
 export async function getCategoryWithNavigation(
   categorySlug: string
 ): Promise<CategoryWithChain | null> {
-  // Получаем текущую категорию
+  // Получаем категорию
   const [currentCategory] = await db
     .select()
     .from(categories)
@@ -32,30 +32,41 @@ export async function getCategoryWithNavigation(
 
   if (!currentCategory) return null;
 
-  // Получаем breadcrumbs (цепочку родителей)
-  const breadcrumbs = await buildCategoryChain(currentCategory.id);
+  // Параллельно получаем breadcrumbs и подкатегории
+  const [breadcrumbs, subcategoriesData] = await Promise.all([
+    buildCategoryChain(currentCategory.id),
+    // Используем один запрос с JOIN вместо подзапросов
+    db
+      .select({
+        id: categories.id,
+        name: categories.name,
+        slug: categories.slug,
+        description: categories.description,
+        parentId: categories.parentId,
+        productsCount: sql<number>`COUNT(DISTINCT ${products.id})::int`,
+      })
+      .from(categories)
+      .leftJoin(products, eq(products.categoryId, categories.id))
+      .where(eq(categories.parentId, currentCategory.id))
+      .groupBy(categories.id),
+  ]);
 
-  // Получаем подкатегории с количеством продуктов
-  const subcategories = await db
-    .select({
-      id: categories.id,
-      name: categories.name,
-      slug: categories.slug,
-      description: categories.description,
-      parentId: categories.parentId,
-      productsCount: sql<number>`(
-        SELECT COUNT(*)::int 
-        FROM ${products} 
-        WHERE ${products.categoryId} = ${categories.id}
-      )`,
-      hasChildren: sql<boolean>`EXISTS(
-        SELECT 1 
-        FROM ${categories} c 
-        WHERE c.parent_id = ${categories.id}
-      )`,
-    })
+  // Проверяем наличие детей одним запросом
+  const childrenCheck = await db
+    .select({ id: categories.id })
     .from(categories)
-    .where(eq(categories.parentId, currentCategory.id));
+    .where(
+      inArray(
+        categories.parentId,
+        subcategoriesData.map((s) => s.id)
+      )
+    )
+    .limit(1);
+
+  const subcategories = subcategoriesData.map((sub) => ({
+    ...sub,
+    hasChildren: childrenCheck.length > 0,
+  }));
 
   // Если нет подкатегорий, получаем продукты
   let categoryProducts: typeof products.$inferSelect[] | undefined = undefined;
@@ -80,65 +91,71 @@ export async function getCategoryWithNavigation(
 
 // Получить корневые категории
 export async function getRootCategories(): Promise<Category[]> {
-  const rootCategories = await db
-    .select({
-      id: categories.id,
-      name: categories.name,
-      slug: categories.slug,
-      description: categories.description,
-      parentId: categories.parentId,
-      productsCount: sql<number>`(
-        WITH RECURSIVE subcats AS (
-          SELECT id FROM ${categories} WHERE id = ${categories.id}
-          UNION ALL
-          SELECT c.id FROM ${categories} c
-          INNER JOIN subcats s ON c.parent_id = s.id
-        )
-        SELECT COUNT(*)::int FROM ${products}
-        WHERE category_id IN (SELECT id FROM subcats)
-      )`,
-      hasChildren: sql<boolean>`EXISTS(
-        SELECT 1 FROM ${categories} c WHERE c.parent_id = ${categories.id}
-      )`,
-    })
-    .from(categories)
-    .where(isNull(categories.parentId));
+  const result = await db.execute<{
+    id: string;
+    name: string;
+    slug: string;
+    description: string | null;
+    parentId: string | null;
+    productsCount: number;
+    hasChildren: boolean;
+  }>(sql`
+    WITH RECURSIVE category_tree AS (
+      -- Начинаем с корневых категорий
+      SELECT id, id as root_id
+      FROM ${categories}
+      WHERE parent_id IS NULL
+      
+      UNION ALL
+      
+      -- Рекурсивно добавляем все подкатегории
+      SELECT c.id, ct.root_id
+      FROM ${categories} c
+      INNER JOIN category_tree ct ON c.parent_id = ct.id
+    )
+    SELECT 
+      c.id,
+      c.name,
+      c.slug,
+      c.description,
+      c.parentId,
+      COUNT(DISTINCT p.id)::int as products_count,
+      EXISTS(
+        SELECT 1 FROM ${categories} child 
+        WHERE child.parentId = c.id
+      ) as has_children
+    FROM ${categories} c
+    LEFT JOIN category_tree ct ON c.id = ct.root_id
+    LEFT JOIN ${products} p ON p.category_id = ct.id
+    WHERE c.parentId IS NULL
+    GROUP BY c.id, c.name, c.slug, c.description, c.parentId, ct.root_id
+    ORDER BY c.name
+  `);
 
-  return rootCategories;
+  return result.rows;
 }
 
 // Построить цепочку категорий (breadcrumbs)
 async function buildCategoryChain(categoryId: string) {
-  const chain: Array<{ id: string; name: string; slug: string }> = [];
-  let currentId: string | null = categoryId;
-
-  const allCategories = await db
-    .select({
-      id: categories.id,
-      name: categories.name,
-      slug: categories.slug,
-      parentId: categories.parentId,
-    })
-    .from(categories);
-
-  const categoryMap = new Map(allCategories.map((cat) => [cat.id, cat]));
-
-  while (currentId) {
-    const category = categoryMap.get(currentId);
-    if (!category) break;
-
-    chain.unshift({
-      id: category.id,
-      name: category.name,
-      slug: category.slug,
-    });
-
-    currentId = category.parentId;
-  }
-
-  return chain;
+  const result = await db.execute<{ id: string; name: string; slug: string }>(sql`
+    WITH RECURSIVE category_path AS (
+      SELECT id, name, slug, parent_id, 1 as level
+      FROM ${categories}
+      WHERE id = ${categoryId}
+      
+      UNION ALL
+      
+      SELECT c.id, c.name, c.slug, c.parent_id, cp.level + 1
+      FROM ${categories} c
+      INNER JOIN category_path cp ON c.id = cp.parent_id
+    )
+    SELECT id, name, slug
+    FROM category_path
+    ORDER BY level DESC
+  `);
+  
+  return result.rows;
 }
-
 // Получить путь категории для построения URL с search params
 export function buildCategoryPath(breadcrumbs: Array<{ slug: string }>) {
   return breadcrumbs.map((b) => b.slug).join(",");

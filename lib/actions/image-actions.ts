@@ -2,7 +2,7 @@
 import { db } from "@/db/drizzle";
 import { productImages, ProductImage } from "@/db/schema";
 import { put, del } from '@vercel/blob';
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
@@ -24,6 +24,15 @@ export async function getProductImages(productId: string) {
     } catch (error) {
         console.error("Error fetching product images:", error);
         throw new Error("Failed to fetch product images");
+    }
+}
+export async function getFeaturedImage(productId: string) {
+    try {
+        const image = await db.select().from(productImages).where(and(eq(productImages.productId, productId), eq(productImages.isFeatured, true))).limit(1);
+        return image[0];
+    } catch (error) {
+        console.error("Error fetching featured image:", error);
+        throw new Error("Failed to fetch featured image");
     }
 }
 export async function deleteImage(imageId: string) {

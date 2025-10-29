@@ -2,7 +2,7 @@
 "use client";
 import React from "react";
 import { useState } from "react";
-import { ChevronRight, ChevronDown, Pencil } from "lucide-react";
+import { ChevronRight, ChevronDown, Pencil,  } from "lucide-react";
 import Link from "next/link";
 import { FilterCategoryForm } from "./forms/filter-category-form";
 import {
@@ -41,9 +41,9 @@ type CategoriesTableProps = {
 };
 
 export default function CategoriesTable({ categories }: CategoriesTableProps) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const [hoveredSubcategory, setHoveredSubcategory] = useState<string | null>(null);
+
   // Функция для построения дерева категорий
   const buildCategoryTree = (
     categories: Category[],
@@ -60,25 +60,15 @@ export default function CategoriesTable({ categories }: CategoriesTableProps) {
   };
 const rootCategories = buildCategoryTree(categories);
   // Рендеринг подкатегорий при hover (внуки и глубже)
-  return (
-    <div className="relative">
-      {/* Кнопка для открытия меню */}
-      <button
-        onClick={() => setIsMenuOpen(!isMenuOpen)}
-        className=" bg-[#0000CD] text-white cursor-pointer text-[14px] 2xl:text-[16px] transition duration-300 font-semibold px-4 py-2 rounded-md hover:bg-blue-600"
-      >
-        {isMenuOpen ? 'Закрыть' : 'Каталог'}
-      </button>
-
-      {/* Полноэкранное меню категорий */}
-      {isMenuOpen && (
-       <div className="flex absolute  left-0 z-50 ">
+return (
+  <div className="flex ">
     {/* Левая панель - родительские категории */}
-    <div className="w-80 border-r rounded-l-lg bg-gray-50 overflow-y-auto shadow-lg">
+    <div className="w-80  px-3  py-3 rounded-xl   overflow-y-auto shadow-">
+
       {rootCategories.map((category) => (
         <div
           key={category.id}
-          className={`px-6 py-4 cursor-pointer border-b transition-colors duration-300 ${
+          className={`px-4 py-4 cursor-pointer border-b rounded-2xl transition-colors duration-300  ${
             hoveredCategory === category.id
               ? 'bg-blue-50 '
               : ''
@@ -88,9 +78,12 @@ const rootCategories = buildCategoryTree(categories);
             setHoveredSubcategory(null);
           }}
         >
-          <Link href={`/categories/${category.slug}`}>
-            <h3 className={`font-semibold text-lg  ${hoveredCategory === category.id ? 'text-blue-600' : 'text-gray-800'}`}>{category.name}</h3>
-          </Link>
+          <Link href={`/categories/${category.slug}`} className="flex items-center justify-between">
+  <h3 className={`font-semibold text-lg transition duration-300 ${hoveredCategory === category.id ? 'text-blue-600' : 'text-gray-800'}`}>
+    {category.name}
+  </h3>
+  <ChevronRight className={`w-4 h-4 transition-transform duration-300 ${hoveredCategory === category.id ? 'rotate-0' : 'rotate-90'}`} /> 
+</Link>
         </div>
       ))}
     </div>
@@ -98,7 +91,7 @@ const rootCategories = buildCategoryTree(categories);
     {/* Средняя панель - дочерние категории */}
     {hoveredCategory && (
       <div 
-        className="w-80 bg-white border-r shadow-xl overflow-y-auto"
+        className="w-80  bg-white border-r  shadow-xl rounded-xl overflow-y-auto"
         onMouseLeave={(e) => {
           // Проверяем, куда движется курсор
           const rect = e.currentTarget.getBoundingClientRect();
@@ -136,10 +129,11 @@ const rootCategories = buildCategoryTree(categories);
                       }`}
                       onMouseEnter={() => setHoveredSubcategory(child.id)}
                     >
-                      <Link href={`/categories/${child.slug}`}>
+                      <Link href={`/categories/${child.slug}`} className="flex items-center justify-between">
                         <h4 className={`font-semibold  text-base ${hoveredSubcategory === child.id ? 'text-blue-600' : 'text-gray-800'} transition duration-300`}>
                           {child.name}
                         </h4>
+                          <ChevronRight className={`w-4 h-4 transition-transform duration-300 ${hoveredSubcategory === child.id ? 'rotate-0' : 'rotate-90'}`} /> 
                       </Link>
                     </div>
                   ))}
@@ -154,7 +148,7 @@ const rootCategories = buildCategoryTree(categories);
     {/* Правая панель - внуки */}
     {hoveredCategory && hoveredSubcategory && hasChildren(hoveredSubcategory) && (
       <div 
-        className="w-80 bg-white shadow-2xl overflow-y-auto"
+        className="w-80 bg-white shadow-2xl overflow-y-auto rounded-xl "
         onMouseLeave={(e) => {
           // Проверяем, куда движется курсор
           const rect = e.currentTarget.getBoundingClientRect();
@@ -204,7 +198,5 @@ const rootCategories = buildCategoryTree(categories);
       </div>
     )}
   </div>
-      )}
-    </div>
-  );
+);
 }
