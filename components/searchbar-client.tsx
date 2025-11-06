@@ -4,7 +4,9 @@ import { useState, useTransition } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from './ui/button';
 import { Search } from 'lucide-react';
+import {Suspense} from 'react';
 export default function SearchBar() {
+  
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
@@ -42,6 +44,7 @@ export default function SearchBar() {
   };
 
   return (
+    <Suspense fallback={<div>Loading...</div>}>
     <form onSubmit={handleSearch} className="w-full">
       <div className="flex gap-2 items-center">
         <div className="relative flex-1">
@@ -83,5 +86,6 @@ export default function SearchBar() {
         </Button>
       </div>
     </form>
+    </Suspense>
   );
 }
