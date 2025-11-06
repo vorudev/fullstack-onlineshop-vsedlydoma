@@ -99,6 +99,7 @@ export async function getRootCategories(): Promise<Category[]> {
     parentId: string | null;
     productsCount: number;
     hasChildren: boolean;
+
   }>(sql`
     WITH RECURSIVE category_tree AS (
       -- Начинаем с корневых категорий
@@ -118,17 +119,17 @@ export async function getRootCategories(): Promise<Category[]> {
       c.name,
       c.slug,
       c.description,
-      c.parentId,
+      c.parent_id,
       COUNT(DISTINCT p.id)::int as products_count,
       EXISTS(
         SELECT 1 FROM ${categories} child 
-        WHERE child.parentId = c.id
+        WHERE child.parent_id = c.id
       ) as has_children
     FROM ${categories} c
     LEFT JOIN category_tree ct ON c.id = ct.root_id
     LEFT JOIN ${products} p ON p.category_id = ct.id
-    WHERE c.parentId IS NULL
-    GROUP BY c.id, c.name, c.slug, c.description, c.parentId, ct.root_id
+    WHERE c.parent_id IS NULL
+    GROUP BY c.id, c.name, c.slug, c.description, c.parent_id, ct.root_id
     ORDER BY c.name
   `);
 
