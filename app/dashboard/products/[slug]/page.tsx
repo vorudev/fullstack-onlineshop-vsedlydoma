@@ -12,7 +12,7 @@ import { AttributeCategoryForm } from "@/components/forms/attributes-categories-
 import { ReviewsTableAdmin } from "@/components/reviews-table-admin";
 import { Pencil, Plus } from "lucide-react";
 import { getAllManufacturers } from "@/lib/actions/manufacturer";
-import ProductImages from "@/components/images-slider";
+import ImagesSlider from "@/components/images/images-slider-product";
 import Link from "next/link";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { getAttributeCategories } from "@/lib/actions/attributes-categories";
@@ -85,7 +85,7 @@ const [attributeCategories, attributes, images, {pagination, manufacturers}, cat
  
           {/* Left Column - Product Image */}
           <div className="lg:col-span-1">
-                   <ProductImages images={images} productTitle={product.title} />
+                   <ImagesSlider images={images} title={product.title} />
           </div>
 
           {/* Right Column - Product Info */}
@@ -131,6 +131,9 @@ const [attributeCategories, attributes, images, {pagination, manufacturers}, cat
                 <div className="flex items-center gap-2 pt-2">
 
                   <span className="text-3xl font-bold text-green-600">{product.price}</span>
+                </div>
+                <div className="flex items-center gap-2 pt-2">
+                  <span className="text-3xl font-bold text-green-600">{product.inStock}</span>
                 </div>
               </div>
             </div>

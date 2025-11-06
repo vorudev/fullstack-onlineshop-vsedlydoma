@@ -3,6 +3,7 @@ import { getApprovedReviews } from "@/lib/actions/reviews";
 import {getPendingReviews} from "@/lib/actions/reviews";
 import { StarDisplay } from "./star-rating-in-tables";
 import {   ApproveReviewButton } from "./approve-review-button";
+import { Review } from "@/db/schema";
 import { DeleteReviewButton } from "./delete-review-button";
  import {
   Dialog,
@@ -26,8 +27,10 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { get } from "http";
-export async function ApprovedReviewsTable() { 
-    const reviews = await getApprovedReviews();
+interface ApprovedReviewsTableProps {
+    reviews: Review[];
+}
+export async function ApprovedReviewsTable({ reviews }: ApprovedReviewsTableProps) { 
     return ( 
           <Table className="w-2/3 mx-auto"> 
         <TableCaption>Список отзывов</TableCaption>

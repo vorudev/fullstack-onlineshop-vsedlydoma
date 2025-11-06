@@ -1,8 +1,8 @@
 'use server';
 
 import { db } from "@/db/drizzle";
-import { categories, Category, filters, manufacturers } from "@/db/schema";
-import { eq, ilike, or  } from "drizzle-orm";
+import { categories, Category, filters, manufacturers, productImages } from "@/db/schema";
+import { eq, ilike, or, gte, lte  } from "drizzle-orm";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
@@ -34,7 +34,9 @@ export async function getFilteredProducts(
   categoryId: string,
   selectedFilters?: FilterParams,
   page: number = 1,
-  limit: number = 20
+  limit: number = 20,
+  priceFrom?: number,
+  priceTo?: number
 ) {
   try {
     // 1. Получаем всех уникальных производителей в категории (до фильтрации)
@@ -48,24 +50,47 @@ export async function getFilteredProducts(
       .innerJoin(manufacturers, eq(products.manufacturerId, manufacturers.id))
       .where(eq(products.categoryId, categoryId));
 
-    // 2. Если фильтры не выбраны - возвращаем все продукты
+    // Функция для добавления условий цены
+    const addPriceConditions = (conditions: any[]) => {
+      if (priceFrom !== undefined && priceFrom > 0) {
+        conditions.push(gte(products.price, priceFrom));
+      }
+      if (priceTo !== undefined && priceTo > 0) {
+        conditions.push(lte(products.price, priceTo));
+      }
+      return conditions;
+    };
+
+    // 2. Если фильтры не выбраны - возвращаем все продукты (с учетом цены)
     if (!selectedFilters || Object.keys(selectedFilters).length === 0) {
+      const whereConditions = addPriceConditions([eq(products.categoryId, categoryId)]);
+      
+
       const result = await db
         .select()
         .from(products)
-        .where(eq(products.categoryId, categoryId))
+        .where(and(...whereConditions))
         .limit(limit)
         .offset((page - 1) * limit);
       
       const totalCount = await db
         .select({ count: sql<number>`count(*)` })
         .from(products)
-        .where(eq(products.categoryId, categoryId));
-      
+        .where(and(...whereConditions));
+      const productIds = result.map(r => r.id);
+      const images = await db
+      .select()
+      .from(productImages)
+      .where(inArray(productImages.productId, productIds));
       return {
         products: result,
+        images: images,
+        pagination: {
+          page,
+          totalPages: Math.ceil(totalCount[0].count / limit),
+          total: totalCount[0].count,
+        },
         availableManufacturers,
-        totalCount: totalCount[0].count,
       };
     }
 
@@ -126,8 +151,8 @@ export async function getFilteredProducts(
         .having(sql`COUNT(DISTINCT ${productAttributes.slug}) = ${Object.keys(filtersBySlug).length}`)
         .as('filtered_products');
 
-      // Строим условия WHERE
-      const whereConditions = [eq(products.categoryId, categoryId)];
+      // Строим условия WHERE (с ценой)
+      const whereConditions = addPriceConditions([eq(products.categoryId, categoryId)]);
       if (hasManufacturerFilter) {
         whereConditions.push(inArray(products.manufacturerId, manufacturerIds));
       }
@@ -140,15 +165,31 @@ export async function getFilteredProducts(
         .limit(limit)
         .offset((page - 1) * limit);
 
+    const [{count}] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(products)
+      .where(and(...whereConditions));
+
+      const productIds = result.map(r => r.products.id);
+      const images = await db
+      .select()
+      .from(productImages)
+      .where(inArray(productImages.productId, productIds));
+
       return {
         products: result.map(r => r.products),
+        images,
         availableManufacturers,
-        totalCount: result.length,
+        pagination: { 
+          page,
+          totalPages: Math.ceil(count / limit),
+          total: count,
+        },
       };
     }
 
-    // Случай 2: Только фильтр по производителям (без атрибутов)
-    const whereConditions = [eq(products.categoryId, categoryId)];
+    // Случай 2: Только фильтр по производителям (без атрибутов, но с ценой)
+    const whereConditions = addPriceConditions([eq(products.categoryId, categoryId)]);
     if (hasManufacturerFilter) {
       whereConditions.push(inArray(products.manufacturerId, manufacturerIds));
     }
@@ -160,10 +201,28 @@ export async function getFilteredProducts(
       .limit(limit)
       .offset((page - 1) * limit);
 
+    const [{count}] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(products)
+      .where(and(...whereConditions));
+
+
+      const productIds = result.map(r => r.id);
+
+    const images = await db
+    .select()
+    .from(productImages)
+    .where(inArray(productImages.productId, productIds));
+   
     return {
       products: result,
+      images,
       availableManufacturers,
-      totalCount: result.length,
+      pagination: { 
+        page,
+        totalPages: Math.ceil(count / limit),
+        total: count,
+      },
     };
 
   } catch (error) {

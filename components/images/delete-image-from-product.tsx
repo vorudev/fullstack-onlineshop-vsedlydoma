@@ -38,7 +38,7 @@ export function DeleteImageFromProductButton({ image }: { image: Omit<ProductIma
 
     return (
         <Dialog>
-            <DialogTrigger asChild>
+            <DialogTrigger asChild className="absolute top-2 right-2">
                 <Button variant="ghost" className="h-8 w-8 p-0">
                     <span className="sr-only">Open</span>
                     <Trash2 className="h-4 w-4" />

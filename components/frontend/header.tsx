@@ -20,7 +20,7 @@ export default async function Header() {
         </header>
         {/* desktop */}
         <header className="bg-white hidden xl:max-w-[1550px] lg:max-w-[1000px] lg:flex flex-col text-black mx-auto ">
-            <nav className="flex flex-row justify-between p-5 text-gray-800">
+            <nav className="flex flex-row justify-between py-5 px-6 text-gray-800">
 <div className="flex flex-row gap-2 items-center ">
    < MapPin className="w-4 h-4" /> <p className=" 2xl:text-lg"> Минск</p>
 </div>
@@ -32,7 +32,7 @@ export default async function Header() {
 </div>
 <p>8-800-555-35-35</p>
             </nav>
-            <div className="flex flex-row  justify-between  gap-3 items-center text-gray-600 py-2" >
+            <div className="flex flex-row  justify-between  gap-3 items-center text-gray-600 py-2 px-3" >
                 <div className="flex flex-row   rounded-xl items-center flex-shrink-0">
                     <Link href="/">
                     <Image src="/logo.webp" alt="logo" width={160} height={60} />

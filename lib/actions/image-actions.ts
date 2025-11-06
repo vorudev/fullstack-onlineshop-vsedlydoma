@@ -1,6 +1,6 @@
 'use server'
 import { db } from "@/db/drizzle";
-import { productImages, ProductImage } from "@/db/schema";
+import { productImages, ProductImage, categoryImages, CategoryImage, manufacturerImages, ManufacturerImage } from "@/db/schema";
 import { put, del } from '@vercel/blob';
 import { eq, and } from "drizzle-orm";
 import { headers } from "next/headers";
@@ -73,3 +73,79 @@ export async function deleteProductImage(storageKey: string) {
         }
   await del(storageKey);
 }
+export async function uploadCategoryImage(file: File) {
+    // ✅ Проверяем права и выбрасываем ошибку
+    const session = await auth.api.getSession({
+      headers: await headers()
+    });
+    
+    if (!session || session.user.role !== 'admin') {
+      throw new Error('Unauthorized'); // или создайте кастомную ошибку
+    }
+    
+    const blob = await put(`categories/${Date.now()}-${file.name}`, file, {
+      access: 'public',
+      addRandomSuffix: true,
+    });
+   
+    return {
+      url: blob.url,
+      storageKey: blob.pathname,
+    };
+  }
+  export async function deleteCategoryImage(storageKey: string) {
+    const session = await auth.api.getSession({
+          headers: await headers()
+        })
+        if (!session || session.user.role !== 'admin') {
+          return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+    await del(storageKey);
+      }
+      export async function getCategoryImages(categoryId: string) {
+        try {
+            const images = await db.select().from(categoryImages).where(eq(categoryImages.categoryId, categoryId));
+            return images;
+        } catch (error) {
+            console.error("Error fetching category images:", error);
+            throw new Error("Failed to fetch category images");
+        }
+    }
+    export async function getFeaturedCategoryImage(categoryId: string) {
+        try {
+            const image = await db.select().from(categoryImages).where(and(eq(categoryImages.categoryId, categoryId), eq(categoryImages.isFeatured, true))).limit(1);
+            return image[0];
+        } catch (error) {
+            console.error("Error fetching featured category image:", error);
+            throw new Error("Failed to fetch featured category image");
+        }
+    }
+export async function uploadManufacturerImage(file: File) {
+    // ✅ Проверяем права и выбрасываем ошибку
+    const session = await auth.api.getSession({
+      headers: await headers()
+    });
+    
+    if (!session || session.user.role !== 'admin') {
+      throw new Error('Unauthorized'); // или создайте кастомную ошибку
+    }
+    
+    const blob = await put(`manufacturers/${Date.now()}-${file.name}`, file, {
+      access: 'public',
+      addRandomSuffix: true,
+    });
+   
+    return {
+      url: blob.url,
+      storageKey: blob.pathname,
+    };
+  }
+  export async function deleteManufacturerImage(storageKey: string) {
+    const session = await auth.api.getSession({
+          headers: await headers()
+        })
+        if (!session || session.user.role !== 'admin') {
+          return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+    await del(storageKey);
+    }

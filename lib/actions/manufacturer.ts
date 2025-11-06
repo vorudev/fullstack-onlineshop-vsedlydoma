@@ -116,3 +116,11 @@ export const getAllManufacturers = async ({
         throw new Error("Failed to fetch manufacturers");
     }
 };
+export async function getManufacturerBySlug(slug: string) {
+    try {
+        return await db.select().from(manufacturers).where(eq(manufacturers.slug, slug));
+    } catch (error) {
+        console.error("Error fetching manufacturer by slug:", error);
+        throw new Error("Failed to fetch manufacturer by slug");
+    }
+}

@@ -169,6 +169,34 @@
       "when": 1761602048532,
       "tag": "0023_long_shen",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1762135235303,
+      "tag": "0024_dear_mister_sinister",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1762332798395,
+      "tag": "0025_next_zombie",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1762334386138,
+      "tag": "0026_hard_whiplash",
+      "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1762419178535,
+      "tag": "0027_shallow_moon_knight",
+      "breakpoints": true
     }
   ]
 }

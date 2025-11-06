@@ -4,15 +4,10 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { notFound } from 'next/navigation';
 import { getCategoryWithNavigation, buildCategoryUrl } from '@/lib/actions/categories';
-import { getFilterCategoriesByProductCategory } from '@/lib/actions/filter-categories';
-import { getFilteredProducts } from '@/lib/actions/product-categories';
-import { getFiltersByCategories } from '@/lib/actions/filters';
-import { getFilterCategoriesWithFiltersByProductCategory } from '@/lib/actions/filter-categories';
-import { getFiltersByCategory } from '@/lib/actions/filters';
-import { getCategoryChain } from '@/lib/actions/product-categories';
-import FilterSidebar from './filtersidebar';
-import ProductList from './sort';
-
+import { getFeaturedCategoryImage } from '@/lib/actions/image-actions';
+import Header from '@/components/frontend/header';
+import Image from 'next/image';
+import Subcat from './subcat';
 interface PageProps {
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -21,16 +16,16 @@ interface PageProps {
 export default async function CategoryPage({ params, searchParams }: PageProps) {
   // Шаг 1: Получаем параметры
   const { slug } = await params;
-  const resolvedSearchParams = await searchParams; 
+  // const resolvedSearchParams = await searchParams; 
 
   
-  const selectedFilters: Record<string, string[]> = {};
-  Object.keys(resolvedSearchParams).forEach(key => {
-    const value = resolvedSearchParams[key];
-    if (value && key !== 'chain') { 
-      selectedFilters[key] = Array.isArray(value) ? value : value.split(',');
-    }
-  });
+  // const selectedFilters: Record<string, string[]> = {};
+  // Object.keys(resolvedSearchParams).forEach(key => {
+  //   const value = resolvedSearchParams[key];
+  //   if (value && key !== 'chain') { 
+  //     selectedFilters[key] = Array.isArray(value) ? value : value.split(',');
+  //   }
+ // });
 
 
   // Шаг 2: Получаем категорию (нужна для следующих запросов)
@@ -45,7 +40,6 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
     redirect(`/products?category=${category.slug}`);
   }
 
-
   // ✅ Шаг 3: ПАРАЛЛЕЛЬНАЯ загрузка зависимых данных
  // const [{products, totalCount, availableManufacturers}, filterCategoriesWithFilters] = await Promise.all([
  //   getFilteredProducts(category.id, selectedFilters, 1, 20),
@@ -53,12 +47,13 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
  // ]);
 
 
-  return (
-    <div className="p-6 flex text-black">
-     {/* Фильтры  <FilterSidebar filterCategories={filterCategoriesWithFilters} avaliableManufacturers={availableManufacturers}/> */}
-      <div className="flex-1 ml-6">
+  return ( <>
 
-        <nav className="mb-6 text-sm text-gray-600">
+    <div className=" xl:max-w-[1550px] lg:max-w-[1000px] flex text-black lg:mx-auto py-2 px-[16px]  lg:py-0 lg:px-0 bg-gray-100">
+    {/* <FilterSidebar filterCategories={filterCategoriesWithFilters} avaliableManufacturers={availableManufacturers}/> */}
+      <div className="flex lg:p-6 flex-col gap-2 lg:gap-2 w-full py-2 ">
+
+        <nav className=" text-sm text-gray-600">
           {breadcrumbs.map((crumb, index) => (
             <span key={crumb.id}>
               <Link 
@@ -70,38 +65,25 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
               >
                 {crumb.name}
               </Link>
-              {index < breadcrumbs.length - 1 && ' > '}
+              {index < breadcrumbs.length - 1 && ' / '}
             </span>
           ))}
         </nav>
 
-        <h1 className="text-3xl font-bold mb-6">{category.name}</h1>
-        {category.description && (
-          <p className="mb-6 text-gray-700">{category.description}</p>
-        )}
+        <h1 className="lg:text-3xl text-2xl font-bold ">{category.name}</h1>
+       
 
   
         {subcategories.length > 0 ? (
-          <div>
-            <h2 className="text-2xl font-semibold mb-4">Подкатегории</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 pt-2 md:grid-cols-1 lg:grid-cols-4 xl:grid-cols-5 lg:gap-6 gap-1">
               {subcategories.map((subcat) => (
-                <Link
+                <Subcat
                   key={subcat.id}
-                  href={buildCategoryUrl(subcat.slug, [
-                    ...breadcrumbs,
-                    { slug: subcat.slug },
-                  ])}
-                  className="card p-4 border rounded hover:shadow-lg transition"
-                >
-                  <h3 className="font-semibold text-lg">{subcat.name}</h3>
-                  <p className="text-gray-600">
-                    {subcat.productsCount} товаров
-                  </p>
-                </Link>
+                  category={subcat}
+                />
               ))}
             </div>
-          </div>
+
         ) : (
          <div className="text-center py-8">
     <p className="text-gray-600 mb-4">Загрузка товаров...</p>
@@ -109,7 +91,9 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
 
         )}
       </div>
-               {/*   <ProductList products={products} /> */}
+              {/* <ProductList products={products} /> */} 
     </div>
+
+    </>
   );
 }

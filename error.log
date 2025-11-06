@@ -1,0 +1,189 @@
+
+> my-app@0.1.0 dev
+> next dev --turbopack
+
+   ▲ Next.js 15.3.2 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://10.1.30.104:3000
+   - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 1157ms
+ ○ Compiling / ...
+ ✓ Compiled / in 5.8s
+[2m2025-11-03T00:39:45.263Z[0m [33mWARN[0m [1m[Better Auth]:[0m Social provider google is missing clientId or clientSecret
+[2m2025-11-03T00:39:45.264Z[0m [33mWARN[0m [1m[Better Auth]:[0m Social provider github is missing clientId or clientSecret
+(node:11482) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ⨯ [TypeError: localStorage.getItem is not a function] {
+  digest: '3354429159'
+}
+[TypeError: localStorage.getItem is not a function]
+ ⨯ [TypeError: localStorage.getItem is not a function] { page: '/' }
+[
+  {
+    id: '6f30fb3f-17ba-4b61-840d-69460cf56040',
+    categoryId: '295481ee-e919-4cef-979f-2c963b2079bd',
+    price: 111,
+    slug: 'fdsfdsfdsfsd',
+    title: 'кеупкупку',
+    description: 'sadsaerqw',
+    manufacturerId: '974dd618-3c6a-4161-8ccd-76c5ee636480',
+    createdAt: 2025-10-23T17:34:14.959Z,
+    updatedAt: 2025-10-23T17:34:14.959Z,
+    sku: 'PRD-7C729FAA'
+  },
+  {
+    id: '79f2044c-77fc-460d-88f8-82bcab2a4308',
+    categoryId: '36c1eb18-b8db-46de-8d52-7529cc56ab47',
+    price: 12,
+    slug: 'huy-ordinarydsadsadsa',
+    title: 'товаро',
+    description: 'dsadsadsa',
+    manufacturerId: '974dd618-3c6a-4161-8ccd-76c5ee636480',
+    createdAt: 2025-10-26T15:01:28.353Z,
+    updatedAt: 2025-10-26T15:01:28.353Z,
+    sku: 'PRD-23DB8C32'
+  },
+  {
+    id: 'bb3efcfb-f33a-4932-b2c2-8ae37156bbb2',
+    categoryId: 'ca34db9b-3ad5-4efd-b123-53dd8c41f890',
+    price: 55,
+    slug: 'PPR022222',
+    title: '25-20-25',
+    description: 'йййй',
+    manufacturerId: '974dd618-3c6a-4161-8ccd-76c5ee636480',
+    createdAt: 2025-10-25T19:50:30.931Z,
+    updatedAt: 2025-10-25T19:50:30.931Z,
+    sku: 'PRD-6AE62F1F'
+  },
+  {
+    id: 'd01d7e13-b5ad-4db1-9711-c116bc50bc64',
+    categoryId: 'ca34db9b-3ad5-4efd-b123-53dd8c41f890',
+    price: 450,
+    slug: 'glavfdsasada',
+    title: 'ваыавыавы',
+    description: 'huy',
+    manufacturerId: '974dd618-3c6a-4161-8ccd-76c5ee636480',
+    createdAt: 2025-10-25T20:42:35.899Z,
+    updatedAt: 2025-10-25T20:42:35.899Z,
+    sku: 'PRD-28215DBC'
+  },
+  {
+    id: '6931b089-64cf-4e0c-9506-1c7589da53fd',
+    categoryId: '563c0d57-596e-4e7b-8dde-047d716982f9',
+    price: 100,
+    slug: 'smesitel',
+    title: ' смеситель на ванную ',
+    description: 'плададсдищща',
+    manufacturerId: '974dd618-3c6a-4161-8ccd-76c5ee636480',
+    createdAt: 2025-10-29T12:29:21.019Z,
+    updatedAt: 2025-10-29T12:29:21.019Z,
+    sku: 'PRD-38396C42'
+  },
+  {
+    id: '29307d17-9a68-49ce-8759-50329ca68815',
+    categoryId: '36c1eb18-b8db-46de-8d52-7529cc56ab47',
+    price: 111,
+    slug: 'rewrewrewrew',
+    title: 'авцыавыцауцауц',
+    description: 'куцкуйцкуц',
+    manufacturerId: '974dd618-3c6a-4161-8ccd-76c5ee636480',
+    createdAt: 2025-10-23T17:37:23.988Z,
+    updatedAt: 2025-10-23T17:37:23.988Z,
+    sku: 'PRD-79292594'
+  },
+  {
+    id: '2e386b4d-c157-4f42-a0d8-91fd2a639f1b',
+    categoryId: '0d414f9e-42d9-4059-8d4a-9373c2833585',
+    price: 122,
+    slug: 'grilll',
+    title: 'Аэрогриль Tefal Easy Fry & Grill XXL EY801D15 Аэрогриль Tefal Easy Fry & Grill XXL EY801D15',
+    description: 'Розыгрыш призов\n' +
+      '\n' +
+      'Аэрогриль Tefal Easy Fry & Grill XXL EY801D15\n' +
+      'Аэрогриль Tefal Easy Fry & Grill XXL EY801D15',
+    manufacturerId: '974dd618-3c6a-4161-8ccd-76c5ee636480',
+    createdAt: 2025-10-29T13:27:21.509Z,
+    updatedAt: 2025-10-29T13:27:21.509Z,
+    sku: 'PRD-5B9F1602'
+  },
+  {
+    id: 'dbb13aee-1dd3-490f-89b6-cb852bbe68c7',
+    categoryId: '70decb8b-725d-4d12-ba8b-325ac7d8c8b1',
+    price: 11111,
+    slug: 'huy-ordinary',
+    title: 'ыыыыы',
+    description: 'sku testy',
+    manufacturerId: '974dd618-3c6a-4161-8ccd-76c5ee636480',
+    createdAt: 2025-10-25T15:54:38.608Z,
+    updatedAt: 2025-10-25T15:54:38.608Z,
+    sku: 'PRD-31B458E7'
+  },
+  {
+    id: '826488d5-c043-44a1-8fb5-39136600cb43',
+    categoryId: '295481ee-e919-4cef-979f-2c963b2079bd',
+    price: 5,
+    slug: 'huyddd',
+    title: 'йййй',
+    description: 'еее',
+    manufacturerId: 'de6cdcab-a91e-44dc-a6f5-403f78106b95',
+    createdAt: 2025-10-23T20:06:59.864Z,
+    updatedAt: 2025-10-23T20:06:59.864Z,
+    sku: 'PRD-1283568'
+  },
+  {
+    id: 'ad232d64-69a9-4f9a-8934-30ae82698e63',
+    categoryId: '36c1eb18-b8db-46de-8d52-7529cc56ab47',
+    price: 111193030000,
+    slug: 'dbdhdhdjd',
+    title: 'fncjfhf',
+    description: 'плададададад',
+    manufacturerId: '974dd618-3c6a-4161-8ccd-76c5ee636480',
+    createdAt: 2025-10-26T18:40:29.208Z,
+    updatedAt: 2025-10-26T18:40:29.208Z,
+    sku: 'PRD-343AF590'
+  },
+  {
+    id: 'd1118d8d-5835-4a89-b53b-cc3d90e19cc0',
+    categoryId: '36c1eb18-b8db-46de-8d52-7529cc56ab47',
+    price: 1,
+    slug: 'gayka',
+    title: 'гайку',
+    description: 'гайка дефолт',
+    manufacturerId: '974dd618-3c6a-4161-8ccd-76c5ee636480',
+    createdAt: 2025-10-25T20:04:44.385Z,
+    updatedAt: 2025-10-25T20:04:44.385Z,
+    sku: 'PRD-107F30F3'
+  },
+  {
+    id: '1c1ea558-b83d-4744-8304-feec22a4fed5',
+    categoryId: '36c1eb18-b8db-46de-8d52-7529cc56ab47',
+    price: 11111,
+    slug: 'dsadsaqdsa',
+    title: 'ывфвыфвыфвыф',
+    description: 'dsadfsadsa',
+    manufacturerId: 'de6cdcab-a91e-44dc-a6f5-403f78106b95',
+    createdAt: 2025-10-25T23:35:45.357Z,
+    updatedAt: 2025-10-25T23:35:45.357Z,
+    sku: 'PRD-64A6B499'
+  }
+]
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 1188ms
+[TypeError: localStorage.getItem is not a function]
+[TypeError: localStorage.getItem is not a function]
+ ⨯ [TypeError: localStorage.getItem is not a function]
+ ⨯ [TypeError: localStorage.getItem is not a function]
+[TypeError: localStorage.getItem is not a function]
+ ⨯ unhandledRejection: [TypeError: localStorage.getItem is not a function]
+ ⨯ unhandledRejection:  [TypeError: localStorage.getItem is not a function]
+[TypeError: localStorage.getItem is not a function]
+[TypeError: localStorage.getItem is not a function]
+ ⨯ [TypeError: localStorage.getItem is not a function]
+[TypeError: localStorage.getItem is not a function] { page: '/' }
+[TypeError: localStorage.getItem is not a function]
+ ⨯ unhandledRejection: [TypeError: localStorage.getItem is not a function]
+ ⨯ unhandledRejection:  [TypeError: localStorage.getItem is not a function]
+ GET / 500 in 9078ms
+ GET / 500 in 73ms

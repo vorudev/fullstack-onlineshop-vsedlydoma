@@ -24,14 +24,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased dark bg-white`}
       >
-        <CartProvider>
+<CartProvider>
           {children}
-    </CartProvider>
+  </CartProvider>
       </body>
     </html>
   );

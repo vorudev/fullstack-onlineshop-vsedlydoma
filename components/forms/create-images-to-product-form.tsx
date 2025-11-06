@@ -32,7 +32,7 @@ interface CreateImagesToProductFormProps {
 }
 
 const formSchema = z.object({
-  productId: z.string().uuid(),
+productId: z.string().uuid(),
   imageUrl: z.string().optional(),
   file: z.any().optional(),
   order: z.number().nullable(),

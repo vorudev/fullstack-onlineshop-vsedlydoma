@@ -5,10 +5,14 @@ import { reviews, Review } from "@/db/schema";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
-import { eq, and, ne, sql } from "drizzle-orm";
+import { eq, and, ne, sql, or, ilike, desc } from "drizzle-orm";
 import { stat } from "fs";
 
-
+interface GetApprovedReviewsParams {
+   search?: string;
+   page?: number;
+   pageSize?: number;
+}
 export async function getReviewsByProductId(productId: string) {
   try {
     const productReviews = await db
@@ -61,7 +65,7 @@ export async function getApprovedReviews() {
         throw new Error("Failed to fetch filtered reviews");
     }
 }
-export async function getApprovedReviewsByProductId(productId: string) {
+export const getApprovedReviewsByProductId = async (productId: string) => {
     try { 
         const filteredReviews = await db
         .select()
@@ -78,6 +82,54 @@ export async function getApprovedReviewsByProductId(productId: string) {
         throw new Error("Failed to fetch filtered reviews by product ID");
     }
 }
+export const getAllApprovedReviews = async ({
+  search = '',
+  page = 1,
+  pageSize = 20,
+}: GetApprovedReviewsParams = {}) => {
+    try { 
+        const offset = (page - 1) * pageSize;
+        const conditions = [];
+        if (search) {
+            conditions.push(
+                or(
+                    ilike(reviews.id, `%${search}%`),
+                    ilike(reviews.user_id, `%${search}%`),
+                    ilike(reviews.product_id, `%${search}%`),
+                    ilike(reviews.rating, `%${search}%`),
+                    sql`CAST(${reviews.id} AS TEXT) ILIKE ${`%${search}%`}`,
+                )
+            );
+        }
+        const whereClause = and(...conditions);
+        const [allReviews, [{ count }]] = await Promise.all([
+            db
+                .select()
+                .from(reviews)
+                .where(whereClause)
+                .limit(pageSize)
+                .offset(offset)
+                .orderBy(desc(reviews.createdAt)),
+            db
+                .select({ count: sql<number>`count(*)` })
+                .from(reviews)
+                .where(whereClause)
+        ]);
+        return {
+          allReviews,
+            pagination: {
+                page,
+                pageSize,
+                total: Number(count),
+                totalPages: Math.ceil(Number(count) / pageSize),
+            },
+        };
+    } catch (error) {
+        console.error("Error fetching products:", error);
+        throw new Error("Failed to fetch products");
+    }
+}
+    
 export async function getPendingReviews() {
     try { 
         const filteredReviews = await db

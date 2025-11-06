@@ -54,6 +54,7 @@ categoryId: z.string().uuid("Category ID is required"),
 manufacturerId: z.string().uuid("Manufacturer ID is required"),
     slug: z.string().min(1, "Slug is required").max(255, "Slug must be less than 255 characters"), 
     description: z.string().min(1, "Description is required"),
+    inStock: z.string()
 
 })
 
@@ -73,6 +74,11 @@ export function ProductForm({product, categories: initialCategories, manufacture
     const [categories, setCategories] = useState(initialCategories);
     const [categorySearchLoading, setCategorySearchLoading] = useState(false);
 
+    // InStock state
+    const [inStockOpen, setInStockOpen] = useState(false);
+
+
+
     const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
       defaultValues: {
@@ -80,6 +86,7 @@ export function ProductForm({product, categories: initialCategories, manufacture
         categoryId: product?.categoryId || "",
         title: product?.title || "",
         slug: product?.slug || "", 
+        inStock: product?.inStock || "",
         description: product?.description || "",
         manufacturerId: product?.manufacturerId || "",
       },
@@ -229,6 +236,65 @@ export function ProductForm({product, categories: initialCategories, manufacture
 />
 
           {/* Category Combobox */}
+          <FormField
+            control={form.control}
+            name="inStock"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>В наличии</FormLabel>
+                <Popover open={inStockOpen} onOpenChange={setInStockOpen}> 
+                  <PopoverTrigger asChild>
+                    <FormControl> 
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={inStockOpen}
+                        className={cn(
+                          "w-full justify-between",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        {field.value || "Статус наличия"}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+<PopoverContent className="w-full p-0" align="start">
+<Command>
+  <CommandEmpty>Ничего не найдено.</CommandEmpty>
+  <CommandGroup>
+   <CommandItem 
+   onSelect={() => {
+    field.onChange("Уточнить на наличие") 
+    setInStockOpen(false)
+   }}
+   
+   >
+    Уточнить на наличие
+   </CommandItem>
+   <CommandItem onSelect={() => {
+    field.onChange("В наличии") 
+    setInStockOpen(false)
+   }}
+    >
+    В наличии
+   </CommandItem>
+   <CommandItem onSelect={() => {
+    field.onChange("Нет в наличии")
+    setInStockOpen(false)
+   }}
+    > 
+    Нет в наличии
+   </CommandItem>
+  </CommandGroup>
+</Command>
+</PopoverContent>
+                </Popover>
+               
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="categoryId"

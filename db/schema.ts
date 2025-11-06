@@ -1,3 +1,4 @@
+import { phoneNumber } from "better-auth/plugins";
 import { desc, or, relations, sql } from "drizzle-orm";
 import { integer, text, boolean, pgTable, uuid, real, timestamp, varchar, pgEnum, AnyPgColumn, index} from "drizzle-orm/pg-core";
 
@@ -68,6 +69,20 @@ export const categories = pgTable("categories", {
   idxParentId: index("idx_parent_id").on(table.parentId),
   
 }));
+export const categoryImages = pgTable("categoryImages", {
+  id: uuid("id").primaryKey().defaultRandom(),
+ categoryId: uuid("category_id").references(() => categories.id).notNull(),
+  imageUrl: text("image_url").notNull(),
+  storageType: text("storage_type").notNull().default("url"),
+  storageKey: text("storage_key"),
+  order: integer("order").default(0),
+  isFeatured: boolean("is_featured").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => ({
+  idxCategoryId: index("idx_category_id").on(table.categoryId),
+  idxOrder: index("idx_order").on(table.order),
+  idxIsFeatured: index("idx_is_featured").on(table.isFeatured),
+}));
 export const filterCategories = pgTable("filtersCategories", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 255 }).notNull().unique(),
@@ -85,6 +100,7 @@ export const filters = pgTable("filters", {
 export const products = pgTable("products", {
 id: uuid("id").primaryKey().defaultRandom(),
 categoryId: uuid("category_id").references(() => categories.id),
+inStock: text("inStock"),
 price: real("price").notNull(),
 slug: varchar("slug", { length: 255 }).notNull().unique(),
 title: text("title").notNull(),
@@ -128,7 +144,25 @@ export const productImages = pgTable("product_images", {
   order: integer("order").default(0),
   isFeatured: boolean("is_featured").default(false),
   createdAt: timestamp("created_at").defaultNow(),
-});
+}, (table) => ({
+  // Индекс для поиска по productId
+  productIdIdx: index("product_images_product_id_idx").on(table.productId),
+}));
+export const manufacturerImages = pgTable("manufacturer_images", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  manufacturerId: uuid("manufacturer_id")
+    .references(() => manufacturers.id, { onDelete: "cascade" })
+    .notNull(),
+  imageUrl: text("image_url").notNull(), // URL для доступа к изображению
+  storageType: text("storage_type").notNull().default("url"), // 'url' | 'upload'
+  storageKey: text("storage_key"), // ключ файла в хранилище (если upload)
+  order: integer("order").default(0),
+  isFeatured: boolean("is_featured").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => ({
+  // Индекс для поиска по manufacturerId
+  manufacturerIdIdx: index("manufacturer_images_manufacturer_id_idx").on(table.manufacturerId),
+}));
 export const reviews = pgTable("reviews", {
   id: uuid("id").primaryKey().defaultRandom(),
   product_id: uuid("product_id").references(() => products.id, { onDelete: 'cascade' }).notNull(),
@@ -139,7 +173,11 @@ export const reviews = pgTable("reviews", {
   author_name: varchar("author_name", { length: 255 }), // для анонимных отзывов
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
-});
+}, (table) => ({
+  idx: index("reviews_idx").on(table.product_id, table.user_id),
+  productIdx: index("reviews_product_idx").on(table.product_id),
+  userIdx: index("reviews_user_idx").on(table.user_id),
+}));
 export const manufacturers = pgTable("manufacturers", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 255 }).notNull().unique(),
@@ -147,7 +185,10 @@ export const manufacturers = pgTable("manufacturers", {
   description: text("description"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
-});
+}, (table) => ({
+  slugIdx: index("manufacturers_slug_idx").on(table.slug),
+  nameIdx: index("manufacturers_name_idx").on(table.name),
+}));
 export const productAttributes = pgTable("product_attributes", {
   id: uuid("id").primaryKey().defaultRandom(),
   productId: uuid("product_id")
@@ -159,15 +200,21 @@ export const productAttributes = pgTable("product_attributes", {
   name: varchar("name", { length: 255 }).notNull(), // например, "Процессор", "RAM"
   value: text("value").notNull(), // например, "Intel i7", "16 GB"
   order: integer("order").default(0), // для сортировки
-  slug: varchar("slug", { length: 255 }).notNull().unique(), // для фильтрации, например "Color"
+  slug: varchar("slug", { length: 255 }).notNull(), // для фильтрации, например "Color"
   createdAt: timestamp("created_at").defaultNow(),
-});
+}, (table) => ({
+  slugIdx: index("product_attributes_slug_idx").on(table.slug),
+  nameIdx: index("product_attributes_name_idx").on(table.name),
+}));
 export const attributeCategories = pgTable("attribute_categories", {
     id: uuid("id").primaryKey().defaultRandom(),
     name: varchar("name", { length: 100 }).notNull(),
     slug: varchar("slug", { length: 100 }).notNull().unique(), 
     displayOrder: integer("display_order").default(0)
-});
+}, (table) => ({
+  slugIdx: index("attribute_categories_slug_idx").on(table.slug),
+  nameIdx: index("attribute_categories_name_idx").on(table.name),
+}));
 
 export const orders = pgTable("orders", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -198,7 +245,10 @@ title: text("title").notNull(),
   quantity: integer("quantity").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
-})
+}, (table) => ({
+  // Индекс на productId
+  productIdIdx: index("order_items_product_id_idx").on(table.productId),
+}));
 export const schema = {
                 
                     products, 
@@ -215,8 +265,9 @@ export const schema = {
                     filters,
                     filterCategories, 
                     reviews, 
-                    productImages
-
+                    productImages,
+                    categoryImages,
+                    manufacturerImages,
                   
                 }
 
@@ -232,6 +283,8 @@ export type Filter = typeof filters.$inferSelect
 export type FilterCategory = typeof filterCategories.$inferSelect
 export type Review = typeof reviews.$inferSelect
 export type ProductImage = typeof productImages.$inferSelect
+export type CategoryImage = typeof categoryImages.$inferSelect
+export type ManufacturerImage = typeof manufacturerImages.$inferSelect
 
 export const ordersRelations = relations(orders, ({ one, many }) => ({
   user: one(user, {

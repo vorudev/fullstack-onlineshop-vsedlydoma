@@ -4,7 +4,9 @@ import { admin } from "better-auth/plugins"
 import { schema } from "@/db/schema";
 import { db } from "@/db/drizzle"; // your drizzle instance
 import { nextCookies } from "better-auth/next-js";
-
+import { Resend } from "resend";
+import ForgotPasswordEmail from "@/components/email/reset-password";
+const resend = new Resend(process.env.RESEND_API_KEY as string);
 
 
 export const auth = betterAuth({ 
@@ -20,11 +22,19 @@ socialProviders: {
 
     },
     updateUser: true,
-
 emailAndPassword: {  
         enabled: true, 
-       
-}, 
+        sendResetPassword: async ({user, url}) => {
+            resend.emails.send({
+                from: 'onboarding@resend.dev',
+                to: user.email,
+                subject: 'Reset Password',
+                react: ForgotPasswordEmail({username: user.name, resetUrl: url, userEmail: user.email}) 
+            })
+        }
+    },
+
+
 
 database: drizzleAdapter(db, {
         provider: "pg", // or "mysql", "sqlite"
