@@ -10,22 +10,12 @@ import Image from 'next/image';
 import Subcat from './subcat';
 interface PageProps {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default async function CategoryPage({ params, searchParams }: PageProps) {
+export default async function CategoryPage({ params }: PageProps) {
   // Шаг 1: Получаем параметры
   const { slug } = await params;
-  // const resolvedSearchParams = await searchParams; 
-
   
-  // const selectedFilters: Record<string, string[]> = {};
-  // Object.keys(resolvedSearchParams).forEach(key => {
-  //   const value = resolvedSearchParams[key];
-  //   if (value && key !== 'chain') { 
-  //     selectedFilters[key] = Array.isArray(value) ? value : value.split(',');
-  //   }
- // });
 
 
   // Шаг 2: Получаем категорию (нужна для следующих запросов)
@@ -40,17 +30,12 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
     redirect(`/products?category=${category.slug}`);
   }
 
-  // ✅ Шаг 3: ПАРАЛЛЕЛЬНАЯ загрузка зависимых данных
- // const [{products, totalCount, availableManufacturers}, filterCategoriesWithFilters] = await Promise.all([
- //   getFilteredProducts(category.id, selectedFilters, 1, 20),
- //   getFilterCategoriesWithFiltersByProductCategory(category.id),
- // ]);
 
 
   return ( <>
 
     <div className=" xl:max-w-[1550px] lg:max-w-[1000px] flex text-black lg:mx-auto py-2 px-[16px]  lg:py-0 lg:px-0 bg-gray-100">
-    {/* <FilterSidebar filterCategories={filterCategoriesWithFilters} avaliableManufacturers={availableManufacturers}/> */}
+      
       <div className="flex lg:p-6 flex-col gap-2 lg:gap-2 w-full py-2 ">
 
         <nav className=" text-sm text-gray-600">
@@ -91,7 +76,6 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
 
         )}
       </div>
-              {/* <ProductList products={products} /> */} 
     </div>
 
     </>
