@@ -34,8 +34,8 @@ export default async function CategoryPage({ params }: PageProps) {
 
   return ( <>
 
-    <div className=" xl:max-w-[1550px] lg:max-w-[1000px] flex text-black lg:mx-auto py-2 px-[16px]  lg:py-0 lg:px-0 bg-gray-100">
-      
+    <div className=" xl:max-w-[1550px] lg:max-w-[1000px] flex text-black lg:mx-auto py-2 px-[16px] min-h-screen   lg:py-0 lg:px-0 bg-gray-100">
+
       <div className="flex lg:p-6 flex-col gap-2 lg:gap-2 w-full py-2 ">
 
         <nav className=" text-sm text-gray-600">
@@ -48,7 +48,7 @@ export default async function CategoryPage({ params }: PageProps) {
                 )}
                 className="hover:text-blue-600"
               >
-                {crumb.name}
+                 {crumb.name}
               </Link>
               {index < breadcrumbs.length - 1 && ' / '}
             </span>

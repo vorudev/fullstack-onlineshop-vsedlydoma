@@ -1,10 +1,8 @@
-
-
 import { getFeaturedCategoryImage } from '@/lib/actions/image-actions';
 import Image from 'next/image';
 import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
-interface SubcatProps {
+interface CategoryProps {
     category: {
         id: string;
         name: string;
@@ -13,7 +11,7 @@ interface SubcatProps {
     }
 }
 
-export default async function Subcat({ category }: SubcatProps) {
+export default async function Category({ category }: CategoryProps) {
     const featuredImage = await getFeaturedCategoryImage(category.id);
     return (
        <Link href={`/categories/${category.slug}`} 
