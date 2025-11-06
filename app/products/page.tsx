@@ -11,7 +11,7 @@ import { notFound } from "next/navigation";
 import Pagination from "@/components/pagination";
 import Link from "next/link";
 interface PageProps {
-  searchParams: {
+  searchParams: Promise<{
     category: string;
     chain: string;
     priceFrom: string;
@@ -19,7 +19,7 @@ interface PageProps {
     page?: string;
 
     [key: string]: string | string[] | undefined;
-  };
+  }>;
 }
 export default async function ProductsPage({ searchParams }: PageProps) {
   const resolvedSearchParams = await searchParams; 
