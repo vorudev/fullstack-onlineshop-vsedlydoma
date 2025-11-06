@@ -44,7 +44,6 @@ export default function SearchBar() {
   };
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
     <form onSubmit={handleSearch} className="w-full">
       <div className="flex gap-2 items-center">
         <div className="relative flex-1">
@@ -86,6 +85,5 @@ export default function SearchBar() {
         </Button>
       </div>
     </form>
-    </Suspense>
   );
 }
