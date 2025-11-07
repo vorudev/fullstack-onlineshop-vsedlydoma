@@ -82,7 +82,6 @@ export default function FilterSidebar({ filterCategories, avaliableManufacturers
   const [expandedCategories, setExpandedCategories] = useState(['price']);
   const searchParams = useSearchParams();
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [priceFrom, setPriceFrom] = useState<number | undefined>(undefined);
   const [priceTo, setPriceTo] = useState<number | undefined>(undefined);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(
@@ -347,6 +346,7 @@ export default function FilterSidebar({ filterCategories, avaliableManufacturers
             {/* Содержимое категории */}
             {expandedCategories.includes(category.id) && (
               <div className="px-4 pb-4">
+                
                 {category.id === 'price' ? (
                   // Фильтр цены
                   <div className="space-y-3 pt-2">
@@ -371,11 +371,12 @@ export default function FilterSidebar({ filterCategories, avaliableManufacturers
                 ) : (
                   // Обычные чекбоксы
                   <div className="space-y-2 pt-2 max-h-60 overflow-y-auto">
+                   
                     {category.filters.map(filter => (
                       <label
                         key={filter.id}
                         className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded transition-colors"
-                      >
+                      > 
                         <input
                           type="checkbox"
                           checked={selectedFilters[filter.slug]?.includes(filter.id) || false}

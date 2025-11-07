@@ -5,15 +5,21 @@ import { getRandomProductsFast, getProducts } from "@/lib/actions/product";
 import ProductCard from "./product-card";
 import { getAverageRatingByProductId } from "@/lib/actions/reviews";
 import { getCategories } from "@/lib/actions/product-categories";
-import { get } from "http";
 export default async function HomePage () {
 const [categories, products ] = await Promise.all([getCategories(), getRandomProductsFast(
 
 )]);
 console.log(products);
     return (
-        <div className=" min-h-screen mx-auto md:pt-10 pt-4  xl:max-w-[1400px] lg:max-w-[1000px] flex flex-col gap-7  md:px-10 text-black">
-          <div className="flex overflow-x-auto gap-4 px-4 md:px-0 snap-x snap-mandatory">
+      
+        <div className=" min-h-screen mx-auto  xl:max-w-[1400px] lg:max-w-[1000px]  text-black">
+          <div className=" absolute z-10 hidden lg:flex"><CategoriesTable categories={categories} /></div>
+          <div className="lg:ml-81 ml-0 overflow-hidden md:pt-10 pt-4 flex flex-col gap-7  md:px-10">
+          
+          <div className="flex overflow-x-auto gap-4 px-4 md:px-0 snap-x snap-mandatory " style={{ 
+      scrollbarWidth: 'none',
+      msOverflowStyle: 'none',
+    }}>
   <div className="min-w-[80vw] md:min-w-[40vw] lg:min-w-[20vw] md:w-full xl:w-[30%] xl:min-w-0 bg-blue-100 rounded-xl shadow py-4 pl-4 snap-center flex-col flex gap-10 relative  overflow-hidden">
    <div className="flex flex-col"><h3 className="text-lg xl:text-xl font-semibold ">Как нас найти</h3>
     <p className="text-gray-600 text-sm xl:text-base ">Контент первой карточки</p>
@@ -114,7 +120,6 @@ console.log(products);
           </div>
         </div>
         <div className="flex flex-row gap-3">
-          <div className=" absolute z-10 hidden lg:flex"><CategoriesTable categories={categories} /></div>
        <div className="grid grid-cols-1 lg:ml-81  md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Карточка 1 */}
           
@@ -126,6 +131,7 @@ console.log(products);
             
           
           </div>
+        </div>
         </div>
         </div>
     )
