@@ -7,6 +7,7 @@ import { getCategoryWithNavigation, buildCategoryUrl } from '@/lib/actions/categ
 import { getFeaturedCategoryImage } from '@/lib/actions/image-actions';
 import Header from '@/components/frontend/header';
 import Image from 'next/image';
+import { Suspense } from 'react';
 import Subcat from './subcat';
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -33,7 +34,7 @@ export default async function CategoryPage({ params }: PageProps) {
 
 
   return ( <>
-
+ <Suspense fallback={<div>Loading...</div>}>
     <div className=" xl:max-w-[1400px] lg:max-w-[1000px] flex text-black lg:mx-auto py-2 px-[16px] min-h-screen   lg:py-0 lg:px-0 bg-gray-100">
 
       <div className="flex lg:p-6 flex-col gap-2 lg:gap-2 w-full py-2 ">
@@ -77,7 +78,7 @@ export default async function CategoryPage({ params }: PageProps) {
         )}
       </div>
     </div>
-
+</Suspense>
     </>
   );
 }
