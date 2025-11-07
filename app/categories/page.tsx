@@ -1,12 +1,13 @@
 import { getRootCategories } from '@/lib/actions/categories';
 import Link from 'next/link';
+import { Suspense } from 'react';
 import Category from './category';
 export default async function CatalogPage() {
   const rootCategories = await getRootCategories();
 
   return (
     <>
-
+<Suspense fallback={<div>Loading...</div>}>
     <div className=" xl:max-w-[1400px] lg:max-w-[1000px] flex text-black lg:mx-auto py-2 px-[16px] min-h-screen  lg:py-0 lg:px-0 bg-gray-100">
       
       <div className="flex lg:p-6 flex-col gap-2 lg:gap-2 w-full py-2 ">
@@ -34,7 +35,7 @@ export default async function CatalogPage() {
         )}
       </div>
     </div>
-
+</Suspense>
     </>
   );
 }
