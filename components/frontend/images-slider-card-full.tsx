@@ -36,36 +36,37 @@ export default function ImagesSlider({ images, title }: Images) {
   });
   return (
     <div className="w-full overflow-hidden">
-  <div className="flex lg:hidden gap-3 overflow-x-auto py-2  snap-x snap-mandatory scrollbar-hide pb-2"
-       style={{ 
-         scrollbarWidth: 'none',
-         msOverflowStyle: 'none',
-       }}>
+  <div className="flex gap-3 overflow-x-auto py-2  scroll-snap-center px-10 snap-x snap-mandatory scrollbar-hide pb-2"
+    style={{ 
+      scrollbarWidth: 'none',
+      msOverflowStyle: 'none',
+    }}>
     {sortedImages.map((image) => (
       <div 
         key={image.id}
-        className="flex-shrink-0 snap-start relative rounded-lg overflow-hidden"
-        style={{ 
-          width: 'calc(100vw - 3rem)',
-          maxWidth: '180px',
-          maxHeight: '150px',
-          aspectRatio: '1/1.15'
-        }}
+        className="flex-shrink-0 snap-start lg:snap-center w-[180px] h-[150px] lg:w-[200px] lg:h-[200px]   aspect-[1/1.15] lg:aspect-[1/1] relative rounded-lg overflow-hidden"
       >
         <Image
           src={image.imageUrl}
-          width={180}
-          height={150}
+     fill
           alt={`${title}${image.isFeatured ? ' - главное фото' : ''}`}
-          className="w-full h-full object-contain"
+          className="w-full h-full object-contain  "
         />
-       
       </div>
     ))}
   </div>
-<div className="hidden lg:block aspect-[1/1] relative w-[200px] h-[200px]">
-   
-</div>  
+  
+  {/* Индикаторы точек */}
+  {sortedImages.length > 1 && (
+    <div className="flex justify-center gap-1.5 mt-2">
+      {sortedImages.map((image, index) => (
+        <div 
+          key={image.id}
+          className="w-1.5 h-1.5 rounded-full bg-gray-300"
+        />
+      ))}
+    </div>
+  )}
 </div>
 
 

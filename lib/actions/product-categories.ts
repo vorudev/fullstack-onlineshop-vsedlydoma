@@ -65,7 +65,7 @@ export async function getFilteredProducts(
     // 2. Если фильтры не выбраны - возвращаем все продукты (с учетом цены)
     if (!selectedFilters || Object.keys(selectedFilters).length === 0) {
       const whereConditions = addPriceConditions([eq(products.categoryId, categoryId)]);
-      
+        
 
       const result = await db
         .select()
@@ -195,7 +195,7 @@ const productsWithDetails = result.map(product => ({
       .select({ count: sql<number>`count(*)` })
       .from(products)
       .where(and(...whereConditions));
-
+  
       const productIds = result.map(r => r.products.id);
        const [images, ratings] = await Promise.all([
   db.select()
@@ -220,11 +220,15 @@ const ratingsMap = new Map(
     reviewCount: r.reviewCount 
   }])
 );
-const productsWithDetails = result.map(product => ({
-  ...product,
-  averageRating: ratingsMap.get(product.products.id)?.averageRating || 0,
-  reviewCount: ratingsMap.get(product.products.id)?.reviewCount || 0,
-}));
+const productsWithDetails = result.map(row => {
+  const product = 'products' in row ? row.products : row;
+
+  return {
+    ...product,
+    averageRating: ratingsMap.get(product.id)?.averageRating || 0,
+    reviewCount: ratingsMap.get(product.id)?.reviewCount || 0,
+  };
+});
 
       return {
         productsWithDetails,

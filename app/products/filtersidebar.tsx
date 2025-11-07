@@ -2,7 +2,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { X, Settings2} from "lucide-react";
+import { X, Settings2, ChevronUp, ChevronDown} from "lucide-react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import ProductList from "./sort";
 import type ProductUnited from "./page";
@@ -79,6 +79,7 @@ export default function FilterSidebar({ filterCategories, avaliableManufacturers
   const router = useRouter();
     const pathname = usePathname();
     const [sortBy, setSortBy] = useState<SortOption>('default');
+  const [expandedCategories, setExpandedCategories] = useState(['price']);
   const searchParams = useSearchParams();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -123,7 +124,7 @@ export default function FilterSidebar({ filterCategories, avaliableManufacturers
     
     // Удаляем старые фильтры
     Array.from(params.keys()).forEach(key => {
-      if (key !== 'chain') {
+      if (key !== 'chain' && key !== 'category') {
         params.delete(key);
       }
     });
@@ -183,6 +184,14 @@ export default function FilterSidebar({ filterCategories, avaliableManufacturers
           return productsCopy;
       }
     }, [productsWithDetails, sortBy]);
+
+     const toggleCategory = (categoryId: string) => {
+    setExpandedCategories(prev => 
+      prev.includes(categoryId)
+        ? prev.filter(id => id !== categoryId)
+        : [...prev, categoryId]
+    );
+  };
   return (
     <>
     <div className="flex flex-row gap-2 justify-between ">
@@ -313,58 +322,91 @@ export default function FilterSidebar({ filterCategories, avaliableManufacturers
 
 
 
-<div className="flex flex-row w-full">
-  <div className="hidden lg:block">
-    <div className="w-64 p-4 border-r ">
-      <h2 className="text-xl font-bold mb-4">Фильтры</h2>
-      
-      {filterCategories.map(category => (
-        <div key={category.id} className="mb-6">
-          <h3 className="text-lg font-semibold mb-2">{category.name}</h3>
-            {category.filters.map(filter => (
-              <div key={filter.id} className="flex items-center mb-1">
-                <input
-                  type="checkbox"
-                  id={filter.id}
-                  checked={selectedFilters[filter.slug]?.includes(filter.id) || false}
-                  onChange={(e) => handleFilterChange(filter.slug, filter.id, e.target.checked)}
-                  className="mr-2"
-                />
-                <label htmlFor={filter.id}>{filter.name}</label>
-              </div>
-            ))}
-        </div>
-      ))}
-      <h3 className="text-lg font-semibold mb-2">Производители</h3>
-      {avaliableManufacturers.map(manufacturer => (
-        <div key={manufacturer.id} className="mb-1">
-          <input
-            type="checkbox"
-            id={manufacturer.id}
-            checked={selectedFilters.manufacturer?.includes(manufacturer.id) || false}
-            onChange={(e) => handleFilterChange('manufacturer', manufacturer.id, e.target.checked)}
-            className="mr-2"
-          />
-          <label htmlFor={manufacturer.id}>{manufacturer.name}</label>
-        </div>
-      ))}
-
-      <div className="mt-6 space-y-2">
-        <button
-          onClick={applyFilters}
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition"
-        >
-          Применить
-        </button>
-        
+<div className="flex flex-row w-full gap-5 pb-30">
+  <div className=" w- bg-white border border-gray-200 rounded-lg shadow-sm lg:block hidden">
+      {/* Заголовок */}
+      <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-gray-900">Фильтры</h3>
         <button
           onClick={resetFilters}
-          className="w-full bg-gray-200 text-gray-700 py-2 px-4 rounded hover:bg-gray-300 transition"
+          className="text-sm text-blue-600 hover:text-blue-700 font-medium"
         >
           Сбросить
         </button>
       </div>
-    </div>
+
+      {/* Список категорий */}
+      <div className="divide-y divide-gray-200">
+        {allFilterCategories.map(category => (
+          <div key={category.id} className="border-b border-gray-100 last:border-b-0">
+            {/* Заголовок категории */}
+            <button
+              onClick={() => toggleCategory(category.id)}
+              className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors"
+            >
+              <span className="font-medium text-gray-900">{category.name}</span>
+              {expandedCategories.includes(category.id) ? (
+                <ChevronUp className="w-5 h-5 text-gray-500" />
+              ) : (
+                <ChevronDown className="w-5 h-5 text-gray-500" />
+              )}
+            </button>
+
+            {/* Содержимое категории */}
+            {expandedCategories.includes(category.id) && (
+              <div className="px-4 pb-4">
+                {category.id === 'price' ? (
+                  // Фильтр цены
+                  <div className="space-y-3 pt-2">
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="number"
+                        placeholder="От"
+                        value={priceFrom || ''}
+                        onChange={(e) => setPriceFrom(Number(e.target.value) || undefined)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                      <span className="text-gray-400">—</span>
+                      <input
+                        type="number"
+                        placeholder="До"
+                        value={priceTo || ''}
+                        onChange={(e) => setPriceTo(Number(e.target.value) || undefined)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  // Обычные чекбоксы
+                  <div className="space-y-2 pt-2 max-h-60 overflow-y-auto">
+                    {category.filters.map(filter => (
+                      <label
+                        key={filter.id}
+                        className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded transition-colors"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selectedFilters[filter.slug]?.includes(filter.id) || false}
+                          onChange={(e) => handleFilterChange(filter.slug, filter.id, e.target.checked)}
+                          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
+                        />
+                        <span className="text-sm text-gray-700">{filter.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Кнопка применения */}
+      <div className="p-4 border-t border-gray-200">
+        <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg transition-colors">
+          Применить фильтры
+        </button>
+      </div>
     </div>
     
       <ProductList  products={sortedProducts}  />
