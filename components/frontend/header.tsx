@@ -3,6 +3,7 @@ import Link from "next/link"
 import Image from "next/image"
 import CategoriesTable from "../categories-table-user"
 import SearchBar from "../searchbar-client"
+import { Suspense } from "react"
 import { getCategories } from "@/lib/actions/product-categories";
 export default async function Header() {
     const categories = await getCategories();
@@ -15,8 +16,10 @@ export default async function Header() {
             </Link>
               <div className="flex flex-row gap-2 items-center "> < MapPin className="w-3 h-3" /> <p className=" text-sm"> Минск</p>
               </div>
-        </div>
+         </div>
+         <Suspense fallback={<div>Loading...</div>}>
         <SearchBar />
+        </Suspense>
         </header>
         {/* desktop */}
         <header className="bg-white hidden xl:max-w-[1550px] lg:max-w-[1000px] lg:flex flex-col text-black mx-auto ">
