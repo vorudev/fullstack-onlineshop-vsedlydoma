@@ -12,7 +12,7 @@ const [categories, products ] = await Promise.all([getCategories(), getRandomPro
 )]);
 console.log(products);
     return (
-        <div className=" min-h-screen mx-auto md:pt-10 pt-4  xl:max-w-[1550px] lg:max-w-[1000px] flex flex-col gap-7  md:px-10 text-black">
+        <div className=" min-h-screen mx-auto md:pt-10 pt-4  xl:max-w-[1400px] lg:max-w-[1000px] flex flex-col gap-7  md:px-10 text-black">
           <div className="flex overflow-x-auto gap-4 px-4 md:px-0 snap-x snap-mandatory">
   <div className="min-w-[80vw] md:min-w-[40vw] lg:min-w-[20vw] md:w-full xl:w-[30%] xl:min-w-0 bg-blue-100 rounded-xl shadow py-4 pl-4 snap-center flex-col flex gap-10 relative  overflow-hidden">
    <div className="flex flex-col"><h3 className="text-lg xl:text-xl font-semibold ">Как нас найти</h3>
