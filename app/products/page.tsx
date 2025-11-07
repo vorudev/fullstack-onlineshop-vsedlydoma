@@ -65,7 +65,7 @@ const productsWithDetailAndImages = productsWithDetails?.map(product => {
     console.log(productsWithDetails);
 
     return (
-        <div className="flex flex-col px-[16px] gap-2 lg:px-6 text-black xl:max-w-[1550px] lg:max-w-[1000px] mx-auto">
+        <div className="flex flex-col px-[16px] gap-2 lg:px-6 text-black xl:max-w-[1400px] lg:max-w-[1000px] mx-auto">
           <nav className=" text-sm text-gray-600 pt-[20px]">
           {breadcrumbs.map((crumb, index) => (
             <span key={crumb.id}>

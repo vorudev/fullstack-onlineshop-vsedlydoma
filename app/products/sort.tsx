@@ -45,7 +45,10 @@ export default function ProductList({products}: {products: ProductUnited[]}) {
   return (
     <div className="w-full">
       {/* Список продуктов */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 ">
+      <div className="grid gap-4 " 
+      style={{
+    gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+  }}>
         {products?.map((product) => (
           <ProductCardFull
             key={product.id}

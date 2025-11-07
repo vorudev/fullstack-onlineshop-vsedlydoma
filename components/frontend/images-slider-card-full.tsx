@@ -57,16 +57,6 @@ export default function ImagesSlider({ images, title }: Images) {
   </div>
   
   {/* Индикаторы точек */}
-  {sortedImages.length > 1 && (
-    <div className="flex justify-center gap-1.5 mt-2">
-      {sortedImages.map((image, index) => (
-        <div 
-          key={image.id}
-          className="w-1.5 h-1.5 rounded-full bg-gray-300"
-        />
-      ))}
-    </div>
-  )}
 </div>
 
 

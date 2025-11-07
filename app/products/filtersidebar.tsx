@@ -153,23 +153,23 @@ export default function FilterSidebar({ filterCategories, avaliableManufacturers
     router.push(`${pathname}?category=${categorySlug}`);
   };
 
-  const allFilterCategories = [
-    ...filterCategories,
-    {
-      id: 'manufacturer',
-      name: 'Производители',
-      filters: avaliableManufacturers.map(m => ({
-        id: m.id,
-        slug: 'manufacturer',
-        name: m.name
-      }))
-    },
-    {
+ const allFilterCategories = [
+  {
     id: 'price',
     name: 'Цена',
-    filters: [] // Особый случай - рендерим кастомный контент
-  }
-  ];
+    filters: [], // Особый случай - рендерим кастомный контент
+  },
+  {
+    id: 'manufacturer',
+    name: 'Производители',
+    filters: avaliableManufacturers.map(m => ({
+      id: m.id,
+      slug: 'manufacturer',
+      name: m.name,
+    })),
+  },
+  ...filterCategories, // остальные идут после
+];
     const sortedProducts = useMemo(() => {
       if (!productsWithDetails) return [];
       
@@ -323,28 +323,20 @@ export default function FilterSidebar({ filterCategories, avaliableManufacturers
 
 
 <div className="flex flex-row w-full gap-5 pb-30">
-  <div className=" w- bg-white border border-gray-200 rounded-lg shadow-sm lg:block hidden">
+  <div className=" w-[370px] overflow-hidden  bg-white rounded-2xl lg:block hidden">
       {/* Заголовок */}
-      <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900">Фильтры</h3>
-        <button
-          onClick={resetFilters}
-          className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-        >
-          Сбросить
-        </button>
-      </div>
+    
 
       {/* Список категорий */}
-      <div className="divide-y divide-gray-200">
+      <div className="">
         {allFilterCategories.map(category => (
-          <div key={category.id} className="border-b border-gray-100 last:border-b-0">
+          <div key={category.id} className=" cursor-pointer">
             {/* Заголовок категории */}
             <button
               onClick={() => toggleCategory(category.id)}
-              className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors"
+              className="w-full px-4 py-3 flex items-center justify-between hover:bg-blue-100 transition duration-200 hover:text-blue-600 "
             >
-              <span className="font-medium text-gray-900">{category.name}</span>
+              <span className="">{category.name}</span>
               {expandedCategories.includes(category.id) ? (
                 <ChevronUp className="w-5 h-5 text-gray-500" />
               ) : (
@@ -364,7 +356,7 @@ export default function FilterSidebar({ filterCategories, avaliableManufacturers
                         placeholder="От"
                         value={priceFrom || ''}
                         onChange={(e) => setPriceFrom(Number(e.target.value) || undefined)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 transition-all duration-200 focus:ring-blue-600/50 focus:border-transparent"
                       />
                       <span className="text-gray-400">—</span>
                       <input
@@ -372,7 +364,7 @@ export default function FilterSidebar({ filterCategories, avaliableManufacturers
                         placeholder="До"
                         value={priceTo || ''}
                         onChange={(e) => setPriceTo(Number(e.target.value) || undefined)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 transition-all duration-200 focus:ring-blue-600/50  focus:border-transparent"
                       />
                     </div>
                   </div>
