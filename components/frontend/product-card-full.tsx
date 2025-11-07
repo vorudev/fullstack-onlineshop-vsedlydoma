@@ -2,6 +2,7 @@
  import { Heart, ShoppingCart , ChartNoAxesColumn, Star} from "lucide-react";
 import { getAverageRatingByProductId } from "@/lib/actions/reviews";
 import { getProductImages } from "@/lib/actions/image-actions";
+import { AddToCart } from "@/app/products/add-to-cart-prop";
 import Link from "next/link";
 import { ProductImage } from "@/db/schema";
 import ImagesSliderCardFull from "./images-slider-card-full";
@@ -95,9 +96,7 @@ function getReviewText(count: number): string {
           <button className="  cursor-pointer px-2 bg-white hover:bg-gray-100 text-gray-600 font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors">
           <Heart className="w-6 h-6" />
           </button>
-          <button className="  cursor-pointer px-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <ShoppingCart className="w-6 h-6" /> Купить
-          </button>
+           <AddToCart id={product.id} price={product.price} title={product.title} sku={product.sku} />
           </div>
           </div>
         </div>

@@ -3,6 +3,7 @@ import Map from "./map";
 import CategoriesTable from "../categories-table-user-2";
 import { getRandomProductsFast, getProducts } from "@/lib/actions/product";
 import ProductCard from "./product-card";
+import Link from "next/link";
 import { getAverageRatingByProductId } from "@/lib/actions/reviews";
 import { getCategories } from "@/lib/actions/product-categories";
 export default async function HomePage () {
@@ -14,13 +15,13 @@ console.log(products);
       
         <div className=" min-h-screen mx-auto  xl:max-w-[1400px] lg:max-w-[1000px]  text-black">
           <div className=" absolute z-10 hidden lg:flex"><CategoriesTable categories={categories} /></div>
-          <div className="lg:ml-81 ml-0 overflow-hidden md:pt-10 pt-4 flex flex-col gap-7  md:px-10">
+          <div className="lg:ml-81 ml-0 overflow-hidden md:pt-10 lg:pt-5 pt-4 flex flex-col gap-7  md:px-10">
           
           <div className="flex overflow-x-auto gap-4 px-4 md:px-0 snap-x snap-mandatory " style={{ 
       scrollbarWidth: 'none',
       msOverflowStyle: 'none',
     }}>
-  <div className="min-w-[80vw] md:min-w-[40vw] lg:min-w-[20vw] md:w-full xl:w-[30%] xl:min-w-0 bg-blue-100 rounded-xl shadow py-4 pl-4 snap-center flex-col flex gap-10 relative  overflow-hidden">
+  <div className="min-w-[80vw] md:min-w-[40vw] lg:min-w-[20vw] md:w-full xl:w-[30%] xl:min-w-0 bg-blue-100 rounded-xl shadow py-4 pl-4 snap-center flex-col flex lg:hidden gap-10 relative  overflow-hidden">
    <div className="flex flex-col"><h3 className="text-lg xl:text-xl font-semibold ">Как нас найти</h3>
     <p className="text-gray-600 text-sm xl:text-base ">Контент первой карточки</p>
     </div> 
@@ -42,7 +43,7 @@ console.log(products);
     <ShoppingCart className="w-30 h-30" /> 
     </div>
   </div>
-    <div className="w-[10%] xl:flex hidden bg-green-100/50 rounded-xl shadow py-4  px-3 flex-col gap-6 relative overflow-hidden">
+    <Link href="/categories" className="w-[20%] xl:flex hidden bg-green-100/50 rounded-xl shadow py-4  px-3 flex-col gap-6 relative overflow-hidden">
     <div className="flex flex-col">
       <h3 className="text-base font-semibold xl:text-xl">Каталог</h3>
       <p className="text-gray-600 text-sm xl:text-base">Все товары</p>
@@ -50,7 +51,7 @@ console.log(products);
     <div className="absolute -bottom-3 -right-3 text-green-500/50">
       <TextSelect className="w-20 h-20" />
     </div>
-  </div>
+  </Link>
    <div className="flex-1 bg-purple-100 hidden  rounded-xl shadow py-4 pl-4 pr-2 xl:flex flex-col gap-10 relative overflow-hidden">
     <div className="flex flex-col">
       <h3 className="text-base font-semibold xl:text-xl">Производители</h3>
@@ -120,7 +121,7 @@ console.log(products);
           </div>
         </div>
         <div className="flex flex-row gap-3">
-       <div className="grid grid-cols-1 lg:ml-81  md:grid-cols-2 lg:grid-cols-4 gap-6">
+       <div className="grid grid-cols-1  md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Карточка 1 */}
           
           

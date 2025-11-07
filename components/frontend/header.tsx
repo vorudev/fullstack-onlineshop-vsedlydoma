@@ -1,9 +1,12 @@
-import { MapPin, ShoppingCart, User, Heart } from "lucide-react"
+import { MapPin, ShoppingCart, Heart } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import CategoriesTable from "../categories-table-user"
 import SearchBar from "../searchbar-client"
+
 import { Suspense } from "react"
+import UserElement from "./icons-header/user-header"
+import CartHeader from "./icons-header/cart-header"
 import { getCategories } from "@/lib/actions/product-categories";
 export default async function Header() {
     const categories = await getCategories();
@@ -47,10 +50,9 @@ export default async function Header() {
                     
                    <Link href="/wishlist" className="flex flex-col hover:bg-gray-100 rounded-xl transition duration-300 p-3 gap-1 items-center "> <Heart className="2xl:w-6 2xl:h-6 text-gray-400 " />
                    <span className="text-[14px] 2xl:text-md">Избранное</span></Link>
-                   <Link href="/cart" className="flex flex-col p-3 hover:bg-gray-100 rounded-xl transition duration-300 gap-1 items-center "> <ShoppingCart className="2xl:w-6 2xl:h-6  text-gray-400 " />
-                   <span className="text-[14px] 2xl:text-md">Корзина</span></Link>
-                   <Link href="/signin" className="flex flex-col p-3 hover:bg-gray-100 rounded-xl transition duration-300 gap-1 items-center "> <User className="2xl:w-6 2xl:h-6 text-gray-400 " />
-                   <span className="text-[14px] 2xl:text-md">Войти</span></Link>
+                  
+                   <CartHeader />
+                   <UserElement />
                 </div>
                  
                 </div> 

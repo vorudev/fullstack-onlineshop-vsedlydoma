@@ -77,6 +77,7 @@ return (
             setHoveredCategory(category.id);
             setHoveredSubcategory(null);
           }}
+          
         >
           <Link href={`/categories/${category.slug}`} className="flex items-center justify-between">
   <h3 className={`font-semibold text-lg transition duration-300 ${hoveredCategory === category.id ? 'text-blue-600' : 'text-gray-800'}`}>
@@ -95,7 +96,7 @@ return (
         onMouseLeave={(e) => {
           // Проверяем, куда движется курсор
           const rect = e.currentTarget.getBoundingClientRect();
-          if (e.clientX < rect.left) {
+          if (e.clientX < rect.left || e.clientY < rect.top || e.clientY > rect.bottom) {
             // Курсор ушел влево - закрываем все
             setHoveredCategory(null);
             setHoveredSubcategory(null);
