@@ -1,8 +1,9 @@
 'use server';
 
 import { db } from "@/db/drizzle";
-import { categories, Category, filters, manufacturers, productImages } from "@/db/schema";
+import { categories, Category, filters, manufacturers, productImages, reviews } from "@/db/schema";
 import { eq, ilike, or, gte, lte  } from "drizzle-orm";
+import { ProductImage } from "@/db/schema";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
@@ -78,12 +79,37 @@ export async function getFilteredProducts(
         .from(products)
         .where(and(...whereConditions));
       const productIds = result.map(r => r.id);
-      const images = await db
-      .select()
-      .from(productImages)
-      .where(inArray(productImages.productId, productIds));
+    const [images, ratings] = await Promise.all([
+  db.select()
+    .from(productImages)
+    .where(inArray(productImages.productId, productIds)),
+  
+  // ДОБАВЛЯЕМ GROUP BY product_id
+  db.select({
+    productId: reviews.product_id,
+    averageRating: sql<number>`AVG(${reviews.rating})`,
+    reviewCount: sql<number>`COUNT(${reviews.id})`,
+  })
+  .from(reviews)
+  .where(inArray(reviews.product_id, productIds))
+  .groupBy(reviews.product_id) // ← ВОТ ЭТО КЛЮЧЕВОЕ!
+]);
+
+
+const ratingsMap = new Map(
+  ratings.map(r => [r.productId, { 
+    averageRating: r.averageRating, 
+    reviewCount: r.reviewCount 
+  }])
+);
+const productsWithDetails = result.map(product => ({
+  ...product,
+  averageRating: ratingsMap.get(product.id)?.averageRating || 0,
+  reviewCount: ratingsMap.get(product.id)?.reviewCount || 0,
+}));
+
       return {
-        products: result,
+       productsWithDetails,
         images: images,
         pagination: {
           page,
@@ -171,20 +197,44 @@ export async function getFilteredProducts(
       .where(and(...whereConditions));
 
       const productIds = result.map(r => r.products.id);
-      const images = await db
-      .select()
-      .from(productImages)
-      .where(inArray(productImages.productId, productIds));
+       const [images, ratings] = await Promise.all([
+  db.select()
+    .from(productImages)
+    .where(inArray(productImages.productId, productIds)),
+  
+  // ДОБАВЛЯЕМ GROUP BY product_id
+  db.select({
+    productId: reviews.product_id,
+    averageRating: sql<number>`AVG(${reviews.rating})`,
+    reviewCount: sql<number>`COUNT(${reviews.id})`,
+  })
+  .from(reviews)
+  .where(inArray(reviews.product_id, productIds))
+  .groupBy(reviews.product_id) // ← ВОТ ЭТО КЛЮЧЕВОЕ!
+]);
+
+
+const ratingsMap = new Map(
+  ratings.map(r => [r.productId, { 
+    averageRating: r.averageRating, 
+    reviewCount: r.reviewCount 
+  }])
+);
+const productsWithDetails = result.map(product => ({
+  ...product,
+  averageRating: ratingsMap.get(product.products.id)?.averageRating || 0,
+  reviewCount: ratingsMap.get(product.products.id)?.reviewCount || 0,
+}));
 
       return {
-        products: result.map(r => r.products),
-        images,
-        availableManufacturers,
-        pagination: { 
+        productsWithDetails,
+        images: images,
+        pagination: {
           page,
           totalPages: Math.ceil(count / limit),
-          total: count,
+        total: count,
         },
+        availableManufacturers,
       };
     }
 
@@ -208,28 +258,54 @@ export async function getFilteredProducts(
 
 
       const productIds = result.map(r => r.id);
-
-    const images = await db
-    .select()
+    const [images, ratings] = await Promise.all([
+  db.select()
     .from(productImages)
-    .where(inArray(productImages.productId, productIds));
-   
-    return {
-      products: result,
-      images,
-      availableManufacturers,
-      pagination: { 
-        page,
-        totalPages: Math.ceil(count / limit),
-        total: count,
-      },
-    };
+    .where(inArray(productImages.productId, productIds)),
+  
+  // ДОБАВЛЯЕМ GROUP BY product_id
+  db.select({
+    productId: reviews.product_id,
+    averageRating: sql<number>`AVG(${reviews.rating})`,
+    reviewCount: sql<number>`COUNT(${reviews.id})`,
+  })
+  .from(reviews)
+  .where(inArray(reviews.product_id, productIds))
+  .groupBy(reviews.product_id) // ← ВОТ ЭТО КЛЮЧЕВОЕ!
+]);
+
+
+const ratingsMap = new Map(
+  ratings.map(r => [r.productId, { 
+    averageRating: r.averageRating, 
+    reviewCount: r.reviewCount 
+  }])
+);
+const productsWithDetails = result.map(product => ({
+  ...product,
+  averageRating: ratingsMap.get(product.id)?.averageRating || 0,
+  reviewCount: ratingsMap.get(product.id)?.reviewCount || 0,
+}));
+
+
+      return {
+        productsWithDetails,
+        images: images,
+        pagination: {
+          page,
+          totalPages: Math.ceil(count / limit),
+          total: count,
+        },
+        availableManufacturers,
+      };
 
   } catch (error) {
     console.error("Error filtering products:", error);
     throw new Error("Failed to filter products");
   }
+  
 }
+
 export async function getRootCategories() {
   return await db
     .select()

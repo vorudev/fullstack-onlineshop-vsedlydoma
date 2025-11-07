@@ -5,17 +5,38 @@ import Link from 'next/link';
 import ProductCardFull from '@/components/frontend/product-card-full';
 import { ProductImage } from '@/db/schema'
 import { Product } from '@/db/schema';
-
+import { Review } from '@/db/schema';
 type SortOption = 'default' | 'price-asc' | 'price-desc';
 
 
 
-interface ProductWithImages {
-  product: Product;
-  images: ProductImage[];
+interface ProductUnited {
+    images: {
+        id: string;
+        productId: string;
+        imageUrl: string;
+        storageType: string;
+        storageKey: string | null;
+        order: number | null;
+        isFeatured: boolean | null;
+        createdAt: Date | null;
+    }[];
+    averageRating: number;
+    reviewCount: number;
+    id: string;
+    categoryId: string | null;
+    inStock: string | null;
+    price: number;
+    slug: string;
+    title: string;
+    description: string;
+    manufacturerId: string | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+    sku: string | null;
 }
 
-export default function ProductList({products}: {products: ProductWithImages[]}) {
+export default function ProductList({products}: {products: ProductUnited[]}) {
 
 
   // Сортируем продукты на основе выбранной опции
@@ -27,9 +48,9 @@ export default function ProductList({products}: {products: ProductWithImages[]})
       <div className="grid gap-4">
         {products?.map((product) => (
           <ProductCardFull
-            key={product.product.id}
-            product={product.product}
-            images={product.images}
+            key={product.id}
+            product={product}
+        
           />
         ))}
       </div>

@@ -7,6 +7,7 @@ import { getFilteredProducts } from '@/lib/actions/product-categories';
 import { getFilterCategoriesWithFiltersByProductCategory } from '@/lib/actions/filter-categories';
 import { getCategoryWithNavigation } from "@/lib/actions/categories";
 import { getProductImages } from '@/lib/actions/image-actions';
+
 import { notFound } from "next/navigation";
 import Pagination from "@/components/pagination";
 import Link from "next/link";
@@ -44,20 +45,25 @@ export default async function ProductsPage({ searchParams }: PageProps) {
     }
   const {category, breadcrumbs} = data;
 const [
-  {products, pagination, availableManufacturers, images}, 
+  {productsWithDetails, pagination, availableManufacturers, images}, 
   filterCategoriesWithFilters,
   
 ] = await Promise.all([
   getFilteredProducts(category.id, selectedFilters, page, 20, priceFrom, priceTo),
   getFilterCategoriesWithFiltersByProductCategory(category.id),
 ])
-
- const productsWithImages = products.map(product => ({
-  product,
-  images: images.filter(image => image.productId === product.id)
-}));
-    
+const productsWithDetailAndImages = productsWithDetails?.map(product => {
+  // Находим картинки, которые принадлежат текущему продукту
+  const productImages = images?.filter(img => img.productId === product.id) || [];
   
+  return {
+    ...product,
+    images: productImages,
+  };
+});
+
+    console.log(productsWithDetails);
+
     return (
         <div className="flex flex-col px-[16px] gap-2 lg:px-0 text-black">
           <nav className=" text-sm text-gray-600 pt-[20px]">
@@ -88,7 +94,7 @@ const [
             filterCategories={filterCategoriesWithFilters} 
             categorySlug={categorySlug} 
             avaliableManufacturers={availableManufacturers}
-            products={productsWithImages}
+            productsWithDetails={productsWithDetailAndImages}
             />
         </div>
     );

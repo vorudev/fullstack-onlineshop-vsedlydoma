@@ -5,25 +5,37 @@ import { getProductImages } from "@/lib/actions/image-actions";
 import Link from "next/link";
 import { ProductImage } from "@/db/schema";
 import ImagesSliderCardFull from "./images-slider-card-full";
-interface ProductsWithImages {
+interface ProductUnited {
+   
   product: {
+    averageRating: number;
+    reviewCount: number;
     id: string;
+    categoryId: string | null;
+    inStock: string | null;
+    price: number;
+    slug: string;
     title: string;
+    description: string;
+    manufacturerId: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;
-    slug: string;
-    description: string;
-    categoryId: string | null;
-    price: number;
-    manufacturerId: string | null;
     sku: string | null;
+    images: {
+        id: string;
+        productId: string;
+        imageUrl: string;
+        storageType: string;
+        storageKey: string | null;
+        order: number | null;
+        isFeatured: boolean | null;
+        createdAt: Date | null;
+    }[]
 }
-
-     images: ProductImage[];
 }
-export default function ProductCard( {product, images}: ProductsWithImages) {
+export default function ProductCard( { product}: ProductUnited) {
   
-  //  const rounded = Math.round(averageRating * 10) / 10;
+    const rounded = Math.round(product.averageRating);
  const getRatingColor = (rating: number) => {
   if (rating >= 4.5) return 'text-green-600';
   if (rating >= 4.0) return 'text-emerald-600';
@@ -52,7 +64,7 @@ function getReviewText(count: number): string {
     return ( 
         <div className="bg-white rounded-2xl  hover:shadow-xl transition-all duration-300 overflow-hidden  group lg:px-[24px] lg:py-[24px] " key={product.id}> 
             <Link className="relative overflow-hidden" href={`/product/${product.slug}`}>
-            <ImagesSliderCardFull images={images} title={product.title} />
+            <ImagesSliderCardFull images={product.images} title={product.title} />
               
               
             </  Link>
@@ -64,10 +76,10 @@ function getReviewText(count: number): string {
               </h3>
               </Link>
               <Link className="flex items-center mb-1" href={`/product/${product.slug}`}>
-             {/* {rounded ? rounded && 
+               {rounded ? rounded && 
               <div className={`flex mr-2  items-center gap-1 ${getRatingColor(rounded)}`}>
                   <Star className="w-4 h-4" /> {rounded ? rounded : null} 
-                </div> : null}  */}
+                </div> : null}  
 {/* <span className=" text-gray-500">
   {getReviewText(reviewCount)}
 </span> */}

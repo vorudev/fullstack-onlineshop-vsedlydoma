@@ -5,8 +5,8 @@ import { useMemo, useState } from "react";
 import { X, Settings2} from "lucide-react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import ProductList from "./sort";
-import { ProductImage } from "@/db/schema";
-import { Product } from "@/db/schema";
+import type ProductUnited from "./page";
+
 interface Filter {
   id: string;
   name: string;
@@ -19,7 +19,20 @@ interface Filter {
   slug: string;
   displayOrder: number;
 }
+interface Review {
+  averageRating: {
+    averageRating: number;
+    reviewCount: number;
+  };
+  reviewCount: {
+    reviewCount: number;
+    averageRating: number;
+  }
+}
 
+// Сначала создайте отдельные типы для переиспользования
+
+  
 
 interface FilterCategoryWithFilters {
   id: string;
@@ -28,20 +41,41 @@ interface FilterCategoryWithFilters {
   displayOrder: number;
   filters: Filter[];
 }
-interface ProductWithImages {
-  product: Product;
-  images: ProductImage[];
-}
+
 
 interface FilterSidebarProps {
 filterCategories: FilterCategoryWithFilters[];
 avaliableManufacturers: { id: string; name: string }[]
 categorySlug: string | undefined;
-products: ProductWithImages[];
+productsWithDetails: {
+    images: {
+        id: string;
+        productId: string;
+        imageUrl: string;
+        storageType: string;
+        storageKey: string | null;
+        order: number | null;
+        isFeatured: boolean | null;
+        createdAt: Date | null;
+    }[];
+    averageRating: number;
+    reviewCount: number;
+    id: string;
+    categoryId: string | null;
+    inStock: string | null;
+    price: number;
+    slug: string;
+    title: string;
+    description: string;
+    manufacturerId: string | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+    sku: string | null;
+}[] | undefined
 }
 
 
-export default function FilterSidebar({ filterCategories, avaliableManufacturers, categorySlug, products }: FilterSidebarProps) {
+export default function FilterSidebar({ filterCategories, avaliableManufacturers, categorySlug, productsWithDetails }: FilterSidebarProps) {
   const router = useRouter();
     const pathname = usePathname();
     const [sortBy, setSortBy] = useState<SortOption>('default');
@@ -136,19 +170,19 @@ export default function FilterSidebar({ filterCategories, avaliableManufacturers
   }
   ];
     const sortedProducts = useMemo(() => {
-      if (!products) return [];
+      if (!productsWithDetails) return [];
       
-      const productsCopy = [...products];
+      const productsCopy = [...productsWithDetails];
       
       switch (sortBy) {
         case 'price-asc':
-          return productsCopy.sort((a, b) => a.product.price - b.product.price);
+          return productsCopy.sort((a, b) => a.price - b.price);
         case 'price-desc':
-          return productsCopy.sort((a, b) => b.product.price - a.product.price);
+          return productsCopy.sort((a, b) => b.price - a.price);
         default:
           return productsCopy;
       }
-    }, [products, sortBy]);
+    }, [productsWithDetails, sortBy]);
   return (
     <>
     <div className="flex flex-row gap-2 justify-between ">
