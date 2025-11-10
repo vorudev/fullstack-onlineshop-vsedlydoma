@@ -85,15 +85,17 @@ export default function OrderForm( {items}: OrderFormProps) {
     
     return (
         <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mt-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full flex flex-col gap-4 ">
+        <div className="grid md:grid-cols-2 gap-4 ">
         <FormField
           control={form.control}
             name="customerName"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Title</FormLabel>
-              <FormControl>
-                <Input placeholder="Products title" {...field} />
+            <FormItem >
+              <FormLabel>Имя</FormLabel>
+              <FormControl className=" border border-gray-300 rounded-md h-12 py-0   ">
+               <div className="bg-white flex items-center h-full ">
+                <Input placeholder="Иван Иванов" className="w-full focus:outline-none focus:ring-blue-500 focus:ring-2 border-none focus:border-none" {...field}  /></div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -105,9 +107,9 @@ export default function OrderForm( {items}: OrderFormProps) {
             name="customerEmail"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Price</FormLabel>
-              <FormControl>
-                <Input placeholder="Product Price" type="email" {...field} />
+              <FormLabel>Почта</FormLabel>
+              <FormControl className=" border border-gray-300 rounded-md h-12 py-0   ">
+                <div className="bg-white flex items-center h-full "><Input placeholder="example@gmail.com" className="w-full focus:outline-none focus:ring-blue-500 focus:ring-2 border-none focus:border-none" type="email" {...field} /></div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -118,54 +120,44 @@ export default function OrderForm( {items}: OrderFormProps) {
             name="customerPhone"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Phone Number</FormLabel>
-              <FormControl>
-                       <Input 
-          placeholder="Phone Number" 
+              <FormLabel>Номер телефона</FormLabel>
+              <FormControl className=" border border-gray-300 rounded-md h-12 py-0   ">
+                       <div className="bg-white flex items-center h-full "><Input 
+                       className="w-full focus:outline-none focus:ring-blue-500 focus:ring-2 border-none focus:border-none"
+          placeholder="89999999999" 
           {...field}
           onChange={(e) => {
             // Разрешаем только цифры и пробелы
             const value = e.target.value.replace(/[^\d\s]/g, '');
             field.onChange(value);
           }}
-        />
+        /> </div>
 
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-            name="status"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Input placeholder="Products description" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        
 <FormField
           control={form.control}
             name="notes"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>notes</FormLabel>
-              <FormControl>
-                <Input placeholder="notes" {...field}  value={field.value ?? ""}/>
+              <FormLabel>Заметки к заказу</FormLabel>
+              <FormControl className=" border border-gray-300 rounded-md h-12 py-0   ">
+                <div className="bg-white flex items-center h-full "><Input className="w-full focus:outline-none focus:ring-blue-500 focus:ring-2 border-none focus:border-none" placeholder="" {...field}  value={field.value ?? ""}/></div>
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+         </div>
         
         
         
-       <Button type="submit" disabled={isLoading}>{isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 
-        "Create Order"
+       <Button type="submit" className="bg-blue-500 text-white w-full lg:w-[200px] h-[48px] hover:bg-blue-600" disabled={isLoading}>{isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 
+        "Создать заказ"
         }</Button>
       </form>
     </Form>

@@ -96,7 +96,7 @@ function getReviewText(count: number): string {
           <button className="  cursor-pointer px-2 bg-white hover:bg-gray-100 text-gray-600 font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors">
           <Heart className="w-6 h-6" />
           </button>
-           <AddToCart id={product.id} price={product.price} title={product.title} sku={product.sku} />
+           <AddToCart id={product.id} price={product.price} title={product.title} sku={product.sku} slug={product.slug}/>
           </div>
           </div>
         </div>
