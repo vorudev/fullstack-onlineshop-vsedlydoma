@@ -1,5 +1,6 @@
 import Link from "next/link";
 import {Home, MapPin, ShoppingCart, User, TextSearch } from "lucide-react"
+import { useSession } from "@/lib/auth-client";
 export default function NavMenuMobile() 
 { 
     return (
@@ -15,15 +16,15 @@ export default function NavMenuMobile()
    <MapPin className="w-6 h-6"/> 
    <span className="text-xs">Магазины</span> 
    </Link>
-   <Link href="/" className="flex flex-col  items-center">
+   <Link href="/categories" className="flex flex-col  items-center">
    <TextSearch className="w-6 h-6"/> 
    <span className="text-xs">Каталог</span> 
    </Link>
-   <Link href="/" className="flex flex-col g items-center">
+   <Link href="/cart" className="flex flex-col g items-center">
    <ShoppingCart className="w-6 h-6"/> 
    <span className="text-xs">Корзина</span> 
    </Link>
-   <Link href="/" className="flex flex-col g items-center">
+   <Link href="/signin" className="flex flex-col g items-center">
    <User className="w-6 h-6"/> 
    <span className="text-xs">Войти</span> 
    </Link>
