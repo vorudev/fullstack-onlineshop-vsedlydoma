@@ -18,9 +18,9 @@ export default function Checkout() {
         <div className="text-black min-h-screen xl:max-w-[1400px] mx-auto lg:max-w-[1000px] pb-40 ">
             <div className="flex flex-col py-2 px-8 lg:ml-11">
                 <div className="flex flex-row items-center gap-2">
-            <div className="relative  w-[150px] h-[100px] ">
+            <Link href="/" className="relative  w-[150px] h-[100px] ">
 <Image src="/logo.webp" alt="Logo" fill className="object-contain" />
-            </div>
+            </Link>
             <div className="h-12 w-px bg-gray-300 mx-2"></div>
             
           <div className="relative border-l "> <button 
