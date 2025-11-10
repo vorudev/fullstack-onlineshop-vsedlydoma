@@ -7,15 +7,17 @@ id: string;
 price: number;
 title: string;
 sku: string | null;
+slug: string;
 
  } 
-export const AddToCart: React.FC<AddToCartProps> = ({ id, price, title, sku }) => {
+export const AddToCart: React.FC<AddToCartProps> = ({ id, price, title, sku, slug }) => {
     const { addToCart, cart } = useCart();
     const product = {
         id,
         title,
         price,
-        sku
+        sku,
+        slug
 
     };
     
