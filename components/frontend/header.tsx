@@ -9,7 +9,7 @@ import UserElement from "./icons-header/user-header"
 import CartHeader from "./icons-header/cart-header"
 import { getCategories } from "@/lib/actions/product-categories";
 export default async function Header() {
-    const categories = await getCategories();
+  //   const categories = await getCategories();
     return  ( 
         <>
         <header className="bg-white lg:hidden flex flex-col text-black mx-auto gap-3 py-2 px-3">
@@ -43,7 +43,7 @@ export default async function Header() {
                     <Link href="/">
                     <Image src="/logo.webp" alt="logo" width={160} height={60} />
                     </Link>
-                    <CategoriesTable categories={categories} /> </div>
+               {/*     <CategoriesTable categories={categories} /> */} </div> 
                 <SearchBar />
                 <div className="flex flex-row gap-2 items-center  "> 
 

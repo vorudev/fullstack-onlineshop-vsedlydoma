@@ -73,14 +73,14 @@ if (error) {
 }
 return ( 
     <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 pt-3 w-full">
             <div className="grid gap-6">    
                 <FormField
           control={form.control}
           name="currentPassword"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Current Password</FormLabel>
+              <FormLabel>Текущий пароль</FormLabel>
               <FormControl>
                 <Input type="password" {...field} />
               </FormControl>
@@ -93,7 +93,7 @@ return (
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>New Password</FormLabel>
+              <FormLabel>Новый пароль</FormLabel>
               <FormControl>
                 <Input type="password" {...field} />
               </FormControl>
@@ -106,7 +106,7 @@ return (
           name="confirmPassword"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Confirm New Password</FormLabel>
+              <FormLabel>Подтвердите новый пароль</FormLabel>
               <FormControl>
                 <Input type="password" {...field } />
               </FormControl>
@@ -116,9 +116,9 @@ return (
         />
             </div>
             <Button type="submit"
-            className="bg-[rgb(35,25,22)] text-[rgb(228,224,212)] w-full h-[48px] bdog text-[12px] uppercase " disabled={isLoading} >
+            className="bg-blue-500 hover:bg-blue-600 text-white w-full h-[48px] text-[12px] uppercase " disabled={isLoading} >
 
-             {isLoading ? <Loader2Icon className="size-4 animate-spin"></Loader2Icon> : "Continue"}
+             {isLoading ? <Loader2Icon className="size-4 animate-spin"></Loader2Icon> : "Изменить пароль"}
                 </Button>
         </form>
     </Form>
