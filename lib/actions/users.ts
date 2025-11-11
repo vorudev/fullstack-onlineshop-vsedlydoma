@@ -50,3 +50,25 @@ export const signUp = async (email: string, password: string, username: string) 
     }
 }
 }
+export const updateUserName = async (name: string) => { 
+    try {
+        await auth.api.updateUser({
+            body: {
+               name,
+            }
+        })
+        return { 
+            success: true, 
+            message: "Имя успешно изменено"
+        }
+    } catch (error) {
+        const e = error as Error
+        return { 
+            success: false, 
+            message: e.message || "Ошибка при изменении имени"
+        }
+     
+    
+    }
+ 
+}

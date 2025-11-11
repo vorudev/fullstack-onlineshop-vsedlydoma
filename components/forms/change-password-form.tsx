@@ -33,9 +33,15 @@ import { toast } from "sonner";
 import { Loader2Icon } from "lucide-react";
 
  const formSchema = z.object({
-  password: z.string().min(8),
-  confirmPassword: z.string().min(8),
-  currentPassword: z.string().min(8),
+  password: z.string().min(8, {
+    message: "Пароль должен содержать не менее 8 символов",
+  }),
+  confirmPassword: z.string().min(8, {
+    message: "Пароль должен содержать не менее 8 символов",
+  }),
+  currentPassword: z.string().min(8, {
+    message: "Пароль должен содержать не менее 8 символов",
+  }),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Пароли не совпадают",
   path: ["confirmPassword"], // This sets the error on confirmPassword field
@@ -46,6 +52,7 @@ export function ChangePasswordForm({
   ...props
 }: React.ComponentProps<"div">) {
   const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState<string | undefined>('');
   const router = useRouter();
    const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -65,9 +72,13 @@ const { error } = await authClient.changePassword({
   currentPassword: values.currentPassword,
 });
 if (error) {
-  toast.error(error.message);
+  if (error.message === "Invalid password") {
+    setMessage("Неверный текущий пароль");
+  } else {
+    setMessage(error.message);
+  }
  } else {
-  console.log("Password changed successfully");
+  setMessage('');
  }
  setIsLoading(false);
 }
@@ -115,11 +126,15 @@ return (
           )}
         />
             </div>
-            <Button type="submit"
+           <div className="w-full "><Button type="submit"
             className="bg-blue-500 hover:bg-blue-600 text-white w-full h-[48px] text-[12px] uppercase " disabled={isLoading} >
 
              {isLoading ? <Loader2Icon className="size-4 animate-spin"></Loader2Icon> : "Изменить пароль"}
                 </Button>
+                {message && (
+        <p className="text-red-500 mt-2 text-sm">{message}</p>
+      )}
+      </div>
         </form>
     </Form>
 )
