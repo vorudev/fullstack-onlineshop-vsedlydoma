@@ -4,6 +4,7 @@ import CategoriesTable from "../categories-table-user-2";
 import { getRandomProductsFast, getProducts } from "@/lib/actions/product";
 import ProductCard from "./product-card";
 import Link from "next/link";
+import UserGreetingHome from "./user-greeting-home";
 import { getAverageRatingByProductId } from "@/lib/actions/reviews";
 import { getCategories } from "@/lib/actions/product-categories";
 export default async function HomePage () {
@@ -32,17 +33,7 @@ console.log(products);
     </div>
   </div>
   
-  <div className="min-w-[80vw] md:min-w-[40vw] md:w-full xl:w-[30%] xl:min-w-0 bg-blue-100 rounded-xl shadow py-4 pl-4 snap-center flex-col flex gap-10 relative  overflow-hidden">
-<div className="flex flex-col"><h3 className="text-lg xl:text-xl font-semibold ">Личный кабинет</h3>
-    <p className="text-gray-600 text-sm xl:text-base">Отслеживайте свои заказы</p>
-    </div> 
-    <div className="flex flex-row gap-2"><button className="bg-white rounded-lg  text-sm border border-gray-300 py-2 px-3 xl:text-base">Войти</button>
-<button className="bg-white rounded-lg  text-sm border border-gray-300 py-2 px-3 xl:text-base">Мои заказы</button>
-    </div>
-    <div className="absolute -bottom-4 -right-5 text-blue-500/50">
-    <ShoppingCart className="w-30 h-30" /> 
-    </div>
-  </div>
+   <UserGreetingHome />
     <Link href="/categories" className="w-[20%] xl:flex hidden bg-green-100/50 rounded-xl shadow py-4  px-3 flex-col gap-6 relative overflow-hidden">
     <div className="flex flex-col">
       <h3 className="text-base font-semibold xl:text-xl">Каталог</h3>
@@ -121,16 +112,10 @@ console.log(products);
           </div>
         </div>
         <div className="flex flex-row gap-3">
-       <div className="grid grid-cols-1  md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Карточка 1 */}
-          
-          
+       <div className="grid grid-cols-1  md:grid-cols-2 lg:grid-cols-4 gap-6">  
  { products.map((product) => (
             <ProductCard key={product.id} {...product} />
           ))}
-
-            
-          
           </div>
         </div>
         </div>

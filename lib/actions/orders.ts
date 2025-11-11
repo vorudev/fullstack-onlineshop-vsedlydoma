@@ -381,7 +381,7 @@ export async function createOrder(orderInput: CreateOrderData, orderItemsInput: 
 
         const orderItem = await db.insert(orderItems).values(orderItemsWithOrderId).returning();
 
-        return { order, orderItem };
+        return { order, orderItem, orderId: order[0].id || '' };
     } catch (error) {
         console.error("Error creating order:", error);
         throw new Error("Failed to create order");

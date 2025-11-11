@@ -5,6 +5,7 @@ import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import { Order } from '@/db/schema';
+import { useRouter } from 'next/navigation';
 import {
   Table,
   TableBody,
@@ -41,6 +42,7 @@ export function ActiveOrdersTable({
     initialOrders: Omit<Order, "notes" | "updatedAt" | "status">[],
 }) {
     const [searchQuery, setSearchQuery] = useState('');
+    const router = useRouter();
  const filteredOrders = initialOrders.filter((order) => {
    const searchQueryLower = searchQuery.toLowerCase();
    return ( 
@@ -50,59 +52,71 @@ export function ActiveOrdersTable({
      order.id?.toString().includes(searchQueryLower)
    );
  });  return (
-    <div className="space-y-4">
-      {/* Поле поиска */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 size-4" />
-        <Input
-          type="text"
-          placeholder="Поиск по названию, slug или цене..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10"
-        />
-      </div>
+    <div className="space-y-4 w-full">
+  {/* Поле поиска */}
+  <div className="relative">
+    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 size-4" />
+    <Input
+      type="text"
+      placeholder="Поиск по названию, slug или цене..."
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      className="pl-10"
+    />
+  </div>
 
-      {/* Показать количество результатов */}
-      {searchQuery && (
-        <p className="text-sm text-gray-500">
-          Найдено: {filteredOrders.length} из {initialOrders.length}
-        </p>
-      )}
+  {/* Показать количество результатов */}
+  {searchQuery && (
+    <p className="text-sm text-gray-500">
+      Найдено: {filteredOrders.length} из {initialOrders.length}
+    </p>
+  )}
 
-      <Table>
-        <TableCaption>A list of your products</TableCaption>
-  
-        <TableBody className="grid grid-cols-3 " >
-          {filteredOrders.length === 0 ? (
-            <TableRow className="w-full h-full border-r border-gray-200">
-              <TableCell colSpan={7} className="text-center text-gray-500">
-                Заказы не найдены
+  {/* Таблица */}
+  <div className="">
+    <Table>
+      <TableCaption>Лист активных заказов</TableCaption>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Имя</TableHead>
+          <TableHead>Телефон</TableHead>
+          <TableHead>Дата</TableHead>
+          <TableHead>ID заказа</TableHead>
+          <TableHead className="text-right">Сумма</TableHead>
+          <TableHead className="text-right">Действия</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {filteredOrders.length === 0 ? (
+          <TableRow>
+            <TableCell colSpan={6} className="text-center text-gray-500">
+              Заказы не найдены
+            </TableCell>
+          </TableRow>
+        ) : (
+          filteredOrders.map((order) => (
+            <TableRow 
+              key={order.id}
+              className="cursor-pointer "
+              onClick={() => router.push(`/dashboard/order/${order.id}`)}
+            >
+              <TableCell className="font-medium">{order.customerName}</TableCell>
+              <TableCell>{order.customerPhone}</TableCell>
+              <TableCell>{order.createdAt?.toLocaleDateString()}</TableCell>
+              <TableCell>{order.id}</TableCell>
+              <TableCell className="text-right">{order.total} руб</TableCell>
+              <TableCell className="text-right">
+                <Button variant="ghost" size="sm">
+                  Открыть
+                </Button>
               </TableCell>
             </TableRow>
-          ) : (
-            filteredOrders.map((order) => (
-              <Link key={order.id} href={`/dashboard/order/${order.id}`}  className='border-r w-full '>
-              <TableRow className="flex justify-between items-center"  >
-                <TableCell className="font-medium" >{order.customerName}</TableCell>
-                <TableCell>{order.customerPhone}</TableCell>
-                <TableCell>{order.createdAt?.toLocaleDateString()}</TableCell>
-                <TableCell className="text-right">{order.id}</TableCell>
-                 <TableCell className="text-right">{order.total}</TableCell>
-                <TableCell className="text-right">
-                 
-
-                  
-
-                
-                </TableCell>
-              </TableRow>
-              </Link>
-            ))
-          )}
-        </TableBody>
-      </Table>
-    </div>
+          ))
+        )}
+      </TableBody>
+    </Table>
+  </div>
+</div>
   ); 
 
 }

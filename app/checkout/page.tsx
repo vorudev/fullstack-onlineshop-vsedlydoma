@@ -69,9 +69,10 @@ export default function Checkout() {
 </div>
 <div className="bg-white px-3 py-2 flex lg:flex-row flex-col rounded-md w-full lg:h-[200px]">
 <div className="flex flex-col gap-1 w-full lg:w-1/2 p-3 ">
-    <p className="text-[16px] font-semibold">г. Москва, ул. Пушкинская, д. 1</p>
-    <p className="text-[14px] text-gray-600">Понедельник - пятница с 10:00 до 20:00</p>
-    <p className="text-[14px] text-gray-600">8 900 000 000</p>
+    <p className="text-[16px] font-semibold">Минск, Аэродромная ул., 3
+</p>
+    <p className="text-[14px] text-gray-600">Понедельник - пятница с 9:00 до 19:00, суббота с 10:00 до 16:00, воскресенье с 10:00 до 14:00</p>
+    <p className="text-[14px] text-gray-600">+375 29 380-82-46</p>
 </div>
  <div className="relative w-full lg:w-1/2 h-[200px] lg:h-auto  rounded-2xl overflow-hidden">
       <Map />

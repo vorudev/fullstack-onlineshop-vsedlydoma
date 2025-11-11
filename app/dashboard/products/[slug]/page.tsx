@@ -155,13 +155,13 @@ const [attributeCategories, attributes, images, {pagination, manufacturers}, cat
                     <DialogHeader>
                       <DialogTitle>Создать характеристику</DialogTitle>
 <AttributeForm product={product} categories={attributeCategories} /> 
-                      <DialogTitle>Создать категорию характеристик</DialogTitle>
-                      <AttributeCategoryForm /> 
+                     
                     </DialogHeader>
                   </DialogContent>
                 </Dialog>
               </div>
               
+                      <AttributeCategoryForm /> 
               <div className="divide-y divide-gray-600">
               </div>
               

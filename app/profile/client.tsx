@@ -57,7 +57,7 @@ export default function ProfilePage({ orders, pagination }: Props) {
  <div className="flex flex-col">
     <p className="text-[20px] font-semibold">{session?.user?.name}</p>
     <p className="text-[16px] text-gray-400 font-semibold">{session?.user?.email}</p>
-    <p className="text-[16px] text-gray-400 font-semibold">+7 953 533 55 53</p>
+    <p className="text-[16px] text-gray-400 font-semibold">{session?.user?.phoneNumber || "Телефон не указан"}</p>
  </div>
                 </div>
                 <div className="flex lg:flex-row lg:gap-5 overflow-x-auto w-full gap-2 px-8 md:px-0 snap-x lg:justify-start lg:ml-11 snap-mandatory " style={{ 

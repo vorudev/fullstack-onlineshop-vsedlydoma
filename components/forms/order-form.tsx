@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation";
 import { Loader2Icon } from "lucide-react";
-
+import { useCart } from "@/app/context/cartcontext"
 import { useState } from "react";
 import {
     Form,
@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { createOrder } from "@/lib/actions/orders";
+import { useSession } from "@/lib/auth-client"
 import { user } from "@/db/schema";
 
 interface OrderFormProps {
@@ -35,24 +36,28 @@ interface OrderFormProps {
 }
 const formSchema = z.object({
   status: z.string(),
-  customerName: z.string().min(2, { message: "Name must be at least 2 characters." }).max(50, { message: "Name must be at most 50 characters." }),
-  customerEmail: z.string().email({ message: "Invalid email address." }),
-  customerPhone: z.string().min(10, { message: "Phone number must be at least 10 characters." }).max(15, { message: "Phone number must be at most 15 characters." }),
+  customerName: z.string().min(2, { message: "Имя должно содержать не менее 2 символов." }).max(50, { message: "Имя должно содержать не более 50 символов." }),
+  customerEmail: z.string().email({ message: "Неверный email адрес." }),
+  customerPhone: z.string().min(10, { message: "Номер телефона должен содержать не менее 10 символов." }).max(15, { message: "Номер телефона должен содержать не более 15 символов." }),
   notes: z.string().nullable(),
 
 
 });
 export default function OrderForm( {items}: OrderFormProps) {
     const [isLoading, setIsLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
+    const [error, setError] = useState(false);
+    const { data: session } = useSession();
     const router = useRouter();
+    const { cart, clearCart } = useCart();
         const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             status: "pending",
-            customerName: "",
-            customerEmail: "",
-            customerPhone: "",
-            
+            customerName: session?.user?.name || "",
+            customerEmail: session?.user?.email || "",
+            customerPhone: session?.user?.phoneNumber || "",
+            notes: null,
           
 
         }
@@ -72,11 +77,14 @@ export default function OrderForm( {items}: OrderFormProps) {
    { /*   productId: "prod_123", */ }
           try {
             const result = await createOrder(values, testDataItems);
-            
-            console.log("✅ Заказ создан:", result);
-            // Показать success message
+            if (result) {
+                setSuccess(true);
+                clearCart();
+                router.push(`/order/${result.orderId}`);
+            }
+           
         } catch (error) {
-            console.error("❌ Ошибка:", error);
+            setError(true);
             // Показать error message
         } finally {
             setIsLoading(false);
@@ -156,9 +164,12 @@ export default function OrderForm( {items}: OrderFormProps) {
         
         
         
-       <Button type="submit" className="bg-blue-500 text-white w-full lg:w-[200px] h-[48px] hover:bg-blue-600" disabled={isLoading}>{isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 
+       <div className="flex flex-col items-center"><Button type="submit" className="bg-blue-500 text-white w-full lg:w-[200px] h-[48px] hover:bg-blue-600" disabled={isLoading}>{isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 
         "Создать заказ"
         }</Button>
+        {error && <p className="text-red-500">Произошла ошибка при создании заказа.</p>}
+        {success && <p className="text-green-500">Заказ успешно создан.</p>}
+        </div>
       </form>
     </Form>
     );

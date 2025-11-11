@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { admin } from "better-auth/plugins"
+import { admin, phoneNumber } from "better-auth/plugins"
 import { schema } from "@/db/schema";
 import { db } from "@/db/drizzle"; // your drizzle instance
 import { nextCookies } from "better-auth/next-js";
@@ -36,6 +36,7 @@ emailAndPassword: {
 
 
 
+
 database: drizzleAdapter(db, {
         provider: "pg", // or "mysql", "sqlite"
         schema,
@@ -52,7 +53,7 @@ database: drizzleAdapter(db, {
     }
   },
   
-plugins: [admin(), nextCookies()],
+plugins: [admin(), nextCookies(), phoneNumber()],
 });
 
 export type Session = typeof auth.$Infer.Session;

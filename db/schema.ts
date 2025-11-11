@@ -10,6 +10,8 @@ name: text('name').notNull(),
 role: roleEnum('role').default('user').notNull(), // добавляем это поле
  email: text('email').notNull().unique(),
  emailVerified: boolean('email_verified').$defaultFn(() => false).notNull(),
+ phoneNumber: text('phone_number').unique(),
+ phoneNumberVerified: boolean('phone_number_verified').$defaultFn(() => false).notNull(),
  image: text('image'),
  createdAt: timestamp('created_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull(),
  updatedAt: timestamp('updated_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull(),
