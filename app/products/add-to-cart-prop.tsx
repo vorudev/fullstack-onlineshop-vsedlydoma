@@ -38,7 +38,7 @@ export const AddToCart: React.FC<ProductUnited> = ({ product }) => {
     
     return (
         <button
-        className={` px-3 bg-blue-600 min-w-[140px] font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors ${isInCart ? "bg-white text-blue-600 border border-blue-600" : "cursor-pointer text-white hover:bg-blue-700  "}`}
+        className={` lg:px-3 px-2 bg-blue-600 min-w-[140px] font-semibold lg:py-3 py-2 rounded-xl flex items-center justify-center gap-2 transition-colors ${isInCart ? "bg-white text-blue-600 border border-blue-600" : "cursor-pointer text-white hover:bg-blue-700  "}`}
         onClick={() => addToCart(product)}
         disabled={isInCart}
         >
