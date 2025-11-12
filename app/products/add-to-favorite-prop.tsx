@@ -38,7 +38,7 @@ export const AddToFavorite: React.FC<ProductUnited> = ({ product }) => {
             onClick={() => addToFavorite(product)}
             disabled={isInFavorite}
         >
-            {isInFavorite ?  <Heart className="lg:w-6 lg:h-6 w-6 h-6 text-red-500" /> : <Heart className="lg:w-6 lg:h-6 w-6 h-6 text-gray-500" />}
+            {isInFavorite ?  <Heart className="lg:w-6 lg:h-6 w-4 h-4 text-red-500" /> : <Heart className="lg:w-6 lg:h-6 w-4 h-4 text-gray-500" />}
         </button>
     );
 }

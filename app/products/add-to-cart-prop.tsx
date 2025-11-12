@@ -42,7 +42,7 @@ export const AddToCart: React.FC<ProductUnited> = ({ product }) => {
         onClick={() => addToCart(product)}
         disabled={isInCart}
         >
-       {<ShoppingCart className="w-6 h-6" />} <span className="text-[14px] lg:text-[16px]">{isInCart ? "В корзине" : ` Купить`}</span>
+       {<ShoppingCart className="lg:w-6 lg:h-6 w-4 h-4" />} <span className="text-[14px] lg:text-[16px]">{isInCart ? "В корзине" : ` Купить`}</span>
         </button>
     );
  } 
