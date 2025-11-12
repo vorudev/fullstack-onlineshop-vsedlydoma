@@ -106,13 +106,13 @@ function getReviewText(count: number): string {
               
             </  Link>
             
-            <div className="p-5 flex flex-col lg:flex-row gap-1 lg:gap-1 lg:p-0">
+            <div className="p-5 flex flex-col lg:flex-row gap-2 lg:gap-1 lg:p-0">
               <Link href={`/product/${product.slug}`}>
               <h3 className="text-gray-900  text-[16px] line-clamp-2">
                 {product.title}
               </h3>
               </Link>
-              <Link className="flex items-center mb-1" href={`/product/${product.slug}`}>
+              <Link className="flex items-center " href={`/product/${product.slug}`}>
                {rounded ? rounded && 
               <div className={`flex mr-2  items-center gap-1 ${getRatingColor(rounded)}`}>
                   <Star className="w-4 h-4" /> {rounded ? rounded : null} 
@@ -124,19 +124,14 @@ function getReviewText(count: number): string {
 
               </Link>
               
-              <div className="flex items-end justify-between mb-4">
-                <div>
-                  <div className="text-xl font-semibold text-gray-900">{product.price} руб</div>
-
-                </div>
-               
-              </div>
-              <div className="flex flex-row gap-4 items-center ">
-             <div className=""> 
-             <AddToCart product={product}/>
-             </div>
-              <div className="">
+             
+              <div className="flex flex-row gap-3 items-center ">
+                 <div className="text-xl 
+                 p-2 rounded-md font-semibold text-gray-900 w-1/2">
+                  <h3>{product.price} руб</h3></div>
+             <div className="w-1/2 flex flex-row  items-center justify-end gap-2"> 
               <AddToFavorite product={product}/>
+              <AddToCart product={product}/>
 
               </div>
 
