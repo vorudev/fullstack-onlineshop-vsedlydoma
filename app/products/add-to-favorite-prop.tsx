@@ -34,7 +34,7 @@ export const AddToFavorite: React.FC<ProductUnited> = ({ product }) => {
     const isInFavorite = favorite.some((item) => item.product.id === product.id)
     return (
         <button
-            className={` lg:w-full bg-gray-100 p-2 rounded-xl lg:bg-white ${isInFavorite ? "" : "cursor-pointer"}`}
+            className={` lg:w-full bg-gray-100 p-2 rounded-md lg:bg-white ${isInFavorite ? "" : "cursor-pointer"}`}
             onClick={() => addToFavorite(product)}
             disabled={isInFavorite}
         >
