@@ -131,19 +131,16 @@ function getReviewText(count: number): string {
                 </div>
                
               </div>
-              <div className="flex flex-row gap-1 ">
-              <button className="w-1/2 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <ShoppingCart className="w-6 h-6" />
+              <div className="flex flex-row gap-4 items-center ">
+             <div className=""> 
+             <AddToCart product={product}/>
+             </div>
+              <div className="">
+              <AddToFavorite product={product}/>
 
-              </button>
-              <button className=" w-1/4 cursor-pointer bg-white hover:bg-gray-100 text-gray-600 font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <Heart className="w-5 h-5" />
+              </div>
 
-              </button>
-
-              <button className=" w-1/4 cursor-pointer bg-white hover:bg-gray-100 text-gray-600 font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors">
-              <ChartNoAxesColumn className="w-5 h-5" />
-              </button>
+             
               </div>
             </div>
             </div>

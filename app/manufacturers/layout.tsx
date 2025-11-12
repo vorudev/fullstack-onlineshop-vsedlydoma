@@ -7,7 +7,7 @@ export default function ManufacturersLayout({ children }: { children: React.Reac
     <Suspense fallback={<div>Loading...</div>}>
     <Header />
     </Suspense>
-    <div className="bg-gray-100">
+    <div className="bg-gray-100 ">
            
             {children}
         </div>
