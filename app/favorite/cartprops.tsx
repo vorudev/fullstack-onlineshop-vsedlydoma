@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Star, Trash2, Heart } from "lucide-react";
 import Link from "next/link";
 import { getFeaturedImage } from "@/lib/actions/image-actions";
+import {AddToCart}from "../products/add-to-cart-prop";
 import { ProductImage } from "@/db/schema";
 import ImagesSliderCardFull from "../cart/images-slider-card-full";
 type CartItemProps = {
@@ -106,13 +107,17 @@ function getReviewText(count: number): string {
          </div>
         </div>
        
-       <div className="flex items-center gap-2"><button 
+   <div className="flex items-end flex-col  gap-2">
+        <p className="text-lg font-semibold text-gray-900">{item.product.price.toFixed(2)} руб</p>
+        <div className="flex items-center gap-2"><button 
           className="text-gray-400 bg-gray-100 p-2 rounded-md hover:text-red-500 cursor-pointer transition-colors flex-shrink-0" 
           onClick={() => removeFromFavorite(item.product.id)}
           aria-label="Удалить товар"
         >
           <Heart className="w-5 h-5 text-red-500" />
-        </button>  <p className="text-lg font-semibold text-gray-900">{item.product.price.toFixed(2)} руб</p>
+        </button>  
+                <AddToCart product={item.product} />
+        </div>
         </div>
       </div> 
     </div>
@@ -124,13 +129,16 @@ function getReviewText(count: number): string {
      
           
           
-        <div className="flex items-center gap-2"><button 
+        <div className="flex items-center justify-between w-full gap-2">
+          <div className="flex items-center gap-2"> <button 
           className="text-gray-400 bg-gray-100 p-2 rounded-md hover:text-red-500 cursor-pointer transition-colors flex-shrink-0" 
           onClick={() => removeFromFavorite(item.product.id)}
           aria-label="Удалить товар"
         >
-          <Heart className="w-5 h-5 text-red-500" />
-        </button>  <p className="text-lg font-semibold text-gray-900">{item.product.price.toFixed(2)} руб</p>
+          <Heart className="w-5 h-5 text-red-500" /></button>
+  <p className="text-lg font-semibold text-gray-900">{item.product.price.toFixed(2)} руб</p>
+        </div>
+        <AddToCart product={item.product} />
         </div>
       </div>   
   </div>
