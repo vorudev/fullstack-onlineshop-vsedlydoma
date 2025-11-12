@@ -1,6 +1,7 @@
 'use client';
 import { useCart } from "@/app/context/cartcontext"; 
 import { ShoppingCart } from "lucide-react";
+import { CheckIcon } from "lucide-react";
 interface ProductUnited {
    
   product: {
@@ -42,7 +43,7 @@ export const AddToCart: React.FC<ProductUnited> = ({ product }) => {
         onClick={() => addToCart(product)}
         disabled={isInCart}
         >
-       {<ShoppingCart className="lg:w-6 lg:h-6 w-4 h-4" />} <span className="text-[14px] lg:text-[16px] hidden lg:block">{isInCart ? "В корзине" : ` Купить`}</span>
+       {isInCart ? <CheckIcon className="lg:w-6 lg:h-6 w-5 h-5" /> : <ShoppingCart className="lg:w-6 lg:h-6 w-5 h-5" />} <span className="text-[14px] lg:text-[16px] hidden lg:block">{isInCart ? "В корзине" : ` Купить`}</span>
         </button>
     );
  } 
