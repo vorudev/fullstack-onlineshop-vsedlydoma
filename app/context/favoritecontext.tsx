@@ -1,5 +1,4 @@
-"use client";
-
+'use client';
 import React, {
   createContext,
   useCallback,
@@ -9,6 +8,7 @@ import React, {
   useState,
   ReactNode
 } from 'react';
+
 interface ProductUnited {
    
   product: {
@@ -37,46 +37,34 @@ interface ProductUnited {
     }[]
 }
 }
-export interface CartItem {
- product: ProductUnited['product'];
- quantity: number;
-}
-
-export interface CartContextType {
-  cart: CartItem[];
-  addToCart: (product: ProductUnited['product'], quantity?: number) => void;
-  removeFromCart: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
-  clearCart: () => void;
-  totalItems: number;
-  totalPrice: number;
-  distinctItems: number;
-  isInCart: (productId: string) => boolean;
-  getItemQuantity: (productId: string) => number;
+export interface FavoriteItem {
+   product: ProductUnited['product'];
 }
 
 
-const CartContext = createContext<CartContextType | undefined>(undefined);
+export interface FavoriteContextType {
+  favorite: FavoriteItem[];
+  addToFavorite: (product: ProductUnited['product']) => void;
+  removeFromFavorite: (productId: string) => void;
+  clearFavorite: () => void;
+}
 
-const isValidCartItem = (item: any): item is CartItem => {
+const FavoriteContext = createContext<FavoriteContextType | undefined>(undefined);
+const isValidFavoriteItem = (item: any): item is FavoriteItem => {
   return (
     item &&
     typeof item === 'object' &&
     item.product &&
     typeof item.product === 'object' &&
     typeof item.product.id === 'string' &&
-    typeof item.product.price === 'number' &&
-    typeof item.quantity === 'number' &&
-    item.quantity > 0
+    typeof item.product.price === 'number' 
   );
 };
-
-// Функция загрузки корзины из localStorage
-const loadCart = (): CartItem[] => {
+const loadFavorite = (): FavoriteItem[] => {
   if (typeof window === 'undefined') return [];
   
   try {
-    const stored = localStorage.getItem('cart');
+    const stored = localStorage.getItem('favorite');
     if (!stored) return [];
     
     const parsed = JSON.parse(stored);
@@ -89,8 +77,8 @@ const loadCart = (): CartItem[] => {
     
     // Фильтруем и преобразуем валидные элементы
     const validItems = parsed
-      .filter(isValidCartItem)
-      .map((item: CartItem) => ({
+      .filter(isValidFavoriteItem)
+      .map((item: FavoriteItem) => ({
         ...item,
         product: {
           ...item.product,
@@ -119,45 +107,45 @@ const loadCart = (): CartItem[] => {
   }
 };
 
-export const CartProvider: React.FC<{children: ReactNode}> = ({ children }) => {
-  const [cart, setCart] = useState<CartItem[]>(() => loadCart());
+export const FavoriteProvider: React.FC<{children: ReactNode}> = ({ children }) => {
+  const [favorite, setFavorite] = useState<FavoriteItem[]>(() => loadFavorite());
 
   // Сохранение в localStorage при изменении корзины
   useEffect(() => {
     try {
-      localStorage.setItem('cart', JSON.stringify(cart));
+      localStorage.setItem('favorite', JSON.stringify(favorite));
     } catch (e) {
-      console.error('Failed to save cart to localStorage', e);
+      console.error('Failed to save favorite to localStorage', e);
     }
-  }, [cart]);
+  }, [favorite]);
 
-  const removeFromCart = useCallback((productId: string) => {
-    setCart(prev => prev.filter(item => item.product.id !== productId));
+  const removeFromFavorite = useCallback((productId: string) => {
+    setFavorite(prev => prev.filter(item => item.product.id !== productId));
   }, []);
 
   const updateQuantity = useCallback(
     (productId: string, quantity: number) => {
       if (quantity < 1) {
-        removeFromCart(productId);
+        removeFromFavorite(productId);
       } else {
-        setCart(prev =>
+        setFavorite(prev =>
           prev.map(item =>
             item.product.id === productId ? { ...item, quantity } : item
           )
         );
       }
     },
-    [removeFromCart]
+    [removeFromFavorite]
   );
 
-  const addToCart = useCallback((product: ProductUnited['product'], quantityToAdd: number = 1) => {
-    setCart(prev => {
+  const addToFavorite = useCallback((product: ProductUnited['product'], quantityToAdd: number = 1) => {
+    setFavorite(prev => {
       const exist = prev.find(item => item.product.id === product.id);
       
       if (exist) {
         return prev.map(item =>
           item.product.id === product.id 
-            ? { ...item, quantity: item.quantity + quantityToAdd } 
+            ? { ...item, quantity: quantityToAdd } 
             : item
         );
       }
@@ -166,67 +154,61 @@ export const CartProvider: React.FC<{children: ReactNode}> = ({ children }) => {
     });
   }, []);
 
-  const clearCart = useCallback(() => setCart([]), []);
+  const clearFavorite = useCallback(() => setFavorite([]), []);
 
-  const isInCart = useCallback((productId: string) => {
-    return cart.some(item => item.product.id === productId);
-  }, [cart]);
+  const isInFavorite = useCallback((productId: string) => {
+    return favorite.some(item => item.product.id === productId);
+  }, [favorite]);
 
   const getItemQuantity = useCallback((productId: string) => {
-    const item = cart.find(item => item.product.id === productId);
-    return item ? item.quantity : 0;
-  }, [cart]);
+    const item = favorite.find(item => item.product.id === productId);
+    return item ? 1 : 0;
+  }, [favorite]);
 
   const totalItems = useMemo(
-    () => cart.reduce((sum, { quantity }) => sum + quantity, 0),
-    [cart]
+    () => favorite.reduce((sum) => sum + 1, 0),
+    [favorite]
   );
 
-  const totalPrice = useMemo(
-    () => cart.reduce((sum, { product, quantity }) => sum + product.price * quantity, 0),
-    [cart]
-  );
 
-  const distinctItems = useMemo(() => cart.length, [cart]);
+  const distinctItems = useMemo(() => favorite.length, [favorite]);
 
   const value = useMemo(
     () => ({
-      cart,
-      addToCart,
-      removeFromCart,
+      favorite,
+      addToFavorite,
+      removeFromFavorite,
       updateQuantity,
-      clearCart,
+      clearFavorite,
       totalItems,
-      totalPrice,
       distinctItems,
-      isInCart,
+      isInFavorite,
       getItemQuantity,
     }),
     [
-      cart, 
-      addToCart, 
-      removeFromCart, 
+      favorite, 
+      addToFavorite, 
+      removeFromFavorite, 
       updateQuantity, 
-      clearCart, 
+      clearFavorite, 
       totalItems, 
-      totalPrice, 
       distinctItems,
-      isInCart,
+      isInFavorite,
       getItemQuantity,
     ]
   );
 
   return (
-    <CartContext.Provider value={value}>
+    <FavoriteContext.Provider value={value}>
       {children}
-    </CartContext.Provider>
+    </FavoriteContext.Provider>
   );
 };
 
-export const useCart = () => {
-  const context = useContext(CartContext);
+export const useFavorite = () => {
+  const context = useContext(FavoriteContext);
   if (!context) {
-    throw new Error('useCart must be used within CartProvider');
+    throw new Error('useFavorite must be used within FavoriteProvider');
   }
   return context;
 };

@@ -1,33 +1,48 @@
 'use client';
 import { useCart } from "@/app/context/cartcontext"; 
 import { ShoppingCart } from "lucide-react";
-interface AddToCartProps {
-id: string;
-price: number;
-title: string;
-sku: string | null;
-slug: string;
- } 
-export const AddToCart: React.FC<AddToCartProps> = ({ id, price, title, sku, slug }) => {
+interface ProductUnited {
+   
+  product: {
+    averageRating: number;
+    reviewCount: number;
+    id: string;
+    categoryId: string | null;
+    inStock: string | null;
+    price: number;
+    slug: string;
+    title: string;
+    description: string;
+    manufacturerId: string | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+    sku: string | null;
+    images: {
+        id: string;
+        productId: string;
+        imageUrl: string;
+        storageType: string;
+        storageKey: string | null;
+        order: number | null;
+        isFeatured: boolean | null;
+        createdAt: Date | null;
+    }[]
+}
+}
+export const AddToCart: React.FC<ProductUnited> = ({ product }) => {
     const { addToCart, cart } = useCart();
-    const product = {
-        id,
-        title,
-        price,
-        sku,
-        slug
-
-    };
     
-    const isInCart = cart.some((item) => item.id === product.id);
+   
+    
+    const isInCart = cart.some((item) => item.product.id === product.id);
     
     return (
         <button
-        className={` px-3 bg-blue-600 font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors ${isInCart ? "bg-white text-blue-600 border border-blue-600" : "cursor-pointer text-white hover:bg-blue-700  "}`}
+        className={` px-3 bg-blue-600 min-w-[140px] font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors ${isInCart ? "bg-white text-blue-600 border border-blue-600" : "cursor-pointer text-white hover:bg-blue-700  "}`}
         onClick={() => addToCart(product)}
         disabled={isInCart}
         >
-       {<ShoppingCart className="w-6 h-6" />} {isInCart ? "В корзине" : ` Купить`}
+       {<ShoppingCart className="w-6 h-6" />} <span >{isInCart ? "В корзине" : ` Купить`}</span>
         </button>
     );
  } 

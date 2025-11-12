@@ -3,7 +3,7 @@ import Link from "next/link"
 import Image from "next/image"
 import CategoriesTable from "../categories-table-user"
 import SearchBar from "../searchbar-client"
-
+import FavoruteHeader from "./icons-header/favorute-header"
 import { Suspense } from "react"
 import UserElement from "./icons-header/user-header"
 import CartHeader from "./icons-header/cart-header"
@@ -48,8 +48,7 @@ export default async function Header() {
                 <div className="flex flex-row gap-2 items-center  "> 
 
                     
-                   <Link href="/wishlist" className="flex flex-col hover:bg-gray-100 rounded-xl transition duration-300 p-3 gap-1 items-center "> <Heart className="2xl:w-6 2xl:h-6 text-gray-400 " />
-                   <span className="text-[14px] 2xl:text-md">Избранное</span></Link>
+                   <FavoruteHeader />
                   
                    <CartHeader />
                    <UserElement />

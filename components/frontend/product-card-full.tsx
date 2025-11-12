@@ -4,6 +4,7 @@ import { getAverageRatingByProductId } from "@/lib/actions/reviews";
 import { getProductImages } from "@/lib/actions/image-actions";
 import { AddToCart } from "@/app/products/add-to-cart-prop";
 import Link from "next/link";
+import { AddToFavorite } from "@/app/products/add-to-favorite-prop";
 import { ProductImage } from "@/db/schema";
 import ImagesSliderCardFull from "./images-slider-card-full";
 interface ProductUnited {
@@ -91,12 +92,11 @@ function getReviewText(count: number): string {
           </div>
           <div className="flex flex-row gap-2 pt-3 text-sm items-center justify-between">
          <h3 className="text-gray-900 font-semibold text-[16px]">{product.price} руб</h3>
-         <div className="flex items-center gap-2">
+         <div className="flex items-center flex-row pr-1 gap-3">
           
-          <button className="  cursor-pointer px-2 bg-white hover:bg-gray-100 text-gray-600 font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors">
-          <Heart className="w-6 h-6" />
-          </button>
-           <AddToCart id={product.id} price={product.price} title={product.title} sku={product.sku} slug={product.slug}/>
+          
+           <AddToFavorite product={product}/>
+            <AddToCart product={product}/>
           </div>
           </div>
         </div>

@@ -6,27 +6,27 @@ import {getFeaturedImage} from "@/lib/actions/image-actions";
 import Link from "next/link";
 export default function CartPage() {
     const { cart, clearCart, totalPrice  } = useCart();
-    const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    const total = cart.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
 
       const getCartItemsString = () => {
-        return cart.map(item => `${item.title} (x${item.quantity})`).join(', ');
+        return cart.map(item => `${item.product.title} (x${item.quantity})`).join(', ');
     };
  
     // Для OrderForm нужен один id - можем создать комбинированный
-    const cartOrderId = cart.map(item => item.id).join(',');
+    const cartOrderId = cart.map(item => item.product.id).join(',');
     
     return (  <div className=" min-h-screen xl:max-w-[1400px] mx-auto lg:max-w-[1000px] ">
         <div className="flex flex-col py-5 px-6">
             {cart.length === 0 ? (
                 <div className="w-full h-full flex items-center justify-center">
-                    <p className="bdog md:text-[12px] text-[11px] uppercase">cart is empty</p>
+                    <p className="bdog md:text-[12px] text-[11px] uppercase text-gray-600">Корзина пуста</p>
                 </div>
             ) : (
               <div className="flex lg:flex-row flex-col w-full gap-5">
                 
-               <div className="flex flex-col bg-white justify-between rounded-xl lg:p-5 w-full lg:w-2/3">
-                  <div className="flex flex-col gap-3">  {cart.map((item) => (
-                        <CartItemComponent key={item.id} item={item} />
+               <div className="flex flex-col bg-white justify-between rounded-xl lg:p-0 w-full lg:w-2/3">
+                  <div className="flex flex-col ">  {cart.map((item) => (
+                        <CartItemComponent key={item.product.id} item={item} />
                     ))}</div>
                    <div  className="flex flex-row lg:hidden text-black justify-between items-end py-3 border-t px-3 lg:px-0 border-gray-200">
                    <div className="flex flex-col"> 

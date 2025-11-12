@@ -26,17 +26,17 @@ export default function Checkout() {
           <div className="relative border-l "> <button 
             onClick={() => setOpen(!open)}
             className=" text-black  text-[14px] rounded-xl flex flex-row items-center gap-2">
-              Оформляем  {cart.length} товара <br />  на сумму {cart.reduce((acc, item) => acc + item.price * item.quantity, 0).toFixed(2)} руб
+              Оформляем  {cart.length} товара <br />  на сумму {cart.reduce((acc, item) => acc + item.product.price * item.quantity, 0).toFixed(2)} руб
              <div className="flex flex-row ml-2 items-center gap-2 text-gray-300 rounded bg-white ">   {open ? <ChevronUp /> : <ChevronDown />}</div>
                 </button>
                 {open && (
                     <div className="flex flex-col absolute z-50 bg-white shadow-lg rounded-xl px-3 py-3 top-[50px]  w-[400px] -left-[100px] ">
                         {cart.map(item => (
-                            <Link href={`/product/${item.slug}`} key={item.id} className="flex flex-row border-b py-2 border-gray-200 items-center gap-3 w-full justify-between">
+                            <Link href={`/product/${item.product.slug}`} key={item.product.id} className="flex flex-row border-b py-2 border-gray-200 items-center gap-3 w-full justify-between">
                             
               
-                                    <p className="text-[14px] max-w-[300px]">{item.title} ({item.quantity} шт)</p>
-                                    <p className="text-[14px] ">{item.price} руб</p>
+                                    <p className="text-[14px] max-w-[300px]">{item.product.title} ({item.quantity} шт)</p>
+                                    <p className="text-[14px] ">{item.product.price} руб</p>
                                 
                             </Link>
                         ))}

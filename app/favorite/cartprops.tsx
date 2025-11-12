@@ -1,63 +1,31 @@
 import React from "react";
-import { useCart } from "../context/cartcontext"; // Adjust the import path as necessary
+import { useFavorite } from "../context/favoritecontext";
 import { useState, useEffect, useCallback } from "react";
-import type { CartItem } from "../context/cartcontext";
+import type { FavoriteItem } from "../context/favoritecontext";
 import Image from "next/image";
-import { Star, Trash2 } from "lucide-react";
+import { Star, Trash2, Heart } from "lucide-react";
 import Link from "next/link";
 import { getFeaturedImage } from "@/lib/actions/image-actions";
 import { ProductImage } from "@/db/schema";
-import ImagesSliderCardFull from "./images-slider-card-full";
+import ImagesSliderCardFull from "../cart/images-slider-card-full";
 type CartItemProps = {
-  item: CartItem;
+  item: FavoriteItem;
 };
 
-export const CartItemComponent = ({ item }: CartItemProps) => {
-  const { updateQuantity, removeFromCart } = useCart();
+export const FavoriteItemComponent = ({item}:CartItemProps) => {
+  const { removeFromFavorite } = useFavorite();
   const [image, setImage] = useState<ProductImage | null>(null);
-
-  const [inputValue, setInputValue] = useState(item.quantity.toString());
-
-
-  useEffect(() => {
-    setInputValue(item.quantity.toString());
-  }, [item.quantity]);
-
-
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-
-    if (/^\d*$/.test(val)) {
-      setInputValue(val);
-    }
-  }, []);
+ 
  
 
 
-  const handleBlur = useCallback(() => {
-    const trimmed = inputValue.trim();
 
-  
-
-    if (trimmed === '' || trimmed === '0') {
-      removeFromCart(item.product.id);
-      return;
-    }
+ 
 
 
-    const parsed = Number(trimmed);
-    if (Number.isInteger(parsed) && parsed > 0) {
-      updateQuantity(item.product.id, parsed);
-    } else {
-      setInputValue(item.quantity.toString());
-    }
-  }, [
-    inputValue,
-    item.product.id,
-    item.quantity,
-    updateQuantity,
-    removeFromCart
-  ]);
+
+
+
 
 
   const handleKeyDown = useCallback(
@@ -119,27 +87,12 @@ function getReviewText(count: number): string {
     <div className="flex-1 flex-col gap-10 py-3 px-2 hidden lg:flex">
       <div className="flex justify-between items-start gap-4">
         <h2 className="text-base lg:font-medium text-[16px] cl text-gray-900 flex-1">{item.product.title}</h2>
-        <button 
-          className="text-gray-400 hover:text-red-500 cursor-pointer transition-colors flex-shrink-0" 
-          onClick={() => removeFromCart(item.product.id)}
-          aria-label="Удалить товар"
-        >
-          <Trash2 className="w-5 h-5" />
-        </button>
+        
       </div>
 
       <div className=" justify-between items-center hidden lg:flex">
         <div className="flex items-center gap-2">
-          <input
-            type="number"
-            min={1}
-            value={inputValue}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            onKeyDown={handleKeyDown}
-            className="w-16 border text-black border-gray-300 rounded-md px-3 py-1.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition duration-300 focus:border-transparent"
-          />
-          <span className="text-sm text-gray-500">шт</span>
+         
 
         <div className="flex items-center px-2 py-1 rounded-lg">
                   {rounded ? rounded && 
@@ -153,26 +106,32 @@ function getReviewText(count: number): string {
          </div>
         </div>
        
-          <p className="text-lg font-semibold text-gray-900">{item.product.price.toFixed(2)} руб</p>
+       <div className="flex items-center gap-2"><button 
+          className="text-gray-400 bg-gray-100 p-2 rounded-md hover:text-red-500 cursor-pointer transition-colors flex-shrink-0" 
+          onClick={() => removeFromFavorite(item.product.id)}
+          aria-label="Удалить товар"
+        >
+          <Heart className="w-5 h-5 text-red-500" />
+        </button>  <p className="text-lg font-semibold text-gray-900">{item.product.price.toFixed(2)} руб</p>
+        </div>
       </div> 
     </div>
     </div>  
     <h2 className="text-base lg:font-medium text-[16px] cl text-gray-900 flex-1 lg:hidden ">{item.product.title}</h2>
     <div className="flex gap-4 justify-between items-center lg:hidden">
       
-        <div className="flex items-center gap-2">
-          <input
-            type="number"
-            min={1}
-            value={inputValue}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            onKeyDown={handleKeyDown}
-            className="w-16 border text-black border-gray-300 rounded-md px-3 py-1.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition duration-300 focus:border-transparent"
-          />
-          <span className="text-sm text-gray-500">шт</span>
+     
+     
+          
+          
+        <div className="flex items-center gap-2"><button 
+          className="text-gray-400 bg-gray-100 p-2 rounded-md hover:text-red-500 cursor-pointer transition-colors flex-shrink-0" 
+          onClick={() => removeFromFavorite(item.product.id)}
+          aria-label="Удалить товар"
+        >
+          <Heart className="w-5 h-5 text-red-500" />
+        </button>  <p className="text-lg font-semibold text-gray-900">{item.product.price.toFixed(2)} руб</p>
         </div>
-        <p className="text-lg font-semibold text-gray-900">{item.product.price.toFixed(2)} руб</p>
       </div>   
   </div>
 </li>
@@ -180,4 +139,4 @@ function getReviewText(count: number): string {
   );
 };
 
-export default CartItemComponent; 
+export default FavoriteItemComponent; 

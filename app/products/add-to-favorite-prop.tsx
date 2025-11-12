@@ -1,7 +1,6 @@
 'use client';
-import { useCart } from "../../context/cartcontext"; 
-
-
+import { useFavorite } from "@/app/context/favoritecontext";
+import {Heart} from "lucide-react"
 interface ProductUnited {
    
   product: {
@@ -30,24 +29,17 @@ interface ProductUnited {
     }[]
 }
 }
-export const AddToCart: React.FC<ProductUnited> = ({ product }) => {
-    const { addToCart, cart } = useCart();
-    
-    const isInCart = cart.some((item) => item.product.id === product.id);
-    
+export const AddToFavorite: React.FC<ProductUnited> = ({ product }) => {
+    const { addToFavorite, favorite } = useFavorite();
+    const isInFavorite = favorite.some((item) => item.product.id === product.id)
     return (
         <button
-        className={`bg-[rgb(35,25,22)] text-[rgb(228,224,212)] w-full h-[48px] bdog text-[12px] uppercase  ${isInCart ? "" : "cursor-pointer"}`}
-        onClick={() => addToCart(product)}
-        disabled={isInCart}
+            className={` w-full ${isInFavorite ? "" : "cursor-pointer"}`}
+            onClick={() => addToFavorite(product)}
+            disabled={isInFavorite}
         >
-        {isInCart ? "In Cart" : "Add to Cart"}
+            {isInFavorite ?  <Heart className="w-6 h-6 text-red-500" /> : <Heart className="w-6 h-6 text-gray-500" />}
         </button>
     );
- } 
+}
 
-    
-    
-
-    
-    

@@ -118,7 +118,9 @@ export default function OrderHistoryTable({ orders, pagination }: Order) {
                   <th className="px-4 hidden lg:table-cell py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Товары
                   </th>
-                  <th className="px-4 py-3"></th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Номер заказа
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white text-black divide-y ">
@@ -143,6 +145,7 @@ export default function OrderHistoryTable({ orders, pagination }: Order) {
                           {order.orderItems.length} {order.orderItems.length === 1 ? 'товар' : 'товара'}
                         </div>
                       </td>
+                     
                       <td className="px-4 py-4 whitespace-nowrap text-right">
                         <button
                           onClick={() => toggleExpand(order.id)}

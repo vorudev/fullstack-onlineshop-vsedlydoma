@@ -23,14 +23,40 @@ import { createOrder } from "@/lib/actions/orders";
 import { useSession } from "@/lib/auth-client"
 import { user } from "@/db/schema";
 
+interface ProductUnited {
+   
+  product: {
+    averageRating: number;
+    reviewCount: number;
+    id: string;
+    categoryId: string | null;
+    inStock: string | null;
+    price: number;
+    slug: string;
+    title: string;
+    description: string;
+    manufacturerId: string | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+    sku: string | null;
+    images: {
+        id: string;
+        productId: string;
+        imageUrl: string;
+        storageType: string;
+        storageKey: string | null;
+        order: number | null;
+        isFeatured: boolean | null;
+        createdAt: Date | null;
+    }[]
+}
+}
+interface CartItem {
+ product: ProductUnited['product'];
+ quantity: number;
+}
 interface OrderFormProps {
-   items:{
-    id: string,
-    title: string,
-    sku: string | null,
-    price: number,
-    quantity: number
-   }[]
+  items: CartItem[];
 
 
 }
@@ -66,10 +92,10 @@ export default function OrderForm( {items}: OrderFormProps) {
         setIsLoading(true);
     
         const testDataItems = items.map((item) => ({
-            productId: item.id,
-            title: item.title,
-            price: item.price,
-            productSku: item.sku,
+            productId: item.product.id,
+            title: item.product.title,
+            price: item.product.price,
+            productSku: item.product.sku,
             quantity: item.quantity, 
             
         }))
