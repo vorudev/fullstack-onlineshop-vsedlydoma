@@ -537,7 +537,7 @@ export async function getOrderByUserId(userId: string) {
     }
 }
 
-export async function updateOrder(order: Omit<Order, "createdAt" | "updatedAt" | "userId">) {
+export async function updateOrder(order: Omit<Order, "createdAt" | "updatedAt" | "userId" | "sku">) {
 try { 
   const session = await auth.api.getSession({
         headers: await headers()
