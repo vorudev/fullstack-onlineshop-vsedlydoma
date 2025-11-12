@@ -121,7 +121,7 @@ const productsWithDetailAndImages = productsWithDetails?.map(product => {
           </div>
         </div>
     
-        <div className="w-full">
+        <div className="w-full  px-4 md:px-0">
              {/* Список продуктов */}
              <div className="grid gap-4 items-stretch " 
              style={{
