@@ -30,7 +30,7 @@ interface GetAllUsersProps {
     id: string;
     name: string;
     email: string;
-    phoneNumber: string;
+    phoneNumber: string | null;
     
   role: "user" | "admin";  // Changed from string
     banned: boolean
@@ -57,7 +57,7 @@ export function GetAllUsers( { users }: GetAllUsersProps) {
               <TableCell className="font-medium">
                 {user.name}</TableCell>
               <TableCell>{user.email}</TableCell>
-              <TableCell>{user.phoneNumber}</TableCell>
+              <TableCell>{user.phoneNumber || 'Нет номера'}</TableCell>
               <TableCell>{user.role}</TableCell>
               
               <TableCell className="text-right">
