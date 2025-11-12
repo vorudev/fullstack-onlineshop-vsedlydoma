@@ -11,6 +11,7 @@ interface OrderSuccessProps {
     total: number;
     customerName: string | null;
     customerEmail: string | null;
+    sku: string | null;
     customerPhone: string | null;
     orderItems: {
       id: string;
@@ -73,7 +74,7 @@ export default function OrderSuccess({ order }: OrderSuccessProps) {
           </p>
           <div className="inline-flex items-center gap-2 bg-slate-100 px-6 py-3 rounded-full">
             <span className="text-slate-600 font-medium">Номер заказа:</span>
-            <span className="font-bold text-slate-800">#{order.id.slice(0, 8)}</span>
+            <span className="font-bold text-slate-800">{order.sku}</span>
           </div>
         </div>
 

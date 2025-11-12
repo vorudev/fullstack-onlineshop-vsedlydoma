@@ -2,16 +2,25 @@ import { Eye, Heart, ShoppingCart, MapPin, MapPinned, Grid3x3, Building2, TextSe
 import Map from "./map";
 import CategoriesTable from "../categories-table-user-2";
 import { getRandomProductsFast, getProducts } from "@/lib/actions/product";
-import ProductCard from "./product-card";
+import ProductCard from "./product-card-full";
 import Link from "next/link";
+import { getProductImages } from "@/lib/actions/image-actions";
 import UserGreetingHome from "./user-greeting-home";
 import { getAverageRatingByProductId } from "@/lib/actions/reviews";
 import { getCategories } from "@/lib/actions/product-categories";
 export default async function HomePage () {
-const [categories, products ] = await Promise.all([getCategories(), getRandomProductsFast(
+const [categories, {productsWithDetails, images} ] = await Promise.all([getCategories(), getRandomProductsFast(
 
 )]);
-console.log(products);
+const productsWithDetailAndImages = productsWithDetails?.map(product => {
+  // Находим картинки, которые принадлежат текущему продукту
+  const productImages = images?.filter(img => img.productId === product.id) || [];
+  
+  return {
+    ...product,
+    images: productImages,
+  };
+});
     return (
       
         <div className=" min-h-screen mx-auto  xl:max-w-[1400px] lg:max-w-[1000px]  text-black">
@@ -43,14 +52,14 @@ console.log(products);
       <TextSelect className="w-20 h-20" />
     </div>
   </Link>
-   <div className="flex-1 bg-purple-100 hidden  rounded-xl shadow py-4 pl-4 pr-2 xl:flex flex-col gap-10 relative overflow-hidden">
-    <div className="flex flex-col">
+   <div className="flex-1 bg-purple-100 hidden  rounded-xl shadow py-4 pl-4 pr-2 xl:flex flex-col items-between justify-between gap-2 relative overflow-hidden">
+    <div className="flex flex-col ">
       <h3 className="text-base font-semibold xl:text-xl">Производители</h3>
       <p className="text-gray-600 text-sm xl:text-base">Популярные бренды</p>
     </div>
-    <button className="bg-white rounded-lg text-sm border border-gray-300 py-2 px-3 w-fit xl:text-base">
+    <Link href="/manufacturers" className="bg-white rounded-lg text-sm border border-gray-300 py-2 px-3 w-fit xl:text-base">
       Смотреть все
-    </button>
+    </Link>
     <div className="absolute -bottom-4 -right-4 text-purple-500/50">
       <Building2 className="w-24 h-24" />
     </div>
@@ -74,9 +83,9 @@ console.log(products);
       <h3 className="md:text-lg text-base font-semibold">Производители</h3>
       <p className="text-gray-600 text-sm">Популярные бренды</p>
     </div>
-    <button className="bg-white rounded-lg text-sm border border-gray-300 py-2 px-3 w-fit">
+    <Link href="/manufacturers" className="bg-white rounded-lg text-sm border border-gray-300 py-2 px-3 w-fit">
       Смотреть все
-    </button>
+    </Link>
     <div className="absolute -bottom-4 -right-4 text-purple-500/50">
       <Building2 className="w-24 h-24" />
     </div>
@@ -111,14 +120,24 @@ console.log(products);
     </div>
           </div>
         </div>
-        <div className="flex flex-row gap-3">
-       <div className="grid grid-cols-1  md:grid-cols-2 lg:grid-cols-4 gap-6">  
- { products.map((product) => (
-            <ProductCard key={product.id} {...product} />
-          ))}
-          </div>
-        </div>
-        </div>
-        </div>
+    
+        <div className="w-full">
+             {/* Список продуктов */}
+             <div className="grid gap-4 items-stretch " 
+             style={{
+           gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+         }}>
+               {productsWithDetailAndImages?.map((product) => (
+                 <ProductCard
+                   key={product.id}
+                   product={product}
+
+                 />
+               ))}
+             </div>
+           </div>
+ </div>
+ </div>
+ 
     )
 }

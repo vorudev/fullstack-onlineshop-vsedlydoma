@@ -24,6 +24,7 @@ interface Props {
     customerName: string | null;
     customerEmail: string | null;
     customerPhone: string | null;
+    sku: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;
 }[]

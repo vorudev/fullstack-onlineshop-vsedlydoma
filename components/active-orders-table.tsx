@@ -81,7 +81,7 @@ export function ActiveOrdersTable({
           <TableHead>Имя</TableHead>
           <TableHead>Телефон</TableHead>
           <TableHead>Дата</TableHead>
-          <TableHead>ID заказа</TableHead>
+          <TableHead>Номер заказа</TableHead>
           <TableHead className="text-right">Сумма</TableHead>
           <TableHead className="text-right">Действия</TableHead>
         </TableRow>
@@ -103,7 +103,7 @@ export function ActiveOrdersTable({
               <TableCell className="font-medium">{order.customerName}</TableCell>
               <TableCell>{order.customerPhone}</TableCell>
               <TableCell>{order.createdAt?.toLocaleDateString()}</TableCell>
-              <TableCell>{order.id}</TableCell>
+              <TableCell>{order.sku}</TableCell>
               <TableCell className="text-right">{order.total} руб</TableCell>
               <TableCell className="text-right">
                 <Button variant="ghost" size="sm">

@@ -21,6 +21,7 @@
         orderId: string | null;
         productId: string | null;
         productSku: string | null;
+
         price: number;
         title: string;
         quantity: number;
@@ -32,6 +33,7 @@
     status: string;
     notes: string | null;
     total: number;
+    sku: string | null;
     customerName: string | null;
     customerEmail: string | null;
     customerPhone: string | null;

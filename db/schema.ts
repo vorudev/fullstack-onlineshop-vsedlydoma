@@ -229,6 +229,9 @@ export const orders = pgTable("orders", {
   customerPhone: varchar("customer_phone", { length: 50 }),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+  sku: varchar("sku", { length: 16 })
+    .unique()
+    .default(sql`'#' || upper(to_hex(floor(random() * 4294967295)::int))`),
 
 }, (table) => ({
   // Индекс на status

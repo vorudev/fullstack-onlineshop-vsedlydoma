@@ -27,13 +27,16 @@ export async function getReviewsByProductId(productId: string) {
 }
 export async function getAverageRatingByProductId(productId: string) {
   try {
+    const conditions = [];
+
+
     const productReviews = await db
       .select({
         averageRating: sql<number>`AVG(${reviews.rating})`,
         reviewCount: sql<number>`COUNT(${reviews.id})`,
       })
       .from(reviews)
-      .where(eq(reviews.product_id, productId));
+      .where(and(eq(reviews.product_id, productId), eq(reviews.status, 'approved')));
     
     return {
       averageRating: productReviews[0].averageRating,

@@ -20,6 +20,7 @@ interface Order {
     id: string;
     userId: string | null;
     status: string;
+    sku: string | null;
     notes: string | null;
     total: number;
     customerName: string | null;
@@ -145,7 +146,11 @@ export default function OrderHistoryTable({ orders, pagination }: Order) {
                           {order.orderItems.length} {order.orderItems.length === 1 ? 'товар' : 'товара'}
                         </div>
                       </td>
-                     
+                     <td className="px-4 hidden lg:table-cell py-4 whitespace-nowrap">
+                        <div className="text-sm ">
+                          {order.sku}
+                        </div>
+                      </td>
                       <td className="px-4 py-4 whitespace-nowrap text-right">
                         <button
                           onClick={() => toggleExpand(order.id)}

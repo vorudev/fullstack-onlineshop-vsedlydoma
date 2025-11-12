@@ -10,6 +10,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { ManufacturerForm } from './forms/create-manufacturert-form';
+import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
 import { Manufacturer } from '@/db/schema';
 import { DeleteManufacturerButton } from './delete-manufacturer-button';
@@ -24,6 +25,7 @@ import { Pencil } from 'lucide-react';
 
 
 export default function ManufacturersTable({ manufacturers}: { manufacturers: Manufacturer[] }) {
+const router = useRouter();
   return (
     <div className="space-y-4">
       <Table>
@@ -38,19 +40,16 @@ export default function ManufacturersTable({ manufacturers}: { manufacturers: Ma
         </TableHeader>
         <TableBody>
           {manufacturers.map((manufacturer) => (
-            <TableRow key={manufacturer.id}>
+            <TableRow key={manufacturer.id} >
               <TableCell className="font-medium">
-                <Link 
-                  href={`/dashboard/manufacturers/${manufacturer.slug}`}
-                  className="hover:underline"
-                >
+                
                   {manufacturer.name}
-                </Link>
+
               </TableCell>
               <TableCell>{manufacturer.description}</TableCell>
               <TableCell>{manufacturer.slug}</TableCell>
               <TableCell className="text-right">
-                <div className="flex justify-end gap-2">
+                <div className="flex flex-row justify-end gap-2">
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button variant="ghost" size="sm">
@@ -66,7 +65,15 @@ export default function ManufacturersTable({ manufacturers}: { manufacturers: Ma
                   </Dialog>
                   <DeleteManufacturerButton id={manufacturer.id} />
                 </div>
+                          
               </TableCell>
+            <TableCell>
+            <div
+              className="cursor-pointer p-2  rounded-md hover:bg-gray-900"
+              onClick={() => router.push(`/dashboard/manufacturers/${manufacturer.slug}`)}>
+                  открыть
+                </div>           
+            </TableCell>           
             </TableRow>
           ))}
         </TableBody>

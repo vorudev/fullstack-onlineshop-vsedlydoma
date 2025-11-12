@@ -4,7 +4,7 @@ import { db } from "@/db/drizzle";
 import { orders, Order } from "@/db/schema";
 import { user, User } from "@/db/schema";
 import { NextResponse } from "next/server";
-
+import { sendOrderEmails } from "./email";
 
 import { products, Product } from "@/db/schema";
 import { orderItems, OrderItem } from "@/db/schema";
@@ -15,7 +15,7 @@ import { desc } from "drizzle-orm";
 
 import { eq, ne } from "drizzle-orm";
 import { custom } from "zod";
-type CreateOrderData = Omit<Order, "id" | "createdAt" | "updatedAt" | "userId" | "total">;
+type CreateOrderData = Omit<Order, "id" | "createdAt" | "updatedAt" | "userId" | "total" | "sku">;
 
 export type CreateOrderItemData = Omit<OrderItem, "id" | "createdAt" | "updatedAt" | "orderId">;
 
@@ -52,6 +52,7 @@ export async function getActiveOrders() {
         customerName: orders.customerName,
         customerEmail: orders.customerEmail,
         customerPhone: orders.customerPhone,
+        sku: orders.sku
       }
     )
     .from(orders)
@@ -142,6 +143,7 @@ export const getAllComplitedOrders = async ({
     ilike(orders.customerName, `%${search}%`),
     ilike(orders.customerEmail, `%${search}%`),
     ilike(orders.customerPhone, `%${search}%`),
+    ilike(orders.sku, `%${search}%`),
     sql`CAST(${orders.id} AS TEXT) ILIKE ${`%${search}%`}` // Приводим UUID к тексту
   ];
   
@@ -206,6 +208,7 @@ export const getComplitedOrders = async ({
   const searchConditions = [
     ilike(orders.customerName, `%${search}%`),
     ilike(orders.customerEmail, `%${search}%`),
+    ilike(orders.sku, `%${search}%`),
     ilike(orders.customerPhone, `%${search}%`),
     sql`CAST(${orders.id} AS TEXT) ILIKE ${`%${search}%`}` // Приводим UUID к тексту
   ];
@@ -310,6 +313,7 @@ export const getAllCancelledOrders = async ({
     ilike(orders.customerName, `%${search}%`),
     ilike(orders.customerEmail, `%${search}%`),
     ilike(orders.customerPhone, `%${search}%`),
+    ilike(orders.sku, `%${search}%`),
     sql`CAST(${orders.id} AS TEXT) ILIKE ${`%${search}%`}` // Приводим UUID к тексту
   ];
   
@@ -380,7 +384,7 @@ export async function createOrder(orderInput: CreateOrderData, orderItemsInput: 
         }));
 
         const orderItem = await db.insert(orderItems).values(orderItemsWithOrderId).returning();
-
+        await sendOrderEmails({ order: order[0], items: orderItem });
         return { order, orderItem, orderId: order[0].id || '' };
     } catch (error) {
         console.error("Error creating order:", error);
@@ -425,6 +429,7 @@ interface GetUserOrdersParams {
         ilike(orders.customerName, `%${search}%`),
         ilike(orders.customerEmail, `%${search}%`),
         ilike(orders.customerPhone, `%${search}%`),
+        ilike(orders.sku, `%${search}%`),
         sql`CAST(${orders.id} AS TEXT) ILIKE ${`%${search}%`}`
       ];
       
