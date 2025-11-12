@@ -106,7 +106,7 @@ function getReviewText(count: number): string {
               
             </  Link>
             
-            <div className="p-5 flex flex-col lg:flex-row lg:gap-1 lg:p-0">
+            <div className="p-5 flex flex-col lg:flex-row gap-1 lg:gap-1 lg:p-0">
               <Link href={`/product/${product.slug}`}>
               <h3 className="text-gray-900  text-[16px] line-clamp-2">
                 {product.title}
