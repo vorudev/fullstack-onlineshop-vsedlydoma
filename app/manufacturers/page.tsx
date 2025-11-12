@@ -5,16 +5,17 @@ import Category from "./manufacturer";
 import SearchBar from "@/components/frontend/searchbar-manufacturers";
 import { Suspense } from "react";
 interface ManufacturersPageProps {
-    searchParams: {
+    searchParams: Promise<{ 
         page?: string;
         pageSize?: string;
         search?: string;
-    };
+    }>;
 }
 export default async function ManufacturersPage({searchParams}: ManufacturersPageProps) {
-    const search = searchParams.search || '';
-    const page = parseInt(searchParams.page || '1');
-    const pageSize = parseInt(searchParams.pageSize || '20');
+    const searchParamsData = await searchParams;
+    const search = searchParamsData.search || '';
+    const page = parseInt(searchParamsData.page || '1');
+    const pageSize = parseInt(searchParamsData.pageSize || '20');
     const {manufacturers, pagination} = await getAllManufacturers(
         {
             page,
