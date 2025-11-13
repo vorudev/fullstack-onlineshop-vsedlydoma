@@ -149,3 +149,22 @@ export async function uploadManufacturerImage(file: File) {
         }
     await del(storageKey);
     }
+    export async function getManufacturerImages(manufacturerId: string) {
+        try {
+            const images = await db.select().from(manufacturerImages).where(eq(manufacturerImages.manufacturerId, manufacturerId));
+            return images;
+        } catch (error) {
+            console.error("Error fetching manufacturer images:", error);
+            throw new Error("Failed to fetch manufacturer images");
+        }
+    }
+    export async function getFeaturedManufacturerImage(manufacturerId: string) {
+        try {
+            const image = await db.select().from(manufacturerImages).where(and(eq(manufacturerImages.manufacturerId, manufacturerId), eq(manufacturerImages.isFeatured, true))).limit(1);
+            return image[0];
+        } catch (error) {
+            console.error("Error fetching featured manufacturer image:", error);
+            throw new Error("Failed to fetch featured manufacturer image");
+        }
+    }
+        

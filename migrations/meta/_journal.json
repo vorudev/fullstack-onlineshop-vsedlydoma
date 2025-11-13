@@ -197,6 +197,13 @@
       "when": 1762419178535,
       "tag": "0027_shallow_moon_knight",
       "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1762863719114,
+      "tag": "0028_far_storm",
+      "breakpoints": true
     }
   ]
 }

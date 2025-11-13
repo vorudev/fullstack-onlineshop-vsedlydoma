@@ -1,8 +1,8 @@
 'use server';
 
 import { db } from "@/db/drizzle";
-import { Product, products, productAttributes, orderItems, orders, categories } from "@/db/schema";
-import { desc, eq, gte, lte, notInArray } from "drizzle-orm";
+import { Product, products, productAttributes, orderItems, orders, categories, productImages, reviews } from "@/db/schema";
+import { desc, eq, gte, inArray, lte, notInArray } from "drizzle-orm";
 import { unstable_cache } from 'next/cache';
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
@@ -59,8 +59,37 @@ export const getRandomProductsFast = async ({
     const result = await query
       .orderBy(sql`RANDOM()`)
       .limit(limit);
-    
-    return result;
+      const productIds = result.map(r => r.id);
+    const [images, ratings] = await Promise.all([
+      db.select()
+        .from(productImages)
+        .where(inArray(productImages.productId, productIds)),
+      
+      // ДОБАВЛЯЕМ GROUP BY product_id
+      db.select({
+        productId: reviews.product_id,
+        averageRating: sql<number>`AVG(${reviews.rating})`,
+        reviewCount: sql<number>`COUNT(${reviews.id})`,
+      })
+      .from(reviews)
+      .where(inArray(reviews.product_id, productIds))
+      .groupBy(reviews.product_id) // ← ВОТ ЭТО КЛЮЧЕВОЕ!
+    ]);
+    const ratingsMap = new Map(
+  ratings.map(r => [r.productId, { 
+    averageRating: r.averageRating, 
+    reviewCount: r.reviewCount 
+  }])
+);
+const productsWithDetails = result.map(product => ({
+  ...product,
+  averageRating: ratingsMap.get(product.id)?.averageRating || 0,
+  reviewCount: ratingsMap.get(product.id)?.reviewCount || 0,
+}));
+    return {
+      productsWithDetails,
+      images: images
+    };
   } catch (error) {
     console.error("Error fetching random products:", error);
     throw new Error("Failed to fetch random products");

@@ -1,7 +1,7 @@
 'use server';
 import { db } from "@/db/drizzle";
-import { manufacturers, Manufacturer } from "@/db/schema";
-import { eq, ilike, or, and, sql } from "drizzle-orm";
+import { manufacturers, Manufacturer, products, productImages, reviews } from "@/db/schema";
+import { eq, ilike, or, and, sql, count, asc, inArray } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
@@ -12,6 +12,13 @@ pageSize?: number;
 search?: string;
 
 }
+interface GetProductsByManufacturerIdParams {
+    manufacturerId?: string;
+    page?: number;
+    pageSize?: number;
+    search?: string;
+}
+
 
 export async function createManufacturer(manufacturer: Omit<Manufacturer, "id" | "createdAt" | "updatedAt">) {
     try {
@@ -55,6 +62,103 @@ export async function deleteManufacturer(id: string) {
         throw new Error("Failed to delete manufacturer");
     }
 }
+
+
+export const getAllProductsByManufacturerId = async ({
+    manufacturerId = '',
+    page = 1,
+    pageSize = 20,
+    search = ''
+}: GetProductsByManufacturerIdParams = {}) => {
+    try {
+        const offset = (page - 1) * pageSize;
+        const conditions = [];
+        
+        // ✅ Добавляем фильтр по manufacturerId
+        if (manufacturerId) {
+            conditions.push(eq(products.manufacturerId, manufacturerId));
+        }
+        
+        if (search) {
+            conditions.push(
+                or(
+                    ilike(products.title, `%${search}%`),
+                    ilike(products.description, `%${search}%`),
+                    ilike(products.slug, `%${search}%`),
+                    ilike(products.sku, `%${search}%`),
+                    sql`CAST(${products.id} AS TEXT) ILIKE ${`%${search}%`}` // ✅ Исправлено
+                )
+            );
+        }
+
+        let query = db
+            .select()
+            .from(products)
+            .$dynamic();
+
+        let countQuery = db
+            .select({ count: count(products.id) }) // ✅ Исправлено
+            .from(products)
+            .$dynamic();
+
+        if (conditions.length > 0) {
+            query = query.where(and(...conditions));
+            countQuery = countQuery.where(and(...conditions));
+        }
+
+        const getAllProductsByManufacturerIdResult = await query
+            .limit(pageSize)
+            .offset(offset)
+            .orderBy(asc(products.title)); // ✅ Исправлено
+
+        const [{ count: totalCount }] = await countQuery;
+const productIds = getAllProductsByManufacturerIdResult.map(r => r.id);
+    const [images, ratings] = await Promise.all([
+  db.select()
+    .from(productImages)
+    .where(inArray(productImages.productId, productIds)),
+  
+  // ДОБАВЛЯЕМ GROUP BY product_id
+  db.select({
+    productId: reviews.product_id,
+    averageRating: sql<number>`AVG(${reviews.rating})`,
+    reviewCount: sql<number>`COUNT(${reviews.id})`,
+  })
+  .from(reviews)
+  .where(inArray(reviews.product_id, productIds))
+  .groupBy(reviews.product_id) // ← ВОТ ЭТО КЛЮЧЕВОЕ!
+]);
+
+
+const ratingsMap = new Map(
+  ratings.map(r => [r.productId, { 
+    averageRating: r.averageRating, 
+    reviewCount: r.reviewCount 
+  }])
+);
+const productsWithDetails = getAllProductsByManufacturerIdResult.map(product => ({
+  ...product,
+  averageRating: ratingsMap.get(product.id)?.averageRating || 0,
+  reviewCount: ratingsMap.get(product.id)?.reviewCount || 0,
+}));
+
+        return {
+            products: productsWithDetails,
+            images: images,
+            pagination: {
+                page,
+                pageSize,
+                total: totalCount,
+                totalPages: Math.ceil(totalCount / pageSize),
+            }
+        };
+    } catch (error) {
+        console.error("Error fetching products by manufacturer ID:", error);
+        throw new Error("Failed to fetch products by manufacturer ID");
+    }
+};
+    
+
 export const getAllManufacturers = async ({
     page = 1,
     pageSize = 20,
@@ -118,7 +222,8 @@ export const getAllManufacturers = async ({
 };
 export async function getManufacturerBySlug(slug: string) {
     try {
-        return await db.select().from(manufacturers).where(eq(manufacturers.slug, slug));
+       const [manufacturer] = await db.select().from(manufacturers).where(eq(manufacturers.slug, slug));
+       return manufacturer;
     } catch (error) {
         console.error("Error fetching manufacturer by slug:", error);
         throw new Error("Failed to fetch manufacturer by slug");

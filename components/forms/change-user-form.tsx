@@ -20,20 +20,26 @@ import { Input } from "@/components/ui/input"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { set, z } from "zod"
+import { phoneNumber } from "better-auth/plugins";
 
 interface ChangeUserFormProps {
-    user: Omit<User, "createdAt" | "updatedAt" | "emailVerified" | "image" >;
+    user: Omit<User, "createdAt" | "updatedAt" | "emailVerified" | "image" | "phoneNumberVerified" >;
 }
 const formSchema = z.object({
   name: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
+    message: "Имя должно содержать не менее 2 символов.",
 
   }),
 email: z.string().email({ 
-        message: "Invalid email address."
+        message: "Неверный email адрес."
      }),
 role: z.enum(["user", "admin"], {
-    message: "Role must be user or admin.",
+    message: "Роль должна быть user или admin.",
+}),
+phoneNumber: z.string().min(10, {
+    message: "Номер телефона должен содержать не менее 10 символов.",
+}).max(15, {
+    message: "Номер телефона должен содержать не более 15 символов.",
 }),
 banned: z.boolean().optional(),
 });
@@ -48,6 +54,7 @@ export function ChangeUserForm({ user }: ChangeUserFormProps) {
             email: user.email || "",
             role: user.role || "user",
             banned: user.banned || false,
+            phoneNumber: user.phoneNumber || "",
         },
     });
     async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -80,7 +87,7 @@ export function ChangeUserForm({ user }: ChangeUserFormProps) {
             name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>Имя</FormLabel>
               <FormControl>
                 <Input placeholder="User name" {...field} />
               </FormControl>
@@ -102,6 +109,19 @@ export function ChangeUserForm({ user }: ChangeUserFormProps) {
             </FormItem>
           )}
         />
+        <FormField
+          control={form.control}
+            name="phoneNumber"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Телефон</FormLabel>
+              <FormControl>
+                <Input placeholder="User phone number" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
                      <FormField
     control={form.control}
     name="role"
@@ -115,8 +135,8 @@ export function ChangeUserForm({ user }: ChangeUserFormProps) {
                     </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                    <SelectItem value="admin">Admin</SelectItem>
-                    <SelectItem value="user">User</SelectItem>
+                    <SelectItem value="admin">Админ</SelectItem>
+                    <SelectItem value="user">Пользователь</SelectItem>
                 </SelectContent>
             </Select>
             <FormMessage />

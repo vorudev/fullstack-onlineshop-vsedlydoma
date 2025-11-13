@@ -82,7 +82,8 @@ export const getAllUsers = (
           or(
             ilike(user.name, `%${search}%`),
             ilike(user.email, `%${search}%`),
-            ilike(user.role, `%${search}%`)
+            ilike(user.role, `%${search}%`),
+            ilike(user.phoneNumber, `%${search}%`),
           )
         );
       }
@@ -93,6 +94,7 @@ export const getAllUsers = (
           name: user.name,
           email: user.email,
           role: user.role, 
+          phoneNumber: user.phoneNumber,
           banned: user.banned
         })
         .from(user)

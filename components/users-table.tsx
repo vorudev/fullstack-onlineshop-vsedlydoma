@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import type { User } from "@/db/schema";
 import Link from "next/link";
 import { Pencil } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import {
   Dialog,
@@ -29,30 +30,34 @@ interface GetAllUsersProps {
     id: string;
     name: string;
     email: string;
+    phoneNumber: string | null;
+    
   role: "user" | "admin";  // Changed from string
     banned: boolean
   }[]
 }
 export function GetAllUsers( { users }: GetAllUsersProps) {
-  
+  const router = useRouter();
 
     return ( 
        <Table className=""> 
         <TableCaption>A list of all registered users.</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[100px]">Name</TableHead>
+            <TableHead className="w-[100px]">Имя</TableHead>
             <TableHead>Email</TableHead>
-            <TableHead>Role</TableHead>
-            <TableHead className="text-right">Controls</TableHead>
+            <TableHead>Телефон</TableHead>
+            <TableHead>Роль</TableHead>
+            <TableHead className="text-right">Действия</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {users.map((user) => (
-            <TableRow key={user.id}>
+            <TableRow key={user.id} className="cursor-pointer " onClick={() => router.push(`/dashboard/users/${user.id}`)}>
               <TableCell className="font-medium">
-                <Link href={`/dashboard/users/${user.id}`}>{user.name}</Link></TableCell>
+                {user.name}</TableCell>
               <TableCell>{user.email}</TableCell>
+              <TableCell>{user.phoneNumber || 'Нет номера'}</TableCell>
               <TableCell>{user.role}</TableCell>
               
               <TableCell className="text-right">
@@ -64,8 +69,8 @@ export function GetAllUsers( { users }: GetAllUsersProps) {
       </DialogTrigger>
 
       <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Update Product</DialogTitle>
+        <DialogHeader>  
+          <DialogTitle>Изменить пользователя</DialogTitle>
     
 
           <ChangeUserForm user={user} />

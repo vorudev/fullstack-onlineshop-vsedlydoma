@@ -10,6 +10,8 @@ name: text('name').notNull(),
 role: roleEnum('role').default('user').notNull(), // добавляем это поле
  email: text('email').notNull().unique(),
  emailVerified: boolean('email_verified').$defaultFn(() => false).notNull(),
+ phoneNumber: text('phone_number').unique(),
+ phoneNumberVerified: boolean('phone_number_verified').$defaultFn(() => false).notNull(),
  image: text('image'),
  createdAt: timestamp('created_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull(),
  updatedAt: timestamp('updated_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull(),
@@ -227,6 +229,9 @@ export const orders = pgTable("orders", {
   customerPhone: varchar("customer_phone", { length: 50 }),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+  sku: varchar("sku", { length: 16 })
+    .unique()
+    .default(sql`'#' || upper(to_hex(floor(random() * 4294967295)::int))`),
 
 }, (table) => ({
   // Индекс на status

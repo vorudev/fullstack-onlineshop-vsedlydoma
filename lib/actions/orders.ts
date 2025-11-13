@@ -4,18 +4,18 @@ import { db } from "@/db/drizzle";
 import { orders, Order } from "@/db/schema";
 import { user, User } from "@/db/schema";
 import { NextResponse } from "next/server";
-
+import { sendOrderEmails } from "./email";
 
 import { products, Product } from "@/db/schema";
 import { orderItems, OrderItem } from "@/db/schema";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
-import { and, gte, ilike, lte, or, relations, sql } from 'drizzle-orm';
+import { and, gte, ilike, inArray, lte, or, relations, sql } from 'drizzle-orm';
 import { desc } from "drizzle-orm";
 
 import { eq, ne } from "drizzle-orm";
 import { custom } from "zod";
-type CreateOrderData = Omit<Order, "id" | "createdAt" | "updatedAt" | "userId" | "total">;
+type CreateOrderData = Omit<Order, "id" | "createdAt" | "updatedAt" | "userId" | "total" | "sku">;
 
 export type CreateOrderItemData = Omit<OrderItem, "id" | "createdAt" | "updatedAt" | "orderId">;
 
@@ -52,6 +52,7 @@ export async function getActiveOrders() {
         customerName: orders.customerName,
         customerEmail: orders.customerEmail,
         customerPhone: orders.customerPhone,
+        sku: orders.sku
       }
     )
     .from(orders)
@@ -142,6 +143,7 @@ export const getAllComplitedOrders = async ({
     ilike(orders.customerName, `%${search}%`),
     ilike(orders.customerEmail, `%${search}%`),
     ilike(orders.customerPhone, `%${search}%`),
+    ilike(orders.sku, `%${search}%`),
     sql`CAST(${orders.id} AS TEXT) ILIKE ${`%${search}%`}` // Приводим UUID к тексту
   ];
   
@@ -206,6 +208,7 @@ export const getComplitedOrders = async ({
   const searchConditions = [
     ilike(orders.customerName, `%${search}%`),
     ilike(orders.customerEmail, `%${search}%`),
+    ilike(orders.sku, `%${search}%`),
     ilike(orders.customerPhone, `%${search}%`),
     sql`CAST(${orders.id} AS TEXT) ILIKE ${`%${search}%`}` // Приводим UUID к тексту
   ];
@@ -310,6 +313,7 @@ export const getAllCancelledOrders = async ({
     ilike(orders.customerName, `%${search}%`),
     ilike(orders.customerEmail, `%${search}%`),
     ilike(orders.customerPhone, `%${search}%`),
+    ilike(orders.sku, `%${search}%`),
     sql`CAST(${orders.id} AS TEXT) ILIKE ${`%${search}%`}` // Приводим UUID к тексту
   ];
   
@@ -380,53 +384,131 @@ export async function createOrder(orderInput: CreateOrderData, orderItemsInput: 
         }));
 
         const orderItem = await db.insert(orderItems).values(orderItemsWithOrderId).returning();
-
-        return { order, orderItem };
+        await sendOrderEmails({ order: order[0], items: orderItem });
+        return { order, orderItem, orderId: order[0].id || '' };
     } catch (error) {
         console.error("Error creating order:", error);
         throw new Error("Failed to create order");
     }
 }
 
-
-   export async function getUserOrders() {
-    const session = await auth.api.getSession({
-        headers: await headers()
-    });
-    
-    if (!session) {
-        throw new Error("Unauthorized");
-    }
-
-    try {
-        // Получаем заказы пользователя
-        const userOrders = await db
-            .select()
-            .from(orders)
-            .where(eq(orders.userId, session.user.id));
-
-        // Для каждого заказа получаем его товары
-        const ordersWithItems = await Promise.all(
-            userOrders.map(async (order) => {
-                const items = await db
-                    .select()
-                    .from(orderItems)
-                    .where(eq(orderItems.orderId, order.id));
-
-                return {
-                    ...order,
-                    orderItems: items
-                };
-            })
-        );
-
-        return ordersWithItems;
-    } catch (error) {
-        console.error("Error fetching orders:", error);
-        throw new Error("Failed to fetch orders");
-    }
+interface GetUserOrdersParams {
+    page?: number;
+    pageSize?: number;
+    status?: string;
+    search?: string;
 }
-
+  export async function getUserOrders(
+  {page = 1, pageSize = 20, search = '', status = ''}: GetUserOrdersParams = {}
+) {
+  const session = await auth.api.getSession({
+    headers: await headers()
+  });
+  
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
+  
+  try {
+    const offset = (page - 1) * pageSize;
+    const conditions = [];
+    
+    // Базовые условия
+    conditions.push(eq(orders.userId, session.user.id));
+    
+    // ❌ ОШИБКА: если status пустая строка, это условие сломает запрос
+    if (status) {
+      conditions.push(eq(orders.status, status));
+    }
+    
+    // ❌ ОШИБКА: нельзя искать по date полям через ilike
+    // ❌ ОШИБКА: orderItems недоступны в этом запросе без JOIN
+    if (search) {
+      const searchConditions = [
+        // Поиск по строковым полям заказа
+        ilike(orders.customerName, `%${search}%`),
+        ilike(orders.customerEmail, `%${search}%`),
+        ilike(orders.customerPhone, `%${search}%`),
+        ilike(orders.sku, `%${search}%`),
+        sql`CAST(${orders.id} AS TEXT) ILIKE ${`%${search}%`}`
+      ];
+      
+      // Поиск по числовым полям
+      if (!isNaN(Number(search))) {
+        searchConditions.push(eq(orders.total, Number(search)));
+      }
+      
+      conditions.push(or(...searchConditions));
+    }
+    
+    // Получаем общее количество
+    const [totalResult] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(orders)
+      .where(and(...conditions));
+    
+    const total = Number(totalResult.count);
+    
+    // Получаем заказы
+    const userOrders = await db
+      .select()
+      .from(orders)
+      .where(and(...conditions))
+      .limit(pageSize)
+      .offset(offset)
+      .orderBy(desc(orders.createdAt));
+    
+    // Если заказов нет
+    if (userOrders.length === 0) {
+      return {
+        orders: [],
+        pagination: {
+          page,
+          pageSize,
+          total,
+          totalPages: 0
+        }
+      };
+    }
+    
+    // ✅ ОПТИМИЗАЦИЯ: Получаем все товары одним запросом
+    const orderIds = userOrders.map(o => o.id);
+    
+    const allOrderItems = await db
+      .select()
+      .from(orderItems)
+      .where(inArray(orderItems.orderId, orderIds));
+    
+    // Группируем товары по заказам
+    const itemsByOrder = allOrderItems.reduce((acc, item) => {
+      if (!acc[item.orderId!]) {
+        acc[item.orderId!] = [];
+      }
+      acc[item.orderId!].push(item);
+      return acc;
+    }, {} as Record<string, typeof allOrderItems>);
+    
+    // Формируем результат
+    const ordersWithItems = userOrders.map(order => ({
+      ...order,
+      orderItems: itemsByOrder[order.id] || []
+    }));
+    
+    return {
+      orders: ordersWithItems,
+      pagination: {
+        page,
+        pageSize,
+        total,
+        totalPages: Math.ceil(total / pageSize)
+      }
+    };
+    
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    throw new Error("Failed to fetch orders");
+  }
+}
 export async function getOrderByUserId(userId: string) {
     try {
         const userOrders = await db
@@ -455,7 +537,7 @@ export async function getOrderByUserId(userId: string) {
     }
 }
 
-export async function updateOrder(order: Omit<Order, "createdAt" | "updatedAt" | "userId">) {
+export async function updateOrder(order: Omit<Order, "createdAt" | "updatedAt" | "userId" | "sku">) {
 try { 
   const session = await auth.api.getSession({
         headers: await headers()
