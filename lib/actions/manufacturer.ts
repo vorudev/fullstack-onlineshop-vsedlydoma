@@ -1,6 +1,6 @@
 'use server';
 import { db } from "@/db/drizzle";
-import { manufacturers, Manufacturer, products, productImages, reviews } from "@/db/schema";
+import { manufacturers, Manufacturer, products, productImages, reviews, ManufacturerImage, manufacturerImages } from "@/db/schema";
 import { eq, ilike, or, and, sql, count, asc, inArray } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 import { NextResponse } from "next/server";
@@ -61,6 +61,44 @@ export async function deleteManufacturer(id: string) {
         console.error("Error deleting manufacturer:", error);
         throw new Error("Failed to delete manufacturer");
     }
+}
+
+export const getRandomManufacturers = async ({ 
+    limit = 20, 
+}: { 
+    limit?: number; 
+} = {}) => {
+    try {
+        let query = db.select(
+            {
+                id: manufacturers.id,
+                name: manufacturers.name,
+                slug: manufacturers.slug,
+            }
+        )
+            .from(manufacturers)
+        
+        const result = await query
+        .orderBy(sql`RANDOM()`)
+        .limit(limit);
+
+        const manufacturersIds = result.map(r => r.id);
+        
+        const images = await db.select(
+            {
+                id: manufacturerImages.id,
+                manufacturerId: manufacturerImages.manufacturerId,
+                imageUrl: manufacturerImages.imageUrl,
+            }
+        ).from(manufacturerImages).where(inArray(manufacturerImages.manufacturerId, manufacturersIds));
+        return {
+            manufacturers: result,
+            images: images
+        };
+    } catch (error) {
+        console.error("Error fetching random manufacturers:", error);
+        throw new Error("Failed to fetch random manufacturers");
+}
 }
 
 

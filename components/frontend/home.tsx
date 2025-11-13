@@ -2,16 +2,20 @@ import { Eye, Heart, ShoppingCart, MapPin, MapPinned, Grid3x3, Building2, TextSe
 import Map from "./map";
 import CategoriesTable from "../categories-table-user-2";
 import { getRandomProductsFast, getProducts } from "@/lib/actions/product";
+import SliderHome from "./slider-home";
+import { ManufacturersSlider } from "./manufacturers-slider";
 import ProductCard from "./product-card-full";
 import Link from "next/link";
+import { getRandomManufacturers } from "@/lib/actions/manufacturer";
 import { getProductImages } from "@/lib/actions/image-actions";
 import UserGreetingHome from "./user-greeting-home";
 import { getAverageRatingByProductId } from "@/lib/actions/reviews";
 import { getCategories } from "@/lib/actions/product-categories";
 export default async function HomePage () {
-const [categories, {productsWithDetails, images} ] = await Promise.all([getCategories(), getRandomProductsFast(
-
-)]);
+const [categories, {productsWithDetails, images} ] = await Promise.all([
+  getCategories(),
+  getRandomProductsFast(), 
+]);
 const productsWithDetailAndImages = productsWithDetails?.map(product => {
   // Находим картинки, которые принадлежат текущему продукту
   const productImages = images?.filter(img => img.productId === product.id) || [];
@@ -21,18 +25,23 @@ const productsWithDetailAndImages = productsWithDetails?.map(product => {
     images: productImages,
   };
 });
+
     return (
       
         <div className=" min-h-screen mx-auto  xl:max-w-[1400px] lg:max-w-[1000px]  text-black">
           <div className=" absolute z-10 hidden lg:flex"><CategoriesTable categories={categories} /></div>
           <div className="lg:ml-81 ml-0 overflow-hidden md:pt-10 lg:pt-5 pt-4 flex flex-col gap-7  md:px-10">
-          
+         
           <div className="flex overflow-x-auto gap-4 px-4 md:px-0 snap-x snap-mandatory " style={{ 
       scrollbarWidth: 'none',
       msOverflowStyle: 'none',
     }}>
-  <div className="min-w-[80vw] md:min-w-[40vw] lg:min-w-[20vw] md:w-full xl:w-[30%] xl:min-w-0 bg-blue-100 rounded-xl shadow py-4 pl-4 snap-center flex-col flex lg:hidden gap-10 relative  overflow-hidden">
-   <div className="flex flex-col"><h3 className="text-lg xl:text-xl font-semibold ">Как нас найти</h3>
+  
+  
+   <UserGreetingHome />
+   <div className="min-w-[80vw] md:min-w-[40vw] lg:min-w-[20vw] md:w-full xl:w-[30%] xl:min-w-0 bg-blue-100 rounded-xl shadow py-4 pl-4 snap-center flex-col flex lg:hidden gap-10 relative  overflow-hidden">
+   <div className="flex flex-col">
+    <h3 className="text-lg xl:text-xl font-semibold ">Как нас найти</h3>
     <p className="text-gray-600 text-sm xl:text-base ">Контент первой карточки</p>
     </div> 
     <div><button className="bg-white rounded-lg   text-sm border border-gray-300 py-2 px-3 xl:text-base">Показать на карте</button>
@@ -41,8 +50,6 @@ const productsWithDetailAndImages = productsWithDetails?.map(product => {
     <MapPinned className="w-30 h-30" />
     </div>
   </div>
-  
-   <UserGreetingHome />
     <Link href="/categories" className="w-[20%] xl:flex hidden bg-green-100/50 rounded-xl shadow py-4  px-3 flex-col gap-6 relative overflow-hidden">
     <div className="flex flex-col">
       <h3 className="text-base font-semibold xl:text-xl">Каталог</h3>
@@ -67,7 +74,7 @@ const productsWithDetailAndImages = productsWithDetails?.map(product => {
 </div>
 <div className="flex gap-4 xl:hidden px-4 md:px-0 ">
   {/* Карточка Каталог */}
-  <div className="w-[35%] bg-green-100/50 rounded-xl shadow py-4 px-3 flex flex-col gap-6 relative overflow-hidden">
+  <div className="w-[35%] bg-green-100/50 rounded-xl  py-4 px-3 flex flex-col gap-6 relative overflow-hidden">
     <div className="flex flex-col">
       <h3 className="md:text-lg text-base font-semibold">Каталог</h3>
       <p className="text-gray-600 text-sm">Все товары</p>
@@ -78,7 +85,7 @@ const productsWithDetailAndImages = productsWithDetails?.map(product => {
   </div>
   
   {/* Карточка Производители */}
-  <div className="flex-1 bg-purple-100 rounded-xl shadow py-4 pl-4 pr-2 flex flex-col gap-6 relative overflow-hidden">
+  <div className="flex-1 bg-purple-100 rounded-xl  py-4 pl-4 pr-2 flex flex-col gap-6 relative overflow-hidden">
     <div className="flex flex-col">
       <h3 className="md:text-lg text-base font-semibold">Производители</h3>
       <p className="text-gray-600 text-sm">Популярные бренды</p>
@@ -91,6 +98,13 @@ const productsWithDetailAndImages = productsWithDetails?.map(product => {
     </div>
   </div>
 </div>
+ <div className="w-full hidden lg:flex">
+             {/* Список продуктов */}
+        <SliderHome products={productsWithDetailAndImages || []} />
+        
+           </div>
+           
+
          <div className="bg-white rounded-2xl  p-8 mb-12 overflow-hidden  hidden lg:flex w-full ">
           <div className=" flex-col lg:flex-row gap-8 items-center flex w-full  ">
             <div className="flex flex-col gap-4 max-w-[600px]">
@@ -121,21 +135,7 @@ const productsWithDetailAndImages = productsWithDetails?.map(product => {
           </div>
         </div>
     
-        <div className="w-full  px-4 md:px-0">
-             {/* Список продуктов */}
-             <div className="grid gap-4 items-stretch " 
-             style={{
-           gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-         }}>
-               {productsWithDetailAndImages?.map((product) => (
-                 <ProductCard
-                   key={product.id}
-                   product={product}
-
-                 />
-               ))}
-             </div>
-           </div>
+        
  </div>
  </div>
  

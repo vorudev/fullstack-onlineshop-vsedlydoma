@@ -31,7 +31,7 @@ interface GetProductsParams {
   manufacturer?: string; 
 }
 export const getRandomProductsFast = async ({
-  limit = 20,
+  limit = 10,
   category,
   manufacturer,
 }: {
