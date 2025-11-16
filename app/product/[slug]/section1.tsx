@@ -1,8 +1,17 @@
 'use client'
 import React, { useState } from 'react';
 import { Star, Heart, ShoppingCart, Check, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ReviewForm } from '@/components/forms/review-form';
 import { useCart } from '@/app/context/cartcontext';
+import {ReviewsTable} from '@/components/reviews-table';
 import ImagesSliderProductPage from './images-slider-product-page';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 import {useFavorite} from '@/app/context/favoritecontext';
 import Image from 'next/image';
 interface ProductUnited {
@@ -266,8 +275,8 @@ if (!allAttributes) {
             </p>
             <button className="text-[14px] text-blue-600  font-semibold">Показать все</button>
         </div>
-        <div>
-            <h3 className="text-[24px] pb-4 text-gray-900 font-semibold hidden lg:block">
+        <div className="hidden lg:block">
+            <h3 className="text-[24px] pb-4 text-gray-900 font-semibold ">
                 О производителе
             </h3>
             <p className="text-[14px] text-gray-900 max-w-[600px]">
@@ -327,8 +336,35 @@ if (!allAttributes) {
   </div>
  
   </div>
- <button className="bg-blue-600 font-semibold text-white px-4 py-4 rounded-lg">Добавить отзыв</button>
+<Dialog>
+    <DialogTrigger className="bg-blue-600 font-semibold text-white px-4 py-4 rounded-lg text-black">Добавить отзыв</DialogTrigger>
+    <DialogContent className="bg-white  text-black">
+      <DialogHeader>
+        <DialogTitle className="text-[24px] text-gray-900 font-semibold">Добавить отзыв</DialogTitle>
+      </DialogHeader>
+      <ReviewForm product_id={productDetails?.id} />
+    </DialogContent>
+  </Dialog>
             </div>
+          {
+            productDetails?.reviews?.map((review) => (
+              <div className="flex flex-col gap-2 p-2 " key={review.id}>
+            <h3 className="text-[16px] text-gray-900 font-semibold">{review.author}</h3>
+<div className="flex flex-row gap-1 items-center">
+<Star className="w-[20px] h-[20px] text-yellow-300" fill="#FFD700"/>
+    <Star className="w-[20px] h-[20px] text-yellow-300" fill="#FFD700"/>
+    <Star className="w-[20px] h-[20px] text-yellow-300" fill="#FFD700"/>
+    <Star className="w-[20px] h-[20px] text-yellow-300" fill="#FFD700"/>
+    <Star className="w-[20px] h-[20px] text-yellow-300" />
+</div>
+<p className="text-[14px] text-gray-900 pt-1"> 
+     {review.comment}
+</p>
+<p className="text-[14px] text-gray-600">{review.createdAt?.toDateString()}</p>
+          </div>
+
+          ))
+          }
           <div className="flex flex-col gap-2 p-2 ">
             <h3 className="text-[16px] text-gray-900 font-semibold">Кирилл</h3>
 <div className="flex flex-row gap-1 items-center">

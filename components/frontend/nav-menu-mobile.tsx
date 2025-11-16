@@ -9,7 +9,7 @@ export default function NavMenuMobile()
     const session = useSession();
     return (
 <div 
-  className="flex flex-row lg:hidden bg-white justify-between py-2 px-5 md:px-15 items-center fixed bottom-0 w-full text-gray-400"
+  className="flex flex-row lg:hidden bg-white justify-between py-2 px-5 md:px-15 items-center z-[1000] fixed bottom-0 w-full text-gray-400"
   style={{ boxShadow: '0 -4px 6px -1px rgba(0, 0, 0, 0.1)' }}
 >
    <Link href="/" className={`flex flex-col  items-center ${pathname === '/' ? 'text-blue-600' : ''}`}>
