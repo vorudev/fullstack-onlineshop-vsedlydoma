@@ -31,6 +31,8 @@ interface CategoryParams {
   pageSize?: number;
   search?: string;
 }
+
+
 export async function getFilteredProducts(
   categoryId: string,
   selectedFilters?: FilterParams,

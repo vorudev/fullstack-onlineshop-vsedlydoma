@@ -1,8 +1,8 @@
 'use server';
 
 import { db } from "@/db/drizzle";
-import { Product, products, productAttributes, orderItems, orders, categories, productImages, reviews } from "@/db/schema";
-import { desc, eq, gte, inArray, lte, notInArray } from "drizzle-orm";
+import { Product, products, productAttributes, AttributeCategory, attributeCategories, orderItems, orders, categories, productImages, reviews, Manufacturer, manufacturers, manufacturerImages } from "@/db/schema";
+import { desc, eq, gte, inArray, lte, notInArray  } from "drizzle-orm";
 import { unstable_cache } from 'next/cache';
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
@@ -23,6 +23,205 @@ export async function getProducts() {
 }
 
 
+export async function getProductsWithDetailsLeftJoin(slug: string) {
+  try {
+    const result = await db
+    .select(
+      {
+        // product 
+        productId: products.id,
+        productTitle: products.title,
+        productDescription: products.description,
+        productPrice: products.price,
+        productSku: products.sku,
+        productSlug: products.slug,
+        productInStock: products.inStock,
+        productCategoryId: products.categoryId,
+        productManufacturerId: products.manufacturerId,
+        productCreatedAt: products.createdAt,
+        productUpdatedAt: products.updatedAt,
+
+        // productImage
+        productImageId: productImages.id,
+        productImageUrl: productImages.imageUrl,
+        productImageIsFeatured: productImages.isFeatured,
+        productImageProductId: productImages.productId,
+        productImageCreatedAt: productImages.createdAt,
+        productImageStorageType: productImages.storageType,
+        productImagesOrder: productImages.order,
+        productImagesStorageKey: productImages.storageKey,
+
+        // productReview
+        productReviewId: reviews.id,
+        productReviewRating: reviews.rating,
+        productReviewComment: reviews.comment,
+        productReviewCreatedAt: reviews.createdAt,
+        productReviewAuthor: reviews.author_name,
+         
+        // productAttributeCategories
+        attributeCategoryId: attributeCategories.id,
+        attributeCategoryName: attributeCategories.name,
+        attributeCategorySlug: attributeCategories.slug,
+        attributeCategoryDisplayOrder: attributeCategories.displayOrder,
+        
+        // productAttributes
+        productAttributeId: productAttributes.id,
+        productAttributeCategoryId: productAttributes.categoryId,
+        productAttributeName: productAttributes.name,
+        productAttributeValue: productAttributes.value,
+        productAttributeOrder: productAttributes.order,
+        productAttributeSlug: productAttributes.slug,
+
+        // productManufacturer
+        manufacturerId: manufacturers.id,
+        manufacturerName: manufacturers.name,
+        manufacturerSlug: manufacturers.slug,
+        manufacturerDescription: manufacturers.description,
+
+        // manufacturerImage
+        manufacturerImageId: manufacturerImages.id,
+        manufacturerImageManufacturerId: manufacturerImages.manufacturerId,
+        manufacturerImageUrl: manufacturerImages.imageUrl,
+        manufacturerImageCreatedAt: manufacturerImages.createdAt,
+        manufacturerImageStorageType: manufacturerImages.storageType,
+        manufacturerImagesOrder: manufacturerImages.order,
+        manufacturerImagesStorageKey: manufacturerImages.storageKey,
+
+      }
+    )
+    .from(products)
+    .leftJoin(productImages, eq(products.id, productImages.productId))
+    .leftJoin(reviews, eq(products.id, reviews.product_id))
+ .leftJoin(productAttributes, eq(products.id, productAttributes.productId)) // Сначала присоединяем productAttributes
+.leftJoin(attributeCategories, eq(productAttributes.categoryId, attributeCategories.id)) // Затем присоединяем attributeCategories
+.leftJoin(manufacturers, eq(products.manufacturerId, manufacturers.id))
+.leftJoin(manufacturerImages, eq(manufacturers.id, manufacturerImages.manufacturerId))
+    .where(eq(products.slug, slug));
+  
+    if (!result) {
+      return null;
+    }
+    
+    const firstRow = result[0];
+
+    const product = {
+      id: firstRow.productId,
+      title: firstRow.productTitle,
+      description: firstRow.productDescription,
+      price: firstRow.productPrice,
+      sku: firstRow.productSku,
+      slug: firstRow.productSlug,
+      inStock: firstRow.productInStock,
+      categoryId: firstRow.productCategoryId,
+      manufacturerId: firstRow.productManufacturerId,
+      createdAt: firstRow.productCreatedAt,
+      updatedAt: firstRow.productUpdatedAt,
+      images: result.filter(row => row.productImageId !== null || row.productImageUrl !== null || row.productImageProductId !== null || row.productImagesOrder !== null).map(row => ({
+        id: row.productImageId!,
+        productId: row.productId!,
+        isFeatured: row.productImageIsFeatured,
+        imageUrl: row.productImageUrl!,
+        storageType: row.productImageStorageType!,
+        order: row.productImagesOrder,
+        createdAt: row.productImageCreatedAt,
+        storageKey: row.productImagesStorageKey,
+      })),
+      reviews: result.filter(row => row.productReviewId !== null).map(row => ({
+        id: row.productReviewId,
+        productId: row.productId,
+        rating: row.productReviewRating,
+        comment: row.productReviewComment,
+        createdAt: row.productReviewCreatedAt,
+        author: row.productReviewAuthor,
+      })),
+      attributeCategories: result.filter(row => row.attributeCategoryId !== null).map(row => ({
+        id: row.attributeCategoryId,
+        name: row.attributeCategoryName,
+        slug: row.attributeCategorySlug,
+        displayOrder: row.attributeCategoryDisplayOrder,
+      attributes: result.filter(row => row.productAttributeId !== null).map(row => ({
+        id: row.productAttributeId,
+        categoryId: row.productAttributeCategoryId,
+        name: row.productAttributeName,
+        value: row.productAttributeValue,
+        order: row.productAttributeOrder,
+        slug: row.productAttributeSlug,
+      })),
+      })),
+      manufacturer: {
+        id: firstRow.manufacturerId,
+        name: firstRow.manufacturerName,
+        description: firstRow.manufacturerDescription,
+        slug: firstRow.manufacturerSlug,
+        images: result.filter(row => row.manufacturerImageId !== null).map(row => ({
+          id: row.manufacturerImageId!,
+          manufacturerId: row.manufacturerImageManufacturerId,
+          imageUrl: row.manufacturerImageUrl!,
+          storageType: row.manufacturerImageStorageType,
+          order: row.manufacturerImagesOrder,
+          storageKey: row.manufacturerImagesStorageKey,
+        })),
+      },
+    };
+    const averageRating = product.reviews.reduce((acc, review) => acc + review.rating!, 0) / product.reviews.length;
+    const reviewCount = product.reviews.length;
+    
+    const productWithDetails = {
+      ...product,
+      averageRating,
+      reviewCount,
+    };
+    return productWithDetails;
+  } catch (error) {
+    console.error("Error fetching product details:", error);
+    throw new Error("Failed to fetch product details");
+  }
+}
+export async function getProductWithDetails(id: string) {
+  try {
+    const [product,  images, productReviews] = await Promise.all([
+      db.select(
+        {
+          id: products.id,
+          title: products.title,
+          description: products.description,
+          price: products.price,
+          sku: products.sku,
+          slug: products.slug,
+          categoryId: products.categoryId,
+          manufacturerId: products.manufacturerId,
+        }
+      ).from(products).where(eq(products.id, id)),
+      db.select(
+        {
+          id: productImages.id,
+          productId: productImages.productId,
+          isFeatured: productImages.isFeatured,
+          imageUrl: productImages.imageUrl,
+        }
+      ).from(productImages).where(eq(productImages.productId, id)).orderBy(desc(productImages.isFeatured)),
+      db.select(
+        {
+          id: reviews.id,
+          productId: reviews.product_id,
+          rating: reviews.rating,
+          comment: reviews.comment,
+          createdAt: reviews.createdAt,
+        }
+      ).from(reviews).where(eq(reviews.product_id, id)),
+    ]);
+const productDetails = {
+  ...product[0],
+  images,
+  productReviews,
+};
+    return productDetails;
+
+  } catch (error) {
+    console.error("Error fetching product details:", error);
+    throw new Error("Failed to fetch product details");
+  }
+}
 interface GetProductsParams {
   page?: number;
   pageSize?: number;

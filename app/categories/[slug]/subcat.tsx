@@ -9,7 +9,6 @@ interface SubcatProps {
         id: string;
         name: string;
         slug: string;
-        productsCount: number;
     }
 }
 

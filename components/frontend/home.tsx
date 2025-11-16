@@ -12,9 +12,10 @@ import UserGreetingHome from "./user-greeting-home";
 import { getAverageRatingByProductId } from "@/lib/actions/reviews";
 import { getCategories } from "@/lib/actions/product-categories";
 export default async function HomePage () {
-const [categories, {productsWithDetails, images} ] = await Promise.all([
+const [categories, {productsWithDetails, images}, {manufacturers, ManufacturerImages} ] = await Promise.all([
   getCategories(),
   getRandomProductsFast(), 
+  getRandomManufacturers()
 ]);
 const productsWithDetailAndImages = productsWithDetails?.map(product => {
   // Находим картинки, которые принадлежат текущему продукту
@@ -23,6 +24,13 @@ const productsWithDetailAndImages = productsWithDetails?.map(product => {
   return {
     ...product,
     images: productImages,
+  };
+});
+const manufacturersWithImages = manufacturers?.map(manufacturer => {
+  const manufacturerImages = ManufacturerImages?.filter(img => img.manufacturerId === manufacturer.id) || [];
+  return {
+    ...manufacturer,
+    images: manufacturerImages,
   };
 });
 
@@ -98,7 +106,7 @@ const productsWithDetailAndImages = productsWithDetails?.map(product => {
     </div>
   </div>
 </div>
- <div className="w-full hidden lg:flex">
+ <div className="w-full  hidden lg:block">
              {/* Список продуктов */}
         <SliderHome products={productsWithDetailAndImages || []} />
         

@@ -7,7 +7,6 @@ interface CategoryProps {
         id: string;
         name: string;
         slug: string;
-        productsCount: number;
     }
 }
 

@@ -76,10 +76,8 @@ function getReviewText(count: number): string {
           
           </Link>
           <div className="flex flex-row gap-2 pt-2 text-sm items-center">
-            <button className="flex items-center gap-1 py-1 rounded-lg text-gray-500">
-              <ChartNoAxesColumn className="w-4 h-4" /> Сравнить
-            </button>
-          <div className="flex items-center px-2 py-1 rounded-lg">
+            
+          <div className="flex items-center py-1 rounded-lg">
           {rounded ? rounded && 
           <div className={`flex mr-2  items-center gap-1 font-semibold ${getRatingColor(rounded)}`}>
               <Star className="w-4 h-4" /> {rounded ? rounded : null} 

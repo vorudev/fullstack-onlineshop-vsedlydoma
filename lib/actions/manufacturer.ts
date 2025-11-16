@@ -84,7 +84,7 @@ export const getRandomManufacturers = async ({
 
         const manufacturersIds = result.map(r => r.id);
         
-        const images = await db.select(
+        const ManufacturerImages = await db.select(
             {
                 id: manufacturerImages.id,
                 manufacturerId: manufacturerImages.manufacturerId,
@@ -93,7 +93,7 @@ export const getRandomManufacturers = async ({
         ).from(manufacturerImages).where(inArray(manufacturerImages.manufacturerId, manufacturersIds));
         return {
             manufacturers: result,
-            images: images
+          ManufacturerImages
         };
     } catch (error) {
         console.error("Error fetching random manufacturers:", error);

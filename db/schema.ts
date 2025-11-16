@@ -309,3 +309,25 @@ export const orderItemsRelations = relations(orderItems, ({ one }) => ({
     references: [products.id],
   }),
 }));
+
+export const productRelations = relations(products, ({ one, many }) => ({
+  reviews: many(reviews),
+  images: many(productImages),
+  attributes: many(productAttributes),
+  attributeCategories: many(attributeCategories),
+}));
+
+export const productAttributesRelations = relations(productAttributes, ({ one }) => ({
+  product: one(products, {
+    fields: [productAttributes.productId],
+    references: [products.id],
+  }),
+  attributeCategory: one(attributeCategories, {
+    fields: [productAttributes.categoryId],
+    references: [attributeCategories.id],
+  }),
+}));
+
+export const attributeCategoriesRelations = relations(attributeCategories, ({ many }) => ({
+  productAttributes: many(productAttributes),
+}));

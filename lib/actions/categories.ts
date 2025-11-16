@@ -8,15 +8,13 @@ export type Category = {
   slug: string;
   description: string | null;
   parentId: string | null;
-  productsCount: number;
   hasChildren: boolean;
 };
 
 export type CategoryWithChain = {
-  category: Category;
+  category: Omit<Category, "productsCount"> ;
   breadcrumbs: Array<{ id: string; name: string; slug: string }>;
   subcategories: Category[];
-  products?: Array<typeof products.$inferSelect>;
 };
 
 // Получить категорию со всей информацией
@@ -43,10 +41,8 @@ export async function getCategoryWithNavigation(
         slug: categories.slug,
         description: categories.description,
         parentId: categories.parentId,
-        productsCount: sql<number>`COUNT(DISTINCT ${products.id})::int`,
       })
       .from(categories)
-      .leftJoin(products, eq(products.categoryId, categories.id))
       .where(eq(categories.parentId, currentCategory.id))
       .groupBy(categories.id),
   ]);
@@ -68,24 +64,15 @@ export async function getCategoryWithNavigation(
     hasChildren: childrenCheck.length > 0,
   }));
 
-  // Если нет подкатегорий, получаем продукты
-  let categoryProducts: typeof products.$inferSelect[] | undefined = undefined;
-  if (subcategories.length === 0) {
-    categoryProducts = await db
-      .select()
-      .from(products)
-      .where(eq(products.categoryId, currentCategory.id));
-  }
+
 
   return {
     category: {
       ...currentCategory,
-      productsCount: categoryProducts?.length || 0,
       hasChildren: subcategories.length > 0,
     },
     breadcrumbs,
     subcategories,
-    products: categoryProducts,
   };
 }
 
@@ -97,9 +84,7 @@ export async function getRootCategories(): Promise<Category[]> {
     slug: string;
     description: string | null;
     parentId: string | null;
-    productsCount: number;
     hasChildren: boolean;
-
   }>(sql`
     WITH RECURSIVE category_tree AS (
       -- Начинаем с корневых категорий
@@ -120,14 +105,12 @@ export async function getRootCategories(): Promise<Category[]> {
       c.slug,
       c.description,
       c.parent_id,
-      COUNT(DISTINCT p.id)::int as products_count,
       EXISTS(
         SELECT 1 FROM ${categories} child 
         WHERE child.parent_id = c.id
       ) as has_children
     FROM ${categories} c
     LEFT JOIN category_tree ct ON c.id = ct.root_id
-    LEFT JOIN ${products} p ON p.category_id = ct.id
     WHERE c.parent_id IS NULL
     GROUP BY c.id, c.name, c.slug, c.description, c.parent_id, ct.root_id
     ORDER BY c.name

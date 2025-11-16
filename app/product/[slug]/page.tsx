@@ -5,28 +5,24 @@ import { ReviewsTable } from "@/components/reviews-table";
 import Link from "next/link";
 import Section1 from "./section1";
 import Section2 from "./section2";
+import {getProductsWithDetailsLeftJoin} from "@/lib/actions/product";
 
 import Image from "next/image";
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   // Ожидаем params перед использованием
   const { slug } = await params;
-  const product = await getProductsBySlug(slug);
-
-  if (!product) {
-    return <div>Product not found</div>;
-  }
-
-
+ const   productDetails = await getProductsWithDetailsLeftJoin(slug);
+ if (!productDetails) {
+  return <div>Товар не найден</div>;
+}
+  
   return (
-    <>
-     <div className="flex flex-col lg:flex-row lg:pt-[70px] pt-[60px] ">
-            <div className="lg:w-1/3 w-full"> </div>
-            <div className="lg:w-1/3 w-full"> {/*<Section1 product={product} />*/}</div>
-            <div className="lg:w-1/3 w-full hidden lg:block"> {/*<Section2 product={product}/></div>*/}</div>
-        </div>
-        <ReviewsTable productId={product.id} />
-    
-     </>
+   <main className="bg-gray-100 min-h-screen">
+<div className="  xl:max-w-[1400px] lg:max-w-[1000px] flex text-black lg:mx-auto py-2 min-h-screen  lg:py-0 lg:px-0 pb-30">
+<Section1 productDetails={productDetails }/>
+
+</div>
+   </main>
     
   );
 }

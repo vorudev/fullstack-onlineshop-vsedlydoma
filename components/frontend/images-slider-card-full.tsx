@@ -40,31 +40,23 @@ export default function ImagesSlider({ images, title }: Images) {
 
   
   return (
-   <div className="w-full overflow-hidden">
-  <div
-    className="flex gap-3 overflow-x-auto 2xl:overflow-visible py-2 scroll-snap-center px-10 2xl:px-0 snap-x snap-mandatory 2xl:snap-none scrollbar-hide pb-2 2xl:justify-center"
-    style={{
-      scrollbarWidth: 'none',
-      msOverflowStyle: 'none',
-      cursor: 'grab',
-    }}
-  >
-    {sortedImages.slice(0, window.innerWidth >= 1536 ? 1 : sortedImages.length).map((image) => (
-      <div
-        key={image.id}
-        className="flex-shrink-0 snap-start lg:snap-center 2xl:snap-none w-[180px] h-[150px] xl:w-[160px] xl:h-[160px] aspect-[1/1.15] lg:aspect-[1/1] relative rounded-lg overflow-hidden"
-      >
-        <Image
-          src={image.imageUrl}
-          fill
-          alt={`${title}${image.isFeatured ? ' - главное фото' : ''}`}
-          className="w-full h-full object-contain"
-          draggable={false}
-        />
-      </div>
-    ))}
+  <div className="w-full overflow-hidden">
+    <div className="flex gap-3 overflow-x-auto xl:overflow-visible py-2 scroll-snap-center px-10 xl:px-0 snap-x snap-mandatory xl:snap-none scrollbar-hide pb-2 xl:justify-center">
+      {sortedImages.map((image, index) => (
+        <div
+          key={image.id}
+          className={`flex-shrink-0 snap-start lg:snap-center xl:snap-none w-[180px] h-[150px] xl:w-[160px] xl:h-[160px] aspect-[1/1.15] lg:aspect-[1/1] relative rounded-lg overflow-hidden ${index > 0 ? 'xl:hidden' : ''}`}
+        >
+          <Image
+            src={image.imageUrl}
+            fill
+            alt={`${title}${image.isFeatured ? ' - главное фото' : ''}`}
+            className="w-full h-full object-contain"
+            draggable={false}
+          />
+        </div>
+      ))}
+    </div>
   </div>
-  {/* Индикаторы точек */}
-</div>
-  );
+);
 }
