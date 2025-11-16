@@ -17,7 +17,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 }
   
   return (
-   <main className="bg-gray-100 min-h-screen">
+   <main className="lg:bg-gray-100 bg-white min-h-screen">
 <div className="  xl:max-w-[1400px] lg:max-w-[1000px] flex text-black lg:mx-auto py-2 min-h-screen  lg:py-0 lg:px-0 pb-30">
 <Section1 productDetails={productDetails }/>
 
