@@ -1,6 +1,7 @@
 'use client'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ReviewForm } from "@/components/forms/review-form";
+import { useState } from "react";
 import { Star } from "lucide-react";
 import { useRouter, useSearchParams } from 'next/navigation';
 interface ProductUnited {
@@ -140,11 +141,11 @@ const RatingChart = ({productDetails}: ProductUnited) => {
 
       <Dialog>
       <DialogTrigger asChild >
-        <button className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+        <button className="mt-4 cursor-pointer px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
           Оставить отзыв
         </button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="bg-white max-w-lg text-black">
         <DialogHeader>
           <DialogTitle>Оставить отзыв</DialogTitle>
         </DialogHeader>
@@ -157,14 +158,18 @@ const RatingChart = ({productDetails}: ProductUnited) => {
 };
 export default function DesktopReviews({productDetails, internals}: United) {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
     const handleLoadMore = () => {
+    setLoading(true);
     const params = new URLSearchParams(searchParams.toString());
+
     const newLimit = internals.currentLimit + 5;
   params.set('reviewsLimit', newLimit.toString());
   
   // ✅ Правильно - с ${}
   router.push(`/product/${internals.slug}?${params.toString()}`, { scroll: false });
+   setLoading(false);
   };
     const starRating = (rating: number) => {
     const fullStars = Math.floor(rating);
@@ -245,7 +250,7 @@ export default function DesktopReviews({productDetails, internals}: United) {
     onClick={handleLoadMore}
     className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
   >
-    Показать ещё
+    {loading ? 'Загрузка...' : 'Показать больше отзывов'}
   </button>
 )}
 

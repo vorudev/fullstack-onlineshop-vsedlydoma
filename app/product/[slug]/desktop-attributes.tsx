@@ -70,10 +70,8 @@ interface ProductUnited {
 export default function DesktopAtributes({productDetails}: ProductUnited) {
     
     return (
-        <div className="flex flex-col gap-3 lg:block hidden">
-  <h3 className="text-sm text-gray-900 font-semibold mb-3">
-    Характеристики:
-  </h3>
+        <div className=" flex-col gap-3 lg:block hidden">
+
   <div className="grid grid-cols-2 gap-x-8">
     <div>
       {productDetails?.attributes.slice(0, Math.ceil(productDetails?.attributes.length / 2)).map((attr, index) => (
