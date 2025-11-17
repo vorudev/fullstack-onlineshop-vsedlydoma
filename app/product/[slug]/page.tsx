@@ -15,6 +15,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
  if (!productDetails) {
   return <div>Товар не найден</div>;
 }
+
   
   return (
    <main className="lg:bg-gray-100 bg-white min-h-screen">
