@@ -18,6 +18,15 @@ import {
 } from "@/components/ui/dialog";
 import {useFavorite} from '@/app/context/favoritecontext';
 import Image from 'next/image';
+import { int } from 'zod';
+interface Internals {
+    slug: string;
+    currentLimit: number;
+}
+interface United { 
+    internals: Internals;
+    productDetails: ProductUnited['productDetails'];
+}
 interface ProductUnited {
    
   productDetails: {
@@ -85,7 +94,7 @@ interface ProductUnited {
 
 
 }
-export default function ProductPage({productDetails}: ProductUnited) {
+export default function ProductPage({productDetails, internals}: United) {
     const [isExpanded, setIsExpanded] = useState(false);
     const {addToCart} = useCart();
     const {addToFavorite} = useFavorite();
@@ -102,7 +111,7 @@ export default function ProductPage({productDetails}: ProductUnited) {
         </div>
          <div className="flex flex-col lg:hidden gap-1">
             <h3 className="text-[20px] text-gray-900 font-semibold  leading-tight lg:text-[32px]">{productDetails?.title}</h3>
-            <p className="text-[12px] text-gray-600 ">Код товара   {productDetails?.sku}</p>
+            <p className="text-[12px] text-gray-600 ">Код товара   { productDetails?.sku}</p>
             </div>
             <div className="flex flex-row gap-1 items-center lg:hidden">
             <Star className="w-[16px] h-[16px] text-yellow-300" fill="#FFD700"/>
@@ -147,7 +156,7 @@ export default function ProductPage({productDetails}: ProductUnited) {
 
          <DesktopAtributes productDetails={productDetails} />
       </div>
-         <DesktopReviews productDetails={productDetails} />
+         <DesktopReviews productDetails={productDetails} internals={internals}/>
         </div>
 
     <div className="flex items-center lg:hidden justify-between pt-5">
@@ -212,16 +221,16 @@ export default function ProductPage({productDetails}: ProductUnited) {
       )}
     </div>
     */}
-        <div className="flex flex-col gap-[12px] items-start pt-5">
+        <div className="flex flex-col gap-[12px] lg:hidden items-start pt-5">
             <h3 className="text-[24px] text-gray-900 font-semibold">О товаре</h3>
             <p className="text-[14px] text-gray-900 max-w-[600px]">
 
 					
                     {productDetails?.description}
             </p>
-            <button className="text-[14px] text-blue-600  font-semibold">Показать все</button>
+            <button className="text-[14px] text-blue-600  font-semibold  ">Показать все</button>
         </div>
-        <div>
+        <div className=" lg:hidden">
             <h3 className="text-[24px] pb-4 text-gray-900 font-semibold ">
                 О производителе
             </h3>
@@ -232,7 +241,7 @@ export default function ProductPage({productDetails}: ProductUnited) {
 }
             </p>
         </div>
-        <div className="flex flex-col gap-1 items-start mt-[20px] ">
+        <div className="flex flex-col gap-1 items-start mt-[20px]  lg:hidden">
             <h3 className="text-[24px] text-gray-900 font-semibold">Отзывы</h3>
             <div className="flex flex-row gap-2 items-center border-b border-gray-200 pb-2 w-full ">
 <div className="flex flex-row gap-1 items-center">
@@ -288,9 +297,7 @@ export default function ProductPage({productDetails}: ProductUnited) {
 <p className="text-[14px] text-gray-600">12.12.2023</p>
           </div>
         </div>
-<p className="text-[14px] text-blue-600 font-semibold">
-    Показать все отзывы
-</p>
+
     </div>
  )
 }

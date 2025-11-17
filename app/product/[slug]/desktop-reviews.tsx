@@ -1,9 +1,10 @@
-
+'use client'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ReviewForm } from "@/components/forms/review-form";
 import { Star } from "lucide-react";
+import { useRouter, useSearchParams } from 'next/navigation';
 interface ProductUnited {
-   
+  
   productDetails: {
     id: string;
     title: string;
@@ -69,8 +70,15 @@ interface ProductUnited {
 
 
 }
-
-const RatingChart = ({ reviews }: { reviews: any }) => {
+interface Params { 
+  currentLimit: number;
+  slug: string;
+}
+interface United { 
+  internals: Params;
+  productDetails: ProductUnited['productDetails'];
+}
+const RatingChart = ({productDetails}: ProductUnited) => {
   // Подсчитываем количество отзывов для каждой оценки
   const ratingCounts = {
     5: 0,
@@ -80,17 +88,17 @@ const RatingChart = ({ reviews }: { reviews: any }) => {
     1: 0
   };
 
-  reviews?.forEach((review: any) => {
+  const reviews = productDetails.reviews?.forEach((review: any) => {
     if (review.rating >= 1 && review.rating <= 5) {
       ratingCounts[review.rating as keyof typeof ratingCounts]++;
     }
   });
 
-  const totalReviews = reviews?.length || 0;
-  const averageRating = reviews?.reduce((sum: number, r: any) => sum + r.rating, 0) / totalReviews || 0;
+  const totalReviews =  productDetails.reviews?.length || 0;
+  const averageRating =  productDetails.reviews?.reduce((sum: number, r: any) => sum + r.rating, 0) / totalReviews || 0;
 
   return (
-    <div className="flex flex-col gap-4 bg-gray-50 rounded-lg p-6">
+    <div className="flex flex-col gap-4  rounded-lg p-6">
       {/* Общий рейтинг */}
       <div className="flex items-center gap-3">
         <span className="text-5xl font-bold">{averageRating.toFixed(1)}</span>
@@ -98,12 +106,12 @@ const RatingChart = ({ reviews }: { reviews: any }) => {
           {[1, 2, 3, 4, 5].map((star) => (
             <Star
               key={star}
-              className="w-6 h-6 text-red-500"
-              fill={star <= Math.round(averageRating) ? "#ef4444" : "none"}
+              className="w-6 h-6 text-yellow-300"
+              fill={star <= Math.round(averageRating) ? "#FFD700" : "none"}
             />
           ))}
         </div>
-        <span className="text-gray-500">{totalReviews} отзывов</span>
+       <span className="text-gray-500 text-sm whitespace-nowrap">{totalReviews} отзывов</span>
       </div>
 
       {/* График распределения */}
@@ -117,7 +125,7 @@ const RatingChart = ({ reviews }: { reviews: any }) => {
               <span className="text-gray-600 w-3">{rating}</span>
               <div className="flex-1 bg-gray-200 rounded-full h-2 overflow-hidden">
                 <div
-                  className="bg-red-500 h-full rounded-full transition-all duration-300"
+                  className="bg-yellow-300 h-full rounded-full transition-all duration-300"
                   style={{ width: `${percentage}%` }}
                 />
               </div>
@@ -129,14 +137,35 @@ const RatingChart = ({ reviews }: { reviews: any }) => {
         })}
       </div>
 
-      {/* Кнопка оставить отзыв */}
-      <button className="bg-red-500 text-white font-semibold py-3 px-6 rounded-lg hover:bg-red-600 transition-colors">
-        Оставить отзыв
-      </button>
+
+      <Dialog>
+      <DialogTrigger asChild >
+        <button className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          Оставить отзыв
+        </button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Оставить отзыв</DialogTitle>
+        </DialogHeader>
+        <ReviewForm product_id={productDetails.id} />
+      </DialogContent>
+    </Dialog>
+   
     </div>
   );
 };
-export default function DesktopReviews({productDetails}: ProductUnited) {
+export default function DesktopReviews({productDetails, internals}: United) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+    const handleLoadMore = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    const newLimit = internals.currentLimit + 5;
+  params.set('reviewsLimit', newLimit.toString());
+  
+  // ✅ Правильно - с ${}
+  router.push(`/product/${internals.slug}?${params.toString()}`, { scroll: false });
+  };
     const starRating = (rating: number) => {
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 >= 0.5;
@@ -181,50 +210,51 @@ export default function DesktopReviews({productDetails}: ProductUnited) {
 }
     
     return (
-       <div className="flex flex-row gap-1 items-start mt-[20px] hidden lg:block ">
+       <div className=" flex-row gap-1 items-start mt-[20px] hidden  lg:flex">
         <div className="flex flex-col">
           <div className="flex flex-row gap-3 items-end pb-3"><h3 className="text-[24px] text-gray-900 font-semibold leading-tight">Отзывы </h3>
-            <p className="text-[16px] text-gray-600 font-semibold">{productDetails?.reviewCount}</p>
             </div>
-            <div className="flex flex-col gap-3 items-start  pb-2 w-full ">
-<div className="flex flex-row gap-2 items-center"><div className="flex flex-row gap-1 items-center">
-    {starRating(productDetails?.averageRating)}
-    
+            <div className="flex flex-col gap-3 items-start   w-full ">
 
-<p className="text-[24px] text-gray-900 font-semibold">{productDetails?.averageRating.toFixed(2)}</p>
 
-  </div>
- 
-  </div>
-<Dialog>
-    <DialogTrigger className="bg-blue-600 font-semibold text-white px-4 py-3 rounded-xl text-black">Добавить отзыв</DialogTrigger>
-    <DialogContent className="bg-white  text-black">
-      <DialogHeader>
-        <DialogTitle className="text-[24px] text-gray-900 font-semibold">Добавить отзыв</DialogTitle>
-      </DialogHeader>
-      <ReviewForm product_id={productDetails?.id} />
-    </DialogContent>
-  </Dialog>
             </div>
-          {
+          <div className="flex flex-col  border-t  border-gray-200  overflow-y-auto">{
             productDetails?.reviews?.map((review) => (
-              <div className="flex flex-col gap-2 p-2 " key={review.id}>
-            <h3 className="text-[16px] text-gray-900 font-semibold">{review.author_name}</h3>
+              <div className="flex flex-col gap-2 border-b border-gray-200 py-6 " key={review.id}>
+            <h3 className="text-[16px]  text-gray-900 font-semibold">{review.author_name}</h3>
 <div className="flex flex-row gap-1 items-center">
 {starRating(review.rating)}
 </div>
 <p className="text-[14px] text-gray-900 pt-1"> 
      {review.comment}
 </p>
-<p className="text-[14px] text-gray-600">{review.createdAt?.toDateString()}</p>
+<p className="text-[14px] text-gray-600">
+  {review.createdAt?.toLocaleDateString('ru-RU', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  })}
+</p>
           </div>
 
           ))
           }
+ 
+{productDetails?.reviews?.length >= internals?.currentLimit && (
+  <button
+    onClick={handleLoadMore}
+    className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+  >
+    Показать ещё
+  </button>
+)}
+
+    
+          </div>
          
         </div>
         <div >
-          
+          <RatingChart productDetails={productDetails} />
         </div>
         
         </div>

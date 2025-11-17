@@ -22,8 +22,10 @@ export async function getProducts() {
     
 }
 
-
-export async function getProductsWithDetailsLeftJoin(slug: string) {
+interface ProductPageParams { 
+  limit?: number;
+}
+export async function getProductsWithDetailsLeftJoin(slug: string, limit: number) {
   try {
     // 1. Получаем основную информацию о продукте
     const [product] = await db
@@ -49,7 +51,9 @@ export async function getProductsWithDetailsLeftJoin(slug: string) {
         db
           .select()
           .from(reviews)
-          .where(eq(reviews.product_id, product.products.id)),
+          .where(eq(reviews.product_id, product.products.id))
+          .limit(limit),
+
         
         // Атрибуты
         db
