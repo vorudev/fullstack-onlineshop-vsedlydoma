@@ -108,8 +108,8 @@ function getReviewText(count: number): string {
   <div className="flex flex-col items-between gap-4 lg:gap-0 lg:items-start w-full">
     <div className="flex gap-4 w-full items-start " >
     {/* Image Section */}
-    <div className="flex-shrink-0 items-center justify-center flex flex-col w-full lg:w-[180px]">
-       <Link className="relative overflow-hidden lg:max-w-[180px] lg:max-h-[150px] max-w-full " href={`/product/${item.product.slug}`}>
+    <div className="flex-shrink-0 items-center justify-center flex flex-col  w-full lg:w-[180px]">
+       <Link className="relative overflow-hidden lg:max-w-[180px] lg:max-h-[150px]  " href={`/product/${item.product.slug}`}>
             <ImagesSliderCardFull images={item.product.images} title={item.product.title} />
           </Link>
       <p className="text-gray-400 text-[12px] text-center">{item.product.sku}</p>
@@ -157,7 +157,7 @@ function getReviewText(count: number): string {
       </div> 
     </div>
     </div>  
-    <h2 className="text-base lg:font-medium text-[16px] cl text-gray-900 flex-1 lg:hidden ">{item.product.title}</h2>
+    <h2 className="text-base lg:font-medium text-[15px] cl text-gray-900 flex-1 lg:hidden ">{item.product.title}</h2>
     <div className="flex gap-4 justify-between items-center lg:hidden">
       
         <div className="flex items-center gap-2">
