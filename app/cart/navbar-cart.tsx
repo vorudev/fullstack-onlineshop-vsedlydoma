@@ -10,7 +10,7 @@ export default function NavbarCart() {
   style={{ boxShadow: '0 -4px 6px -1px rgba(0, 0, 0, 0.1)' }}
 >
 
- <div className="flex flex-row gap-1">
+ <div className="flex flex-row gap-1 items-center">
 <p className="text-[15px] text-black font-semibold">Итого:</p>
 <p className="text-[16px] text-black font-semibold ">{total.toFixed(2)} руб</p>
 </div>

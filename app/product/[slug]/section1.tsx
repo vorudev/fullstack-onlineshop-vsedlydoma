@@ -7,6 +7,7 @@ import DesktopAtributes from './desktop-attributes';
 import { useCart } from '@/app/context/cartcontext';
 import MobileAtributes from './mobile-atributes';
 import DesktopReviews from './desktop-reviews';
+import MobileReviews from './reviews-mobile';
 import {ReviewsTable} from '@/components/reviews-table';
 import ImagesSliderProductPage from './images-slider-product-page';
 import {
@@ -96,9 +97,10 @@ interface ProductUnited {
 }
 export default function ProductPage({productDetails, internals}: United) {
     const [isExpanded, setIsExpanded] = useState(false);
-    const {addToCart} = useCart();
-    const {addToFavorite} = useFavorite();
-
+    const {addToCart, cart} = useCart();
+    const {addToFavorite, favorite} = useFavorite();
+   const isInCart = cart.some((item) => item.product.id === productDetails.id);
+      const isInFavorite = favorite.some((item) => item.product.id === productDetails.id);
    
  return ( 
     <div className="pt-[16px] px-[16px] overflow-hidden flex w-full flex-col gap-3">
@@ -166,8 +168,8 @@ export default function ProductPage({productDetails, internals}: United) {
         <div className="flex items-center flex-row gap-3">
             <button 
             onClick={() => addToFavorite(productDetails)}
-            className=" text-gray-900  rounded-[8px]">
-          <Heart className="w-5 h-5"/>
+            className={isInFavorite ? 'text-red-500' : 'text-gray-900'}>
+          <Heart className={`w-5 h-5 ${isInFavorite ? 'text-red-500 fill-red-500' : 'text-gray-900'}`}/>
             </button>
             <button 
             onClick={() => addToCart({
@@ -186,8 +188,9 @@ export default function ProductPage({productDetails, internals}: United) {
     sku: productDetails?.sku,
     images: productDetails?.images,
     })}
-            className="bg-blue-600 text-white px-[16px] py-2 rounded-[8px] font-semibold">
-            В корзину
+            className={`px-[16px] py-2 border rounded-[8px] font-semibold ${isInCart ? 'border-blue-600 text-blue-600 cursor-not-allowed' : 'text-white  bg-blue-600'}`}
+            >
+           {isInCart ? 'В корзине' : 'В корзину'}
         </button></div>
         </div>
         <MobileAtributes productDetails={productDetails} />
@@ -228,7 +231,7 @@ export default function ProductPage({productDetails, internals}: United) {
 					
                     {productDetails?.description}
             </p>
-            <button className="text-[14px] text-blue-600  font-semibold  ">Показать все</button>
+            
         </div>
         <div className=" lg:hidden">
             <h3 className="text-[24px] pb-4 text-gray-900 font-semibold ">
@@ -241,63 +244,8 @@ export default function ProductPage({productDetails, internals}: United) {
 }
             </p>
         </div>
-        <div className="flex flex-col gap-1 items-start mt-[20px]  lg:hidden">
-            <h3 className="text-[24px] text-gray-900 font-semibold">Отзывы</h3>
-            <div className="flex flex-row gap-2 items-center border-b border-gray-200 pb-2 w-full ">
-<div className="flex flex-row gap-1 items-center">
-    <Star className="w-[24px] h-[24px] text-yellow-300" fill="#FFD700"/>
-    <Star className="w-[24px] h-[24px] text-yellow-300" fill="#FFD700"/>
-    <Star className="w-[24px] h-[24px] text-yellow-300" fill="#FFD700"/>
-    <Star className="w-[24px] h-[24px] text-yellow-300" fill="#FFD700"/>
-    <Star className="w-[24px] h-[24px] text-yellow-300" />
-</div>
-<p className="text-[24px] text-gray-900 font-semibold">4.0</p>
-  <p className="text-[14px] text-gray-600">122 отзыва</p>
-            </div>
-          <div className="flex flex-col gap-2 p-2 ">
-            <h3 className="text-[16px] text-gray-900 font-semibold">Кирилл</h3>
-<div className="flex flex-row gap-1 items-center">
-<Star className="w-[20px] h-[20px] text-yellow-300" fill="#FFD700"/>
-    <Star className="w-[20px] h-[20px] text-yellow-300" fill="#FFD700"/>
-    <Star className="w-[20px] h-[20px] text-yellow-300" fill="#FFD700"/>
-    <Star className="w-[20px] h-[20px] text-yellow-300" fill="#FFD700"/>
-    <Star className="w-[20px] h-[20px] text-yellow-300" />
-</div>
-<p className="text-[14px] text-gray-900 pt-1"> 
-     В характеристики указана функция загрузки белья во время стирки, не получилось разобраться как это сделать.  Так как во время стирки двери блокируются. 
-</p>
-<p className="text-[14px] text-gray-600">12.12.2023</p>
-          </div>
-          <div className="flex flex-col gap-2 p-2  ">
-            <h3 className="text-[16px] text-gray-900 font-semibold">Кирилл</h3>
-<div className="flex flex-row gap-1 items-center">
-<Star className="w-[20px] h-[20px] text-yellow-300" fill="#FFD700"/>
-    <Star className="w-[20px] h-[20px] text-yellow-300" fill="#FFD700"/>
-    <Star className="w-[20px] h-[20px] text-yellow-300" fill="#FFD700"/>
-    <Star className="w-[20px] h-[20px] text-yellow-300" fill="#FFD700"/>
-    <Star className="w-[20px] h-[20px] text-yellow-300" />
-</div>
-<p className="text-[14px] text-gray-900 pt-1"> 
-     В характеристики указана функция загрузки белья во время стирки, не получилось разобраться как это сделать.  Так как во время стирки двери блокируются. 
-</p>
-<p className="text-[14px] text-gray-600">12.12.2023</p>
-          </div>
-<div className="flex flex-col gap-2 p-2  ">
-            <h3 className="text-[16px] text-gray-900 font-semibold">Кирилл</h3>
-<div className="flex flex-row gap-1 items-center">
-<Star className="w-[20px] h-[20px] text-yellow-300" fill="#FFD700"/>
-    <Star className="w-[20px] h-[20px] text-yellow-300" fill="#FFD700"/>
-    <Star className="w-[20px] h-[20px] text-yellow-300" fill="#FFD700"/>
-    <Star className="w-[20px] h-[20px] text-yellow-300" fill="#FFD700"/>
-    <Star className="w-[20px] h-[20px] text-yellow-300" />
-</div>
-<p className="text-[14px] text-gray-900 pt-1"> 
-     В характеристики указана функция загрузки белья во время стирки, не получилось разобраться как это сделать.  Так как во время стирки двери блокируются. 
-</p>
-<p className="text-[14px] text-gray-600">12.12.2023</p>
-          </div>
-        </div>
-
+    
+ <MobileReviews productDetails={productDetails} internals={internals}/>
     </div>
  )
 }

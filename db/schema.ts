@@ -18,7 +18,6 @@ role: roleEnum('role').default('user').notNull(), // добавляем это �
 banned: boolean("banned").notNull().default(false), // Добавьте эту строку
 
                 });
-
                 export const session = pgTable("session", {
                     id: text('id').primaryKey(),
                     expiresAt: timestamp('expires_at').notNull(),
@@ -27,7 +26,7 @@ banned: boolean("banned").notNull().default(false), // Добавьте эту �
  updatedAt: timestamp('updated_at').notNull(),
  ipAddress: text('ip_address'),
  userAgent: text('user_agent'),
- userId: text('user_id').notNull().references(()=> user.id, { onDelete: 'cascade' })
+ userId: text('user_id').notNull().references(()=> user.id, { onDelete: 'cascade' }),
                 });
 
 export const account = pgTable("account", {
@@ -168,7 +167,7 @@ export const manufacturerImages = pgTable("manufacturer_images", {
 export const reviews = pgTable("reviews", {
   id: uuid("id").primaryKey().defaultRandom(),
   product_id: uuid("product_id").references(() => products.id, { onDelete: 'cascade' }).notNull(),
-  user_id: text("user_id").references(() => user.id, { onDelete: 'cascade' }),
+  user_id: text("user_id").references(() => user.id, { onDelete: 'cascade' }).notNull(),
   rating: real("rating").notNull(), // или можешь использовать integer, если рейтинг только целые числа
   comment: text("comment"),
   status: varchar("status", { length: 255 }).notNull(),
@@ -273,6 +272,7 @@ export const schema = {
                     productImages,
                     categoryImages,
                     manufacturerImages,
+
                   
                 }
 

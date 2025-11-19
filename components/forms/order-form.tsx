@@ -61,11 +61,29 @@ interface OrderFormProps {
 
 }
 const formSchema = z.object({
-  status: z.string(),
-  customerName: z.string().min(2, { message: "Имя должно содержать не менее 2 символов." }).max(50, { message: "Имя должно содержать не более 50 символов." }),
-  customerEmail: z.string().email({ message: "Неверный email адрес." }),
-  customerPhone: z.string().min(10, { message: "Номер телефона должен содержать не менее 10 символов." }).max(15, { message: "Номер телефона должен содержать не более 15 символов." }),
-  notes: z.string().nullable(),
+  customerName: z.string().min(2, { message: "Имя должно содержать не менее 2 символов." }).max(50, { message: "Имя должно содержать не более 50 символов." })
+  .refine(
+      (val) => !/<script|javascript:|onerror=/i.test(val),
+      'Invalid content detected'
+    ),
+  customerEmail: z.string().email({ message: "Неверный email адрес." }).refine(
+      (val) => !/<script|javascript:|onerror=/i.test(val),
+      'Invalid content detected'
+    ),
+  customerPhone: z.string().min(10, { message: "Номер телефона должен содержать не менее 10 символов." }).max(15, { message: "Номер телефона должен содержать не более 15 символов." })
+  .refine(
+      (val) => !/<script|javascript:|onerror=/i.test(val),
+      'Invalid content detected'
+    ),
+notes: z.string().nullable()
+  .refine(
+    (val) => val === null || val.length <= 255,
+    { message: "Заметка должна содержать не более 255 символов." }
+  )
+  .refine(
+    (val) => val === null || !/<script|javascript:|onerror=/i.test(val),
+    { message: 'Invalid content detected' }
+  )
 
 
 });
@@ -79,7 +97,6 @@ export default function OrderForm( {items}: OrderFormProps) {
         const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            status: "pending",
             customerName: session?.user?.name || "",
             customerEmail: session?.user?.email || "",
             customerPhone: session?.user?.phoneNumber || "",

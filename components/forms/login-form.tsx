@@ -66,13 +66,15 @@ const signInWithGithub = async () => {
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    const { success, message } = await signIn(values.email, values.password);
-    if (success) {
-      toast.success(message as string);
-      router.push("/dashboard");
-    } else {
-      toast.error(message as string);
-    }
+    const res = await signIn(values.email, values.password);
+   if (res.success) {
+   router.push("/dashboard");
+}
+console.log(res);
+// Если нужна 2FA
+if (res.requiresTwoFactor) {
+  router.push("/2fa");
+}
     setIsLoading(false);
   }
   return (

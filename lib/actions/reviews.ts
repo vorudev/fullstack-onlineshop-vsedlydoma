@@ -1,12 +1,14 @@
 'use server';
 
 import { db } from "@/db/drizzle";
-import { reviews, Review } from "@/db/schema";
+import { reviews, Review, user, products } from "@/db/schema";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import {rateLimitbyKey} from "./limiter";
 import { eq, and, ne, sql, or, ilike, desc } from "drizzle-orm";
-import { stat } from "fs";
+import rateLimit from "next-rate-limit";
+
 
 interface GetApprovedReviewsParams {
    search?: string;
@@ -47,15 +49,80 @@ export async function getAverageRatingByProductId(productId: string) {
     throw new Error("Failed to fetch average rating by product ID");
   }
 }
-export async function createReview(review: Omit<typeof reviews.$inferInsert, 'id' | 'createdAt' | 'updatedAt'>) {
+async function validateReviewEntities(userId: string , productId: string) {
+  const [users, product] = await Promise.all([
+    db.select(
+      {
+        id: user.id,
+      }
+    ).from(user).where(eq(user.id, userId)).limit(1),
+    db.select(
+      {
+        id: products.id,
+      }
+    ).from(products).where(eq(products.id, productId)).limit(1),
+  ]);
+
+  if (!users.length) throw new Error('User not found');
+  if (!product.length) throw new Error('Product not found');
+}
+async function checkDuplicateReview(userId: string, productId: string) {
+  const existing = await db
+    .select(
+      {
+        id: reviews.id,
+      }
+    )
+    .from(reviews)
+    .where(
+      and(
+        eq(reviews.user_id, userId),
+        eq(reviews.product_id, productId)
+      )
+    )
+    .limit(1);
+
+  if (existing.length > 0) {
+    throw new Error('You have already reviewed this product');
+  }
+}
+
+
+
+function sanitizeString(str: string | null | undefined): string {
+  if (!str) return '';
+  return str
+    .replace(/[<>]/g, '')
+    .replace(/javascript:/gi, '')
+    .replace(/on\w+=/gi, '') 
+    .trim();
+}
+export async function createReview(review: Omit<typeof reviews.$inferInsert, 'id' | 'createdAt' | 'updatedAt' | 'user_id'>) {
   try {
-    const newReview = await db.insert(reviews).values(review).returning();
+    const user = await auth.api.getSession({
+      headers: await headers()
+    })
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+  const sanitizedReview = {
+      ...review,
+      user_id: user.user.id,
+      comment: sanitizeString(review.comment),
+      author_name: sanitizeString(review.author_name),
+    };
+    await validateReviewEntities(sanitizedReview.user_id, sanitizedReview.product_id);
+    await checkDuplicateReview(sanitizedReview.user_id, sanitizedReview.product_id);
+    await rateLimitbyKey(user.user.id, 5, 15 * 60 * 1000);
+  
+    const newReview = await db.insert(reviews).values(sanitizedReview).returning();
     return newReview[0]; // Возвращаем созданный отзыв
   } catch (error) {
     console.error("Error creating review:", error);
     throw new Error("Failed to create review");
   }
 }
+
 export async function getApprovedReviews() {
     try { 
         const filteredReviews = await db

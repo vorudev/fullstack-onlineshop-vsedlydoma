@@ -2,7 +2,7 @@
 
 import { db } from "@/db/drizzle";
 import { Product, products, productAttributes, AttributeCategory, attributeCategories, orderItems, orders, categories, productImages, reviews, Manufacturer, manufacturers, manufacturerImages } from "@/db/schema";
-import { desc, eq, gte, inArray, lte, notInArray  } from "drizzle-orm";
+import { desc, eq, gte, inArray, lte, notInArray, asc  } from "drizzle-orm";
 import { unstable_cache } from 'next/cache';
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
@@ -51,7 +51,7 @@ export async function getProductsWithDetailsLeftJoin(slug: string, limit: number
         db
           .select()
           .from(reviews)
-          .where(eq(reviews.product_id, product.products.id))
+          .where(and(eq(reviews.product_id, product.products.id), eq(reviews.status, 'approved')))
           .limit(limit),
 
         
@@ -59,7 +59,8 @@ export async function getProductsWithDetailsLeftJoin(slug: string, limit: number
         db
           .select()
           .from(productAttributes)
-          .where(eq(productAttributes.productId, product.products.id)),
+          .where(eq(productAttributes.productId, product.products.id))
+          .orderBy(asc(productAttributes.order)),
         
         // Изображения производителя
         product.manufacturers?.id

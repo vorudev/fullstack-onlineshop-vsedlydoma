@@ -2,8 +2,9 @@ import React from "react";
 import { useCart } from "../context/cartcontext"; // Adjust the import path as necessary
 import { useState, useEffect, useCallback } from "react";
 import type { CartItem } from "../context/cartcontext";
+import { useFavorite } from "../context/favoritecontext";
 import Image from "next/image";
-import { Star, Trash2 } from "lucide-react";
+import { Heart, Star, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { getFeaturedImage } from "@/lib/actions/image-actions";
 import { ProductImage } from "@/db/schema";
@@ -14,6 +15,7 @@ type CartItemProps = {
 
 export const CartItemComponent = ({ item }: CartItemProps) => {
   const { updateQuantity, removeFromCart } = useCart();
+  const { addToFavorite, removeFromFavorite } = useFavorite();
   const [image, setImage] = useState<ProductImage | null>(null);
 
   const [inputValue, setInputValue] = useState(item.quantity.toString());
@@ -94,6 +96,8 @@ function getReviewText(count: number): string {
   
   return `${count} ${word}`;
 }
+const featuredImage = item.product.images.find(img => img.isFeatured) || item.product.images[0];
+
 
 
   return (
@@ -105,10 +109,10 @@ function getReviewText(count: number): string {
        
            <li key={item.product.id} className="flex gap-4 w-full  p-3 bg-white rounded-lg border ">
 
-  <div className="flex flex-col items-between gap-4 lg:gap-0 lg:items-start w-full">
+  <div className="flex flex-col items-between  lg:gap-0 lg:items-start w-full">
     <div className="flex gap-4 w-full items-start " >
     {/* Image Section */}
-    <div className="flex-shrink-0 items-center justify-center flex flex-col  w-full lg:w-[180px]">
+    <div className="flex-shrink-0 hidden items-center justify-center lg:flex flex-col  overflow-hidden w-full lg:w-[180px]">
        <Link className="relative overflow-hidden lg:max-w-[180px] lg:max-h-[150px]  " href={`/product/${item.product.slug}`}>
             <ImagesSliderCardFull images={item.product.images} title={item.product.title} />
           </Link>
@@ -156,9 +160,31 @@ function getReviewText(count: number): string {
           <p className="text-lg font-semibold text-gray-900">{item.product.price.toFixed(2)} руб</p>
       </div> 
     </div>
-    </div>  
-    <h2 className="text-base lg:font-medium text-[15px] cl text-gray-900 flex-1 lg:hidden ">{item.product.title}</h2>
-    <div className="flex gap-4 justify-between items-center lg:hidden">
+    </div> 
+     
+    <div className="flex lg:hidden flex-row items-start  gap-2">
+      <div className="relative w-[80px] h-[80px] overflow-hidden  ">
+        <Image src={featuredImage?.imageUrl} alt={item.product.title} fill className="object-contain"/>
+      </div>
+
+   <div className="flex flex-col justify-between h-full  flex-1 lg:hidden"> 
+  <Link href={`/product/${item.product.slug}`} className="text-base lg:font-medium line-clamp-2 text-[15px] text-gray-900 ">{item.product.title}</Link>
+   <div className={`${item.product.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-1 rounded-md self-start`}>
+    <p className={`text-[12px] text-gray-600 ${item.product.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>{item.product.inStock}</p>
+    </div>
+   </div>
+
+    <div className="flex flex-col gap-2 justify-start h-full ">
+       <button onClick={() => addToFavorite(item.product)} className="text-gray-400 hover:text-red-500 cursor-pointer transition-colors flex-shrink-0">
+            <Heart className="w-5 h-5" />
+          </button>
+ <button onClick={() => removeFromCart(item.product.id)} className="text-gray-400 hover:text-red-500 cursor-pointer transition-colors flex-shrink-0">
+  <Trash2 className="w-5 h-5" />
+ </button>
+
+    </div> 
+    </div>
+    <div className="flex gap-4 justify-between pt-4 items-center lg:hidden">
       
         <div className="flex items-center gap-2">
           <input

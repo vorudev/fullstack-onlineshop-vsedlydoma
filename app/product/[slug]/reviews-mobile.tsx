@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { ReviewForm } from "@/components/forms/review-form";
 import { useState } from "react";
 import { Star } from "lucide-react";
+import { useSession } from "@/lib/auth-client";
 import { useRouter, useSearchParams } from 'next/navigation';
 interface ProductUnited {
   
@@ -97,9 +98,26 @@ const RatingChart = ({productDetails}: ProductUnited) => {
 
   const totalReviews =  productDetails.reviews?.length || 0;
   const averageRating =  productDetails.reviews?.reduce((sum: number, r: any) => sum + r.rating, 0) / totalReviews || 0;
-
+const getReviewWord = (count: number) => {
+  const lastDigit = count % 10;
+  const lastTwoDigits = count % 100;
+  
+  if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
+    return 'отзывов';
+  }
+  
+  if (lastDigit === 1) {
+    return 'отзыв';
+  }
+  
+  if (lastDigit >= 2 && lastDigit <= 4) {
+    return 'отзыва';
+  }
+  
+  return 'отзывов';
+};
   return (
-    <div className="flex flex-col gap-4  rounded-lg p-6">
+    <div className="flex flex-col w-full md:max-w-[400px]  rounded-lg ">
       {/* Общий рейтинг */}
       <div className="flex items-center gap-3">
         <span className="text-5xl font-bold">{averageRating.toFixed(1)}</span>
@@ -112,36 +130,18 @@ const RatingChart = ({productDetails}: ProductUnited) => {
             />
           ))}
         </div>
-       <span className="text-gray-500 text-sm whitespace-nowrap">{totalReviews} отзывов</span>
+       <span className="text-gray-500 text-sm whitespace-nowrap">{totalReviews} {getReviewWord(totalReviews)}</span>
       </div>
 
       {/* График распределения */}
-      <div className="flex flex-col gap-2">
-        {[5, 4, 3, 2, 1].map((rating) => {
-          const count = ratingCounts[rating as keyof typeof ratingCounts];
-          const percentage = totalReviews > 0 ? (count / totalReviews) * 100 : 0;
-
-          return (
-            <div key={rating} className="flex items-center gap-3">
-              <span className="text-gray-600 w-3">{rating}</span>
-              <div className="flex-1 bg-gray-200 rounded-full h-2 overflow-hidden">
-                <div
-                  className="bg-yellow-300 h-full rounded-full transition-all duration-300"
-                  style={{ width: `${percentage}%` }}
-                />
-              </div>
-              <span className="text-gray-900 font-semibold w-12 text-right">
-                {count}
-              </span>
-            </div>
-          );
-        })}
-      </div>
+      
 
 
       <Dialog>
-      <DialogTrigger asChild >
-        <button className="mt-4 cursor-pointer px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+      <DialogTrigger asChild 
+      >
+        <button
+         className="mt-4 cursor-pointer px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
           Оставить отзыв
         </button>
       </DialogTrigger>
@@ -156,7 +156,7 @@ const RatingChart = ({productDetails}: ProductUnited) => {
     </div>
   );
 };
-export default function DesktopReviews({productDetails, internals}: United) {
+export default function MobileReviews({productDetails, internals}: United) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
@@ -215,17 +215,16 @@ export default function DesktopReviews({productDetails, internals}: United) {
 }
     
     return (
-       <div className=" flex-row gap-1 items-start mt-[20px] hidden  lg:flex">
-        <div className="flex flex-col w-full">
-          <div className="flex flex-row gap-3 items-end pb-3"><h3 className="text-[24px] text-gray-900 font-semibold leading-tight">Отзывы </h3>
+       <div className=" flex-col gap-1 items-start mt-[20px] flex lg:hidden">
+         <div className="flex flex-row  gap-3 items-end pb-3">
+        <h3 className="text-[24px] text-gray-900 font-semibold leading-tight">Отзывы </h3>
             </div>
-            <div className="flex flex-col gap-3 items-start   w-full ">
-
-
-            </div>
-          <div className="flex flex-col w-full border-t  border-gray-200  overflow-y-auto">
-          {productDetails?.reviews?.length === 0 ? (
-            <p className="text-gray-500 text-center w-full py-8">Отзывов пока нет</p>
+        <RatingChart productDetails={productDetails} />
+        <div className="flex w-full flex-col">
+         
+          <div className="flex flex-col  border-t  w-full border-gray-200  overflow-y-auto">
+            {productDetails?.reviews?.length === 0 ? (
+            <p className="text-gray-500 text-center py-8 w-full">Отзывов пока нет</p>
           ) : (
             productDetails?.reviews?.map((review) => (
               <div className="flex flex-col gap-2 border-b border-gray-200 py-6 " key={review.id}>
@@ -245,8 +244,9 @@ export default function DesktopReviews({productDetails, internals}: United) {
 </p>
           </div>
 
-          ))
-          )}
+        ))
+        )}
+          
  
 {productDetails?.reviews?.length >= internals?.currentLimit && (
   <button
@@ -262,7 +262,7 @@ export default function DesktopReviews({productDetails, internals}: United) {
          
         </div>
         <div >
-          <RatingChart productDetails={productDetails} />
+          
         </div>
         
         </div>

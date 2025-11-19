@@ -71,18 +71,27 @@ const StarRating: React.FC<StarRatingProps> = ({
   );
 };
 const formSchema = z.object({
-    rating: z.number().min(1, "Rating is required").max(5, "Rating must be between 1 and 5"),
-    comment: z.string().optional(),
-    author_name: z.string().min(1, "Login to create a review"),
+    rating: z.number().min(1, "Рейтинг должен быть от 1 до 5").max(5, "Рейтинг должен быть от 1 до 5"),
+    comment: z.string().min(1, "Комментарий должен быть не менее 1 символа").max(255, "Комментарий должен быть не более 255 символов")
+   .refine(
+      (val) => !/<script|javascript:|onerror=/i.test(val),
+      'Invalid content detected'
+    ),
+    author_name: z.string().min(1, "Имя должно быть не менее 1 символа")
+    .refine(
+      (val) => !/<script|javascript:|onerror=/i.test(val),
+      'Invalid content detected'
+    ),
     status: z.string(),
 
 });
 
 export function ReviewForm({ product_id }: { product_id: string}) {
-
+const [error, setError] = useState(false);
+const [success, setSuccess] = useState(false);
     
     // Получаем username из сессии
-
+    const session = useSession();
 
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
@@ -101,12 +110,17 @@ export function ReviewForm({ product_id }: { product_id: string}) {
     async function onSubmit(values: z.infer<typeof formSchema>) { 
         setIsLoading(true);
         try {
+          if (!session?.data?.user) {
+            setError(true);
+            router.push("/signin");
+            return;
+          }
             const reviewData = {
                 ...values,
                 product_id,
             };
             await createReview(reviewData);
-            toast.success("Review created successfully");
+            setSuccess(true);
             form.reset( {
                rating: 5,
                 comment: "",
@@ -115,7 +129,7 @@ export function ReviewForm({ product_id }: { product_id: string}) {
             router.refresh();
         } catch (error) {
             console.error("Error creating review:", error);
-            toast.error("Failed to create review");
+            setError(true);
         } finally {
             setIsLoading(false);
         }
@@ -146,7 +160,7 @@ export function ReviewForm({ product_id }: { product_id: string}) {
             <FormItem>
               <FormLabel></FormLabel>
               <FormControl>
-                <Textarea placeholder="Comment"   {...field} 
+                <Textarea placeholder="Комментарий"   {...field} 
                   
                  />
               </FormControl>
@@ -170,9 +184,14 @@ export function ReviewForm({ product_id }: { product_id: string}) {
         
         
         
-       <button type="submit" disabled={isLoading} className="bg-[rgb(35,25,22)] text-[rgb(228,224,212)] w-full h-[48px] bdog text-[12px] uppercase flex justify-center items-center">{isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" />   :
-"Submit Review"
+      <div className="flex items-center flex-col">
+        <button type="submit" disabled={isLoading} 
+       className="bg-blue-600 text-white w-full h-[48px] cursor-pointer flex items-center justify-center rounded-xl hover:bg-blue-700">{isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" />   :
+"Отправить отзыв"
 }</button>
+ {error && <p className="text-red-500">Произошла ошибка при создании отзыва.</p>}
+        {success && <p className="text-green-500">Отзыв успешно создан.</p>}  
+      </div>
       </form>
     </Form>
     )

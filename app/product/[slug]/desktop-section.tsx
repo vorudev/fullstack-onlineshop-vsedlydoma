@@ -77,13 +77,7 @@ export default function DesktopSection({productDetails}: ProductUnited) {
     const [maxVisible] = useState(8);
    const isInCart = cart.some((item) => item.product.id === productDetails.id);
       const isInFavorite = favorite.some((item) => item.product.id === productDetails.id);
-  if (productDetails?.attributes.length === 0) {
-    return (
-      <div className="text-gray-500 text-center py-8">
-        Характеристики не указаны
-      </div>
-    );
-  }
+  
     const visibleAttributes = productDetails?.attributes.slice(0, maxVisible) || [];
   const hasMore = productDetails?.attributes.length > maxVisible;
     return (
@@ -154,7 +148,7 @@ export default function DesktopSection({productDetails}: ProductUnited) {
       
       <div className="max-w-[150px]">
         <div className="">
-          {visibleAttributes.map((attr, index) => (
+           {visibleAttributes.map((attr, index) => (
             <div
               key={attr.id || attr.slug || index}
               className="grid grid-cols-[minmax(150px,1fr)_minmax(100px,1fr)] text-[14px]  gap-3 py-1"

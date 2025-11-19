@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin, phoneNumber } from "better-auth/plugins"
 import { schema } from "@/db/schema";
+import { twoFactor } from "better-auth/plugins";
 import { db } from "@/db/drizzle"; // your drizzle instance
 import { nextCookies } from "better-auth/next-js";
 import { Resend } from "resend";
@@ -10,6 +11,13 @@ const resend = new Resend(process.env.RESEND_API_KEY as string);
 
 
 export const auth = betterAuth({ 
+    rateLimit: {
+        enabled: true,
+        window: 10,
+        max: 50,
+       
+    },
+    
 socialProviders: {
         google: { 
             clientId: process.env.GOOGLE_CLIENT_ID as string, 
@@ -23,7 +31,8 @@ socialProviders: {
     },
     updateUser: true,
 emailAndPassword: {  
-        enabled: true, 
+        enabled: true,
+            
         sendResetPassword: async ({user, url}) => {
             resend.emails.send({
                 from: 'onboarding@resend.dev',

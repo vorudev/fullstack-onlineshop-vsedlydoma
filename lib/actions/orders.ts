@@ -12,10 +12,10 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { and, gte, ilike, inArray, lte, or, relations, sql } from 'drizzle-orm';
 import { desc } from "drizzle-orm";
-
+import { rateLimitbyIp } from "./limiter";
 import { eq, ne } from "drizzle-orm";
 import { custom } from "zod";
-type CreateOrderData = Omit<Order, "id" | "createdAt" | "updatedAt" | "userId" | "total" | "sku">;
+type CreateOrderData = Omit<Order, "id" | "createdAt" | "updatedAt" | "userId" | "total" | "sku" | "status">;
 
 export type CreateOrderItemData = Omit<OrderItem, "id" | "createdAt" | "updatedAt" | "orderId">;
 
@@ -360,6 +360,14 @@ export const getAllCancelledOrders = async ({
         throw new Error("Failed to get orders");
     }
 }
+function sanitizeString(str: string | null): string {
+  if (!str) return '';
+  return str
+    .replace(/[<>]/g, '')
+    .replace(/javascript:/gi, '')
+    .replace(/on\w+=/gi, '') 
+    .trim();
+}
 export async function createOrder(orderInput: CreateOrderData, orderItemsInput: CreateOrderItemData[]) {
     // Получаем сессию, но не требуем её обязательно
     const session = await auth.api.getSession({
@@ -368,12 +376,20 @@ export async function createOrder(orderInput: CreateOrderData, orderItemsInput: 
     
     // userId будет либо ID пользователя, либо null для гостевых заказов
     const userId = session?.user?.id ?? null;
+    await rateLimitbyIp(5, 15 * 60 * 1000);
     
     try { 
         const total = orderItemsInput.reduce((acc, item) => acc + item.price * item.quantity, 0);
         
+        const sanitizedOrder = {
+          name: sanitizeString(orderInput.customerName),
+          email: sanitizeString(orderInput.customerEmail),
+          phone: sanitizeString(orderInput.customerPhone),
+          notes: sanitizeString(orderInput.notes),
+          status: 'pending',
+        };
         const order = await db.insert(orders).values({
-            ...orderInput,
+            ...sanitizedOrder,
             total,
             userId // может быть null для гостей
         }).returning();
@@ -382,7 +398,7 @@ export async function createOrder(orderInput: CreateOrderData, orderItemsInput: 
             ...item,
             orderId: order[0].id
         }));
-
+        
         const orderItem = await db.insert(orderItems).values(orderItemsWithOrderId).returning();
         await sendOrderEmails({ order: order[0], items: orderItem });
         return { order, orderItem, orderId: order[0].id || '' };

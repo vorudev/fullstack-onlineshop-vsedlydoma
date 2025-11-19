@@ -1,6 +1,7 @@
 
 import Header from "@/components/frontend/header";
 import { Suspense } from "react";
+import NavMenuMobile from "@/components/frontend/nav-menu-mobile";
 
 export default function ProductsLayout({ children }: { children: React.ReactNode }) {
     return (
@@ -9,6 +10,7 @@ export default function ProductsLayout({ children }: { children: React.ReactNode
             <Header />
             </Suspense>
             <main className="min-h-screen bg-gray-100">{children}</main>
+<NavMenuMobile />
         </>
     );
 }
