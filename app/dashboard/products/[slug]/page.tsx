@@ -145,6 +145,20 @@ const [attributeCategories, attributes, images, {pagination, manufacturers}, cat
                   <Tag className="size-5 text-gray-400" />
                   <h2 className="text-lg font-semibold text-gray-400">Характеристики</h2>
                 </div>
+               <div className="flex flex-row gap-2"> <Dialog>
+                  <DialogTrigger>
+                    <Button className="h-9 w-9 p-0 cursor-pointer" variant="ghost">
+                      <Plus className="size-4" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Создать категорию характеристик</DialogTitle>
+           <AttributeCategoryForm /> 
+                     
+                    </DialogHeader>
+                  </DialogContent>
+                </Dialog>
                 <Dialog>
                   <DialogTrigger>
                     <Button className="h-9 w-9 p-0 cursor-pointer" variant="ghost">
@@ -159,9 +173,9 @@ const [attributeCategories, attributes, images, {pagination, manufacturers}, cat
                     </DialogHeader>
                   </DialogContent>
                 </Dialog>
+                </div>
               </div>
-              
-                      <AttributeCategoryForm /> 
+            
               <div className="divide-y divide-gray-600">
               </div>
               

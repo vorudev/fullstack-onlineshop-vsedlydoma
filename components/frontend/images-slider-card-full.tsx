@@ -41,7 +41,11 @@ export default function ImagesSlider({ images, title }: Images) {
   
   return (
   <div className="w-full overflow-hidden">
-    <div className="flex gap-3 overflow-x-auto xl:overflow-visible py-2 scroll-snap-center px-10 xl:px-0 snap-x snap-mandatory xl:snap-none scrollbar-hide pb-2 xl:justify-center">
+    <div className="flex gap-3 overflow-x-auto xl:overflow-visible py-2 scroll-snap-center px-10 xl:px-0 snap-x snap-mandatory xl:snap-none scrollbar-hide pb-2 xl:justify-center"
+    style={{
+    scrollbarWidth: 'none', // для Firefox
+    msOverflowStyle: 'none', // для IE/Edge
+  }}>
       {sortedImages.map((image, index) => (
         <div
           key={image.id}

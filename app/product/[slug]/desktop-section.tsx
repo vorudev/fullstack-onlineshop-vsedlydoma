@@ -80,6 +80,11 @@ export default function DesktopSection({productDetails}: ProductUnited) {
   
     const visibleAttributes = productDetails?.attributes.slice(0, maxVisible) || [];
   const hasMore = productDetails?.attributes.length > maxVisible;
+    const scrollToComponent = () => {
+    const element = document.getElementById('target-component');
+    element?.scrollIntoView({ behavior: 'smooth' });
+  };
+
     return (
         <div className="lg:flex lg:flex-col items-start hidden justify-start gap-[12px] w-full  ">
            
@@ -145,7 +150,7 @@ export default function DesktopSection({productDetails}: ProductUnited) {
       <h3 className="text-sm text-gray-900 font-semibold mb-3">
         Характеристики:
       </h3>
-      
+      {productDetails?.attributes.length > 0 ? (
       <div className="max-w-[150px]">
         <div className="">
            {visibleAttributes.map((attr, index) => (
@@ -162,13 +167,21 @@ export default function DesktopSection({productDetails}: ProductUnited) {
             </div>
           ))} 
           {hasMore && (
-            <button className="text-blue-600 font-semibold text-[14px]">
+            <button
+             className="text-blue-600 font-semibold cursor-pointer text-[14px]"
+             onClick={scrollToComponent}
+             >
               Показать все
             </button>
           )}
         </div>
       </div>
-    </div>
+       ) : (
+      <p className="text-[14px] text-gray-600">Характеристики отсутствуют</p>
+     )}
+     </div>
+    
+    
       <div className="xl:flex hidden flex-col gap-3 items-end">
         <div className="flex flex-col items-end gap-2">
           <div className={productDetails?.inStock === 'В наличии' ? 'flex items-center gap-1.5 bg-green-50 px-3 py-1.5 rounded-[6px]' : 'flex items-center gap-1.5 bg-red-50 px-3 py-1.5 rounded-[6px]'}>

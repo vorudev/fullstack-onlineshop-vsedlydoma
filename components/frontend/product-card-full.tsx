@@ -64,7 +64,7 @@ function getReviewText(count: number): string {
 }
 
     return ( 
-        <div className="bg-white rounded-2xl  transition-all duration-300 overflow-hidden  group lg:p-[12px] min-w-[300px]" key={product.id}> 
+        <div className="bg-white rounded-2xl lg:max-w-[450px]  transition-all duration-300 overflow-hidden  group lg:p-[12px] min-w-[300px]" key={product.id}> 
         <div className="hidden lg:block flex flex-col  px-2 py-2">
           <Link className="relative overflow-hidden" href={`/product/${product.slug}`}>
             <ImagesSliderCardFull images={product.images} title={product.title} />

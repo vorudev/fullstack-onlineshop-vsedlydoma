@@ -61,6 +61,8 @@ export async function getProductsWithDetailsLeftJoin(slug: string, limit: number
           .from(productAttributes)
           .where(eq(productAttributes.productId, product.products.id))
           .orderBy(asc(productAttributes.order)),
+
+         
         
         // Изображения производителя
         product.manufacturers?.id
@@ -288,9 +290,38 @@ export const getAllProducts = async ({
         .orderBy(desc(products.createdAt)), // DESC для новых товаров первыми
       countQuery
     ]);
+    const productIds = allProducts.map(r => r.id);
+    const [images, ratings] = await Promise.all([
+      db.select()
+        .from(productImages)
+        .where(inArray(productImages.productId, productIds)),
+      
+      // ДОБАВЛЯЕМ GROUP BY product_id
+      db.select({
+        productId: reviews.product_id,
+        averageRating: sql<number>`AVG(${reviews.rating})`,
+        reviewCount: sql<number>`COUNT(${reviews.id})`,
+      })
+      .from(reviews)
+      .where(inArray(reviews.product_id, productIds))
+      .groupBy(reviews.product_id) // ← ВОТ ЭТО КЛЮЧЕВОЕ!
+    ]);
+    const ratingsMap = new Map(
+      ratings.map(r => [r.productId, { 
+        averageRating: r.averageRating, 
+        reviewCount: r.reviewCount 
+      }])
+    );
+    const productsWithDetails = allProducts.map(product => ({
+      ...product,
+      images: images.filter(image => image.productId === product.id),
+      averageRating: ratingsMap.get(product.id)?.averageRating || 0,
+      reviewCount: ratingsMap.get(product.id)?.reviewCount || 0,
+    }));
+     
    
     return {
-      products: allProducts,
+      products: productsWithDetails,
       pagination: {
         page,
         pageSize,

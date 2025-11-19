@@ -20,6 +20,7 @@ export function DeleteImageFromProductButton({ image }: { image: Omit<ProductIma
     const router = useRouter();
 
     const handleDelete = async () => {
+        setLoading(true);
         try {
            const res = await fetch(`/api/products/images/${image.id}`, {
                method: "DELETE",
@@ -32,6 +33,7 @@ export function DeleteImageFromProductButton({ image }: { image: Omit<ProductIma
         } catch (error) {
             console.error("Error deleting image:", error);
         } finally {
+            
             setLoading(false);
         }
     } 

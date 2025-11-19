@@ -131,12 +131,11 @@ export default function ProductPage({productDetails, internals}: United) {
 
         </div>
         <div className="flex flex-col gap-[12px] items-start pt-10  hidden lg:block">
-            <h3 className="text-[24px] text-gray-900 font-semibold">О товаре</h3>
+            <h3 className="text-[24px] text-gray-900 font-semibold pb-4">О товаре</h3>
             <p className="text-[14px] text-gray-900 max-w-[600px]">
 
 					{productDetails?.description}
             </p>
-            <button className="text-[14px] text-blue-600  font-semibold">Показать все</button>
         </div>
         <div className="hidden lg:block">
             <h3 className="text-[24px] pb-4 text-gray-900 font-semibold ">
