@@ -106,7 +106,7 @@ const manufacturersWithImages = manufacturers?.map(manufacturer => {
     </div>
   </div>
 </div>
- <div className="w-full  hidden lg:block">
+ <div className="w-full ">
              {/* Список продуктов */}
         <SliderHome products={productsWithDetailAndImages || []} />
         

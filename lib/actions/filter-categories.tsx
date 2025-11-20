@@ -89,3 +89,18 @@ export async function createFilterCategory(category: Omit<FilterCategory, "id" |
         throw new Error("Failed to create filter category");
     }
 }
+export async function deleteFilterCategory(id: string) {
+    try {
+        const session = await auth.api.getSession({
+              headers: await headers()
+            })
+            if (!session || session.user.role !== 'admin') {
+              return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+            }
+        await db.delete(filterCategories).where(eq(filterCategories.id, id));
+    } catch (error) {
+        console.error("Error deleting filter category:", error);
+        throw new Error("Failed to delete filter category");
+    }
+}
+

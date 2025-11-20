@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
+import slugify from "slugify";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { AttributeCategory } from "@/db/schema";
@@ -35,7 +36,6 @@ const formSchema = z.object({
     value: z.string().min(1, "Value is required"),
     order: z.number().nullable(),
     productId: z.string().uuid("Product ID is required"),
-    slug: z.string().min(1, "Slug is required"),
    categoryId: z.string().uuid("Attribute Category ID is required"),
 })
 
@@ -58,6 +58,11 @@ export default function AttributeForm({ attribute, product, categories, category
         try {
             const attributeData = { ...values, 
                 productId: product.id, 
+                slug: slugify(values.name, {
+                  lower: true,
+                  strict: true,
+                  locale: 'ru',
+                }),
 
             };
             if (attribute) {
@@ -104,20 +109,7 @@ export default function AttributeForm({ attribute, product, categories, category
                         </FormItem>
                     )}
                 />
-                <FormField
-                    control={form.control}
-                    name="slug"
-                    render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>SLUG (Название характеристики для фильтрации)</FormLabel>
-                            <FormDescription>Это значения именно для фильтрации, оно не видно пользователю, но нужно для правильной работы системы фильтров. Оно тесно связано с полем "Slug" при создании фильтров. Например, если создаем характеристику "цвет" со значением "красный", то slug будет "Color". Обязательно на английском, без пробелов</FormDescription>
-                            <FormControl>
-                                <Input placeholder="Например, Color" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                
                 <FormField
     control={form.control}
     name="order"

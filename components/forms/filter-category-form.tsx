@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation";
+import slugify from "slugify";
 import { useState } from "react";
 import {
     Form,
@@ -26,7 +27,6 @@ interface FilterCategoryFormProps {
 }
 const formSchema = z.object({
     name: z.string().min(1, "Name is required"),
-    slug: z.string().min(1, "Slug is required"),    
     displayOrder: z.number().nullable(),
     productCategory: z.string().uuid("Product Category ID is required"),
 })
@@ -38,7 +38,6 @@ export function FilterCategoryForm({ category, productCategoryId }: FilterCatego
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: category?.name || "",
-            slug: category?.slug || "",
             displayOrder: category?.displayOrder || null,
             productCategory: productCategoryId || "",
         },
@@ -49,6 +48,11 @@ export function FilterCategoryForm({ category, productCategoryId }: FilterCatego
             const filterCategoryData = {
                 ...values,
                 productCategoryId: productCategoryId,
+                slug: slugify(values.name, {
+                  lower: true,
+                  strict: true,
+                  locale: 'ru',
+                }),
             }
             await createFilterCategory(filterCategoryData);            
             form.reset();
@@ -67,22 +71,9 @@ export function FilterCategoryForm({ category, productCategoryId }: FilterCatego
                     name="name"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Название категории фильтров</FormLabel>
+                            <FormLabel>Название категории фильтров, например "цвет"</FormLabel>
                             <FormControl>
                                 <Input placeholder="Название" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="slug"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Slug</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Slug" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

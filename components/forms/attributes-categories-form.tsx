@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import slugify from "slugify";
 import {
     Form,
     FormControl,
@@ -27,7 +28,6 @@ interface AttributeCategoryFormProps {
 }
 const formSchema = z.object({
     name: z.string().min(1, "Name is required"),
-    slug: z.string().min(1, "Slug is required"),
     displayOrder: z.number().nullable(),
 
 })
@@ -39,7 +39,6 @@ export function AttributeCategoryForm({ category }: AttributeCategoryFormProps) 
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: category?.name || "",
-            slug: category?.slug || "",
             displayOrder: category?.displayOrder || null,
         },
     })
@@ -49,6 +48,11 @@ export function AttributeCategoryForm({ category }: AttributeCategoryFormProps) 
         try {
             const attributeCategoryData = {
                 ...values,
+                slug: slugify(values.name, {
+                  lower: true,
+                  strict: true,
+                  locale: 'ru',
+                }),
             }
             if (category) {
                 await updateAttributeCategory({ ...attributeCategoryData, id: category.id });
@@ -80,20 +84,7 @@ export function AttributeCategoryForm({ category }: AttributeCategoryFormProps) 
                         </FormItem>
                     )}
                 />
-                <FormField
-                    control={form.control}
-                    name="slug"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Это символьный идентификатор категории</FormLabel>
-                            <FormDescription>Только на английском, без пробелов, без спецсимволов, можно использовать цифры и тире </FormDescription>
-                            <FormControl>
-                                <Input placeholder="Например, general или general-characteristics" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+               
 
                 <FormField
                     control={form.control}

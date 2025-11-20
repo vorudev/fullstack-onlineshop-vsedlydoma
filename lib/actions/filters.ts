@@ -22,6 +22,20 @@ export async function createFilter(category: Omit<Filter, "id" | "createdAt" | "
         throw new Error("Failed to create filter");
     }
 }
+export async function deleteFilter(id: string) {
+    try {
+        const session = await auth.api.getSession({
+              headers: await headers()
+            })
+            if (!session || session.user.role !== 'admin') {
+              return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+            }
+        await db.delete(filters).where(eq(filters.id, id));
+    } catch (error) {
+        console.error("Error deleting filter:", error);
+        throw new Error("Failed to delete filter");
+    }
+}
 export async function getFiltersByCategory(categoryId: string) {
     try {
         const filtersByCategory = await db

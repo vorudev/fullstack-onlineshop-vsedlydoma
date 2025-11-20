@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation";
+import slugify from "slugify";
 import { useState } from "react";
 import {
     Form,
@@ -20,28 +21,27 @@ import { Input } from "@/components/ui/input"
 import { createFilter } from "@/lib/actions/filters";
 import { Filter } from "@/db/schema";
 import { ca } from "zod/v4/locales";
+import { FilterCategory } from "@/db/schema";
 
 interface FilterFormProps {
     filter?: Filter;
-    categoryId: string; 
+    category: FilterCategory; 
 }
 
 const formSchema = z.object({
     name: z.string().min(1, "Name is required"),
-    slug: z.string().min(1, "Slug is required"),    
     displayOrder: z.number().nullable(),
     categoryId: z.string().uuid("Filter Category ID is required"),
 })
-export function FilterForm({ filter, categoryId }: FilterFormProps) {
+export function FilterForm({ filter, category }: FilterFormProps) {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: filter?.name || "",
-            slug: filter?.slug || "",
             displayOrder: filter?.displayOrder || null,
-            categoryId: categoryId || "",
+            categoryId: category.id || "",
         },
     })
     async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -49,7 +49,12 @@ export function FilterForm({ filter, categoryId }: FilterFormProps) {
         try {
             const filterData = {
                 ...values,
-                categoryId: categoryId,
+                categoryId: category.id,
+                slug: slugify(category.name, {
+                  lower: true,
+                  strict: true,
+                  locale: 'ru',
+                }),
             }
             await createFilter(filterData);
             form.reset();
@@ -63,13 +68,14 @@ export function FilterForm({ filter, categoryId }: FilterFormProps) {
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                 
                 <FormField
                     control={form.control}
                     name="name"
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Значение</FormLabel>
-                            <FormDescription>Это значения для категории фильтрования, например "красный" к slug "color".</FormDescription>
+                            <FormDescription>Это значения для фильтра, например "красный"</FormDescription>
                             <FormControl>
                                 <Input placeholder="Значение" {...field} />
                             </FormControl>
@@ -77,20 +83,7 @@ export function FilterForm({ filter, categoryId }: FilterFormProps) {
                         </FormItem>
                     )}
                 />
-                <FormField
-                    control={form.control}
-                    name="slug"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Slug</FormLabel>
-                             <FormDescription>Это значения именно для фильтрации, оно не видно пользователю, но нужно для правильной работы системы фильтров. Оно тесно связано с полем "Slug" при создании характеристики. Например, "color" Обязательно на английском, без пробелов</FormDescription>
-                            <FormControl>
-                                <Input placeholder="Slug" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+               
                  <FormField
                     control={form.control}
                     name="displayOrder"

@@ -4,6 +4,7 @@ import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { manufacturers, Product } from "@/db/schema";
 import { zodResolver } from "@hookform/resolvers/zod"
+import slugify from "slugify";
 import { useForm } from "react-hook-form"
 import { updateProduct, createProduct } from "@/lib/actions/product";
 import { Button } from "@/components/ui/button"
@@ -52,7 +53,6 @@ const formSchema = z.object({
  title: z.string().min(1, "Title is required"),
 categoryId: z.string().uuid("Category ID is required"),
 manufacturerId: z.string().uuid("Manufacturer ID is required"),
-    slug: z.string().min(1, "Slug is required").max(255, "Slug must be less than 255 characters"), 
     description: z.string().min(1, "Description is required"),
     inStock: z.string()
 
@@ -85,7 +85,6 @@ export function ProductForm({product, categories: initialCategories, manufacture
         price: product?.price ? Number(product.price) : 0, 
         categoryId: product?.categoryId || "",
         title: product?.title || "",
-        slug: product?.slug || "", 
         inStock: product?.inStock || "",
         description: product?.description || "",
         manufacturerId: product?.manufacturerId || "",
@@ -145,6 +144,11 @@ export function ProductForm({product, categories: initialCategories, manufacture
       try {
         const productData = { 
           ...values,
+          slug: slugify(values.title, {
+            lower: true,
+            strict: true,
+            locale: 'ru',
+          }),
         } 
         if (product) {
           await updateProduct({ ...productData, id: product.id });
@@ -181,20 +185,7 @@ export function ProductForm({product, categories: initialCategories, manufacture
             )}
           />
 
-          {/* Slug */}
-          <FormField
-            control={form.control}
-            name="slug"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Slug</FormLabel>
-                <FormControl>
-                  <Input placeholder="product-slug" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        
 
           {/* Description */}
           <FormField

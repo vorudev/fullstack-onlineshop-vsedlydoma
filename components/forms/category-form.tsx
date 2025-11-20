@@ -10,6 +10,7 @@ import { createCategory, updateCategory } from "@/lib/actions/product-categories
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import slugify from "slugify";
 import { Textarea } from "@/components/ui/textarea"
 import {
   Command,
@@ -45,7 +46,6 @@ interface CategoryFormProps {
 }
 export const formSchema = z.object({
   name: z.string().min(1),
-    slug: z.string().min(1),
     description: z.string().min(1),
     parentId: z.string().nullable(),
 })
@@ -61,7 +61,6 @@ export function CategoryForm({category, categories: initialCategories}: Category
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: category?.name || "",
-      slug: category?.slug || "",
       description: category?.description || "",
       parentId: category?.parentId || null,
     },
@@ -94,6 +93,11 @@ export function CategoryForm({category, categories: initialCategories}: Category
     try { 
         const categoryData = {
             ...values,
+            slug: slugify(values.name, {
+              lower: true,
+              strict: true,
+              locale: 'ru',
+            }),
         }
         if (category) {
             await updateCategory({ ...categoryData, id: category.id });
@@ -124,19 +128,7 @@ export function CategoryForm({category, categories: initialCategories}: Category
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="slug"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Slug</FormLabel>
-              <FormControl>
-                <Input placeholder=" slug Категории" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        
         <FormField
             control={form.control}
             name="parentId"
