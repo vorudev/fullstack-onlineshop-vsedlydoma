@@ -11,11 +11,13 @@ import { getProductImages } from "@/lib/actions/image-actions";
 import UserGreetingHome from "./user-greeting-home";
 import { getAverageRatingByProductId } from "@/lib/actions/reviews";
 import { getCategories } from "@/lib/actions/product-categories";
+import { getAboutInfo } from "@/lib/actions/about-info";
 export default async function HomePage () {
-const [categories, {productsWithDetails, images}, {manufacturers, ManufacturerImages} ] = await Promise.all([
+const [categories, {productsWithDetails, images}, {manufacturers, ManufacturerImages}, about ] = await Promise.all([
   getCategories(),
   getRandomProductsFast(), 
-  getRandomManufacturers()
+  getRandomManufacturers(),
+  getAboutInfo()
 ]);
 const productsWithDetailAndImages = productsWithDetails?.map(product => {
   // Находим картинки, которые принадлежат текущему продукту
@@ -47,13 +49,15 @@ const manufacturersWithImages = manufacturers?.map(manufacturer => {
   
   
    <UserGreetingHome />
-   <div className="min-w-[80vw] md:min-w-[40vw] lg:min-w-[20vw] md:w-full xl:w-[30%] xl:min-w-0 bg-blue-100 rounded-xl shadow py-4 pl-4 snap-center flex-col flex lg:hidden gap-10 relative  overflow-hidden">
+   <div className="min-w-[80vw] md:min-w-[40vw] lg:min-w-[20vw] md:w-full xl:w-[30%] xl:min-w-0 bg-blue-100 rounded-xl shadow py-4 pl-4 snap-center flex-col flex  justify-between lg:hidden gap-10 relative  overflow-hidden">
    <div className="flex flex-col">
     <h3 className="text-lg xl:text-xl font-semibold ">Как нас найти</h3>
-    <p className="text-gray-600 text-sm xl:text-base ">Контент первой карточки</p>
+    <p className="text-gray-600 text-sm xl:text-base ">Информация о нашем магазине</p>
     </div> 
-    <div><button className="bg-white rounded-lg   text-sm border border-gray-300 py-2 px-3 xl:text-base">Показать на карте</button>
-    </div>
+    <div className="flex ">
+      <Link href="/about" className="bg-white rounded-lg   text-sm border border-gray-300 py-2 px-3 xl:text-base">Показать на карте</Link>
+      </div>
+    
     <div className="absolute -bottom-4 -right-5 text-blue-500/50">
     <MapPinned className="w-30 h-30" />
     </div>
@@ -117,10 +121,10 @@ const manufacturersWithImages = manufacturers?.map(manufacturer => {
           <div className=" flex-col lg:flex-row gap-8 items-center flex w-full  ">
             <div className="flex flex-col gap-4 max-w-[600px]">
               <h1 className="2xl:text-3xl text-2xl font-bold text-gray-900">
-                Все для дома
+               Все для дома
               </h1>
               <p className="text-base 2xl:text-lg text-gray-600 leading-relaxed">
-                Мы предлагаем широкий ассортимент сантехнической продукции: смесители, канализация, полипропилен, фитинги и металлопласт, сшитый полиэтилен, сливные трапы, герметики и другие комплектующие - всё от проверенных производителей. Сможем подсказать по любому вопросу, будь то ремонт в квартире или обустройство нового дома.
+                {about?.home}
               </p>
               <div className="flex flex-wrap gap-3 mt-2">
                 <div className="flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-lg">

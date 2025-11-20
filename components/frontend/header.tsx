@@ -31,7 +31,7 @@ export default async function Header() {
    < MapPin className="w-4 h-4" /> <p className=" 2xl:text-lg"> Минск</p>
 </div>
 <div className="flex flex-row gap-6 items-center "> 
-    <Link href="/auth/login" className="2xl:text-lg ">Войти</Link>
+    <Link href="/about" className="2xl:text-lg ">О нас</Link>
     <Link href="/auth/register" className="2xl:text-lg">Регистрация</Link> 
     <Link href="/cart" className="2xl:text-lg">Корзина</Link>
     <Link href="/orders" className="2xl:text-lg">Заказы</Link>

@@ -253,6 +253,27 @@ title: text("title").notNull(),
   // Индекс на productId
   productIdIdx: index("order_items_product_id_idx").on(table.productId),
 }));
+
+export const about = pgTable("about", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    title: varchar("title", { length: 255 }).notNull(),
+    home: text("home").notNull(),
+    description: text("description").notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => ({
+    titleIdx: index("about_title_idx").on(table.title),
+}));
+export const clientInfo = pgTable("client_info", {
+    id: uuid("id").primaryKey().defaultRandom(),
+   info:text("info").notNull(),
+   aboutId: uuid("about_id").references(() => about.id),
+   createdAt: timestamp("created_at").defaultNow(),
+   updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => ({
+    aboutIdIdx: index("client_info_about_id_idx").on(table.aboutId),
+}));
+
 export const schema = {
                 
                     products, 
@@ -272,8 +293,8 @@ export const schema = {
                     productImages,
                     categoryImages,
                     manufacturerImages,
-
-                  
+                    about,
+                    clientInfo,                  
                 }
 
 export type Product = typeof products.$inferSelect 
@@ -286,7 +307,9 @@ export type AttributeCategory = typeof attributeCategories.$inferSelect
 export type Manufacturer = typeof manufacturers.$inferSelect
 export type Filter = typeof filters.$inferSelect
 export type FilterCategory = typeof filterCategories.$inferSelect
+export type About = typeof about.$inferSelect
 export type Review = typeof reviews.$inferSelect
+export type ClientInfo = typeof clientInfo.$inferSelect
 export type ProductImage = typeof productImages.$inferSelect
 export type CategoryImage = typeof categoryImages.$inferSelect
 export type ManufacturerImage = typeof manufacturerImages.$inferSelect
