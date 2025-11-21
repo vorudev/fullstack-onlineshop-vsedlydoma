@@ -273,7 +273,35 @@ export const clientInfo = pgTable("client_info", {
 }, (table) => ({
     aboutIdIdx: index("client_info_about_id_idx").on(table.aboutId),
 }));
-
+export const contactUs = pgTable("contact_us", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    title: varchar("title", { length: 255 }).notNull(),
+    description: text("description").notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => ({
+    titleIdx: index("contact_us_title_idx").on(table.title),
+}));
+export const contactPhones = pgTable("contact_phones", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    phone: varchar("phone", { length: 255 }).notNull(),
+    src: varchar("src", { length: 255 }).notNull(),
+    link: varchar("link", { length: 255 }).notNull(),
+    contactUsId: uuid("contact_us_id").references(() => contactUs.id),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => ({
+    contactUsIdIdx: index("contact_phones_contact_us_id_idx").on(table.contactUsId),
+}));
+export const contactUsTelephones = pgTable("contact_us_telephones", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    phone: varchar("phone", { length: 255 }).notNull(),
+    contactUsId: uuid("contact_us_id").references(() => contactUs.id),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => ({
+    contactUsIdIdx: index("contact_us_telephones_contact_us_id_idx").on(table.contactUsId),
+}));
 export const schema = {
                 
                     products, 
@@ -294,7 +322,10 @@ export const schema = {
                     categoryImages,
                     manufacturerImages,
                     about,
-                    clientInfo,                  
+                    clientInfo,
+                    contactUs,
+                    contactPhones,
+                    contactUsTelephones,                  
                 }
 
 export type Product = typeof products.$inferSelect 
@@ -308,7 +339,10 @@ export type Manufacturer = typeof manufacturers.$inferSelect
 export type Filter = typeof filters.$inferSelect
 export type FilterCategory = typeof filterCategories.$inferSelect
 export type About = typeof about.$inferSelect
-export type Review = typeof reviews.$inferSelect
+export type Review = typeof reviews.$inferSelect 
+export type ContactUs = typeof contactUs.$inferSelect
+export type ContactPhone = typeof contactPhones.$inferSelect
+export type ContactTelephone = typeof contactUsTelephones.$inferSelect
 export type ClientInfo = typeof clientInfo.$inferSelect
 export type ProductImage = typeof productImages.$inferSelect
 export type CategoryImage = typeof categoryImages.$inferSelect

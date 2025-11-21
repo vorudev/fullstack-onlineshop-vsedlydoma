@@ -13,6 +13,7 @@ import {About} from "@/db/schema";
 import {notFound} from "next/navigation";
 import {Suspense} from "react";
 import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 
 export default async function AboutPage() {
@@ -24,9 +25,9 @@ export default async function AboutPage() {
            <div className="p-[16px] 
  ">
             <div className="flex flex-row items-center gap-4">
-<h1>Добавление информации о нас</h1>
+<h1 className="text-[20px] font-semibold">Информация о нас</h1>
         <Dialog>
-            <DialogTrigger><Plus /></DialogTrigger>
+            <DialogTrigger><Button>Изменить <Pencil className="w-4 h-4"/></Button></DialogTrigger>
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Добавить информацио о нас</DialogTitle>
@@ -36,7 +37,7 @@ export default async function AboutPage() {
         </Dialog>
         </div>
             <div >
-              <div className="flex flex-col gap-5 " >
+              <div className="flex flex-col mt-10 bg-white text-black rounded-xl gap-5 " >
 <div className="p-[16px] 
  flex-col flex gap-5 rounded-xl ">
 <h2 className="text-[20px] md:text-[32px] font-semibold leading-tight">

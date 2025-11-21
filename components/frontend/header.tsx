@@ -9,7 +9,7 @@ import UserElement from "./icons-header/user-header"
 import CartHeader from "./icons-header/cart-header"
 import { getCategories } from "@/lib/actions/product-categories";
 export default async function Header() {
-  //   const categories = await getCategories();
+    const categories = await getCategories();
     return  ( 
         <>
         <header className="bg-white lg:hidden flex flex-col text-black mx-auto gap-3 py-2 px-3">
@@ -32,9 +32,9 @@ export default async function Header() {
 </div>
 <div className="flex flex-row gap-6 items-center "> 
     <Link href="/about" className="2xl:text-lg ">О нас</Link>
-    <Link href="/auth/register" className="2xl:text-lg">Регистрация</Link> 
-    <Link href="/cart" className="2xl:text-lg">Корзина</Link>
-    <Link href="/orders" className="2xl:text-lg">Заказы</Link>
+    <Link href="/contact-us" className="2xl:text-lg">Контакты</Link> 
+    <Link href="/categories" className="2xl:text-lg">Категории</Link>
+    <Link href="/profile" className="2xl:text-lg">Профиль</Link>
 </div>
 <p>8-800-555-35-35</p>
             </nav>
@@ -43,7 +43,7 @@ export default async function Header() {
                     <Link href="/">
                     <Image src="/logo.webp" alt="logo" width={160} height={60} />
                     </Link>
-               {/*     <CategoriesTable categories={categories} /> */} </div> 
+                    <CategoriesTable categories={categories} /> </div> 
                 <SearchBar />
                 <div className="flex flex-row gap-2 items-center  "> 
 

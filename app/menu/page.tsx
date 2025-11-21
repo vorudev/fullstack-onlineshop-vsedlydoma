@@ -28,7 +28,7 @@ export default function MenuPage() {
             <h2 className="text-[15px]   leading-tight">О нас</h2>
             <ChevronRight className="w-5 h-5 text-gray-400 absolute right-3" />
             </Link>
-            <Link href="/favorites" className="flex flex-row items-center gap-3 relative py-[16px] px-[12px]">
+            <Link href="/contact-us" className="flex flex-row items-center gap-3 relative py-[16px] px-[12px]">
             <MessageSquareDot className="w-6 h-6 text-gray-400" />
             <h2 className="text-[15px]   leading-tight">Контакты</h2>
             <ChevronRight className="w-5 h-5 text-gray-400 absolute right-3" />

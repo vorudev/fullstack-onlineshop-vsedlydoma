@@ -1,5 +1,5 @@
 "use server";
-import { Calendar, Home, User,  ClipboardList, Package, ChartBarStacked, Info} from "lucide-react"
+import { Calendar, Home, User, Phone,  ClipboardList, Package, ChartBarStacked, Info} from "lucide-react"
 import Link from "next/link"
 import AdminPageUser from "./frontend/admin-page-user";
 import { getPendingReviewsCount } from "@/lib/actions/reviews";
@@ -28,11 +28,7 @@ import { da } from "zod/v4/locales";
 
 
 const items = [
-  {
-    title: "О нас",
-    url: "/dashboard/about",
-    icon: Info ,
-  },
+ 
   {
     title: "Главная",
     url: "/dashboard",
@@ -58,6 +54,16 @@ const items = [
     title: "Категории",
     url: "/dashboard/categories",
     icon: ChartBarStacked,
+  },
+   {
+    title: "О нас",
+    url: "/dashboard/about",
+    icon: Info ,
+  },
+  {
+    title: "Контакты",
+    url: "/dashboard/contact-us",
+    icon: Phone ,
   },
   
 ]
