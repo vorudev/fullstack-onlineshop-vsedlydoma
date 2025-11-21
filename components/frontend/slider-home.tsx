@@ -41,7 +41,7 @@ const ProductsSlider = ({ products }: SliderHomeProps = { products: [] }) => {
     const [slidesPerView, setSlidesPerView] = useState(1);
     const maxIndex = Math.max(0, Math.ceil(products.length / slidesPerView) - 3);
   return (
-    <div className="w-full max-w-7xl mx-auto group   ">
+    <div className="w-full max-w-7xl mx-auto group">
 
       <div className="relative ">
         {/* Кастомная кнопка назад */}

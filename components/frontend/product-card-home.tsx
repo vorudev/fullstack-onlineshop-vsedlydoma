@@ -64,7 +64,7 @@ function getReviewText(count: number): string {
 }
 
     return ( 
-        <div className="bg-gray-100 rounded-2xl  transition-all duration-300 overflow-hidden  group lg:p-[12px] min-w-[300px]" key={product.id}> 
+        <div className="bg-white rounded-2xl lg:max-w-[450px]  transition-all duration-300 overflow-hidden  group lg:p-[12px] lg:min-w-[300px]" key={product.id}> 
         <div className="hidden lg:block flex flex-col  px-2 py-2">
           <Link className="relative overflow-hidden" href={`/product/${product.slug}`}>
             <ImagesSliderCardFull images={product.images} title={product.title} />
@@ -76,10 +76,8 @@ function getReviewText(count: number): string {
           
           </Link>
           <div className="flex flex-row gap-2 pt-2 text-sm items-center">
-            <button className="flex items-center gap-1 py-1 rounded-lg text-gray-500">
-              <ChartNoAxesColumn className="w-4 h-4" /> Сравнить
-            </button>
-          <div className="flex items-center px-2 py-1 rounded-lg">
+            
+          <div className="flex items-center py-1 rounded-lg">
           {rounded ? rounded && 
           <div className={`flex mr-2  items-center gap-1 font-semibold ${getRatingColor(rounded)}`}>
               <Star className="w-4 h-4" /> {rounded ? rounded : null} 
@@ -125,11 +123,11 @@ function getReviewText(count: number): string {
               </Link>
               
              
-              <div className="flex flex-row gap-3 items-center ">
+              <div className="flex lg:flex-row flex-col gap-3 lg:items-center items-start  ">
                  <div className="text-[16px]
-                 font-semibold text-gray-900 w-1/2">
+                 font-semibold text-gray-900 lg:w-1/2">
                   <h3>{product.price} руб</h3></div>
-             <div className="w-1/2 flex flex-row  items-center justify-end gap-2"> 
+             <div className="lg:w-1/2 flex flex-row  items-center justify-end gap-2"> 
               <AddToFavorite product={product}/>
               <AddToCart product={product}/>
 

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Star } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
 import { useRouter, useSearchParams } from 'next/navigation';
+import Link from "next/link";
 interface ProductUnited {
   
   productDetails: {
@@ -81,6 +82,7 @@ interface United {
   productDetails: ProductUnited['productDetails'];
 }
 const RatingChart = ({productDetails}: ProductUnited) => {
+  const {data: session} = useSession();
   // Подсчитываем количество отзывов для каждой оценки
   const ratingCounts = {
     5: 0,
@@ -137,20 +139,23 @@ const getReviewWord = (count: number) => {
       
 
 
-      <Dialog>
+      <Dialog >
       <DialogTrigger asChild 
       >
-        <button
+        {session?.user ? <button
          className="mt-4 cursor-pointer px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
           Оставить отзыв
-        </button>
+        </button> :  <Link href="/signin"
+         className="mt-4 cursor-pointer text-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+        Оставить отзыв
+        </Link>}
       </DialogTrigger>
-      <DialogContent className="bg-white max-w-lg text-black">
+      {session?.user && <DialogContent className="bg-white max-w-lg text-black ">
         <DialogHeader>
           <DialogTitle>Оставить отзыв</DialogTitle>
         </DialogHeader>
         <ReviewForm product_id={productDetails.id} />
-      </DialogContent>
+      </DialogContent>}
     </Dialog>
    
     </div>

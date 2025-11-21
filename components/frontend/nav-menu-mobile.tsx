@@ -16,9 +16,9 @@ export default function NavMenuMobile()
    <Home className="w-5 h-5"/> 
    <span className="text-[11px]">Главная</span> 
    </Link>
-   <Link href="/shops" className={`flex flex-col  items-center ${pathname === '/shops' ? 'text-blue-600' : ''}`}>
+   <Link href="/about" className={`flex flex-col  items-center ${pathname === '/about' ? 'text-blue-600' : ''}`}>
    <MapPin className="w-5 h-5"/> 
-   <span className="text-xs">Магазины</span> 
+   <span className="text-xs">О нас</span> 
    </Link>
    <Link href="/categories" className={`flex flex-col  items-center ${pathname === '/categories' ? 'text-blue-600' : ''}`}>
    <TextSearch className="w-5 h-5"/> 
@@ -29,12 +29,12 @@ export default function NavMenuMobile()
    <span className="text-[11px]">Корзина</span> 
    </Link>
     {session?.data?.user ? (
-        <Link href="/profile" className={`flex flex-col g items-center ${pathname === '/profile' ? 'text-blue-600' : ''}`}>
+        <Link href="/menu" className={`flex flex-col g items-center ${pathname === '/profile' ? 'text-blue-600' : ''}`}>
    <User className="w-5 h-5"/> 
    <span className="text-[11px]">{session?.data?.user?.name}</span> 
    </Link>
      ) : (
-        <Link href="/signin" className={`flex flex-col g items-center ${pathname === '/signin' ? 'text-blue-600' : ''}`}>
+        <Link href="/menu" className={`flex flex-col g items-center ${pathname === '/signin' ? 'text-blue-600' : ''}`}>
    <User className="w-5 h-5"/> 
    <span className="text-[11px]">Войти</span> 
    </Link>

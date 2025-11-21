@@ -54,7 +54,7 @@ const manufacturersWithImages = manufacturers?.map(manufacturer => {
     <h3 className="text-lg xl:text-xl font-semibold ">Как нас найти</h3>
     <p className="text-gray-600 text-sm xl:text-base ">Информация о нашем магазине</p>
     </div> 
-    <div className="flex ">
+    <div className="flex">
       <Link href="/about" className="bg-white rounded-lg   text-sm border border-gray-300 py-2 px-3 xl:text-base">Показать на карте</Link>
       </div>
     

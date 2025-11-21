@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react';
-import { Star, Heart, ShoppingCart, Check, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star, Heart, ShoppingCart, Check, ChevronLeft, ChevronRight, Link } from 'lucide-react';
 import { ReviewForm } from '@/components/forms/review-form';
 import DesktopSection from './desktop-section';
 import DesktopAtributes from './desktop-attributes';
@@ -28,6 +28,7 @@ interface United {
     internals: Internals;
     productDetails: ProductUnited['productDetails'];
 }
+
 interface ProductUnited {
    
   productDetails: {
@@ -103,13 +104,13 @@ export default function ProductPage({productDetails, internals}: United) {
       const isInFavorite = favorite.some((item) => item.product.id === productDetails.id);
    
  return ( 
-    <div className="pt-[16px] px-[16px] overflow-hidden flex w-full flex-col gap-3">
+    <div className=" px-[16px] overflow-hidden flex w-full flex-col gap-3">
   <div className="flex overflow-x-auto gap-2 items-center px-4 md:px-0 snap-x snap-mandatory text-gray-600 text-[14px]" style={{ 
       scrollbarWidth: 'none',
       msOverflowStyle: 'none',
     }}>
-        <div className="flex items-center gap-2 min-w-[80px]"><p>Каталог</p>
-        <ChevronRight className="w-[12px] h-[12px]"/></div>
+        
+        
         </div>
          <div className="flex flex-col lg:hidden gap-1">
             <h3 className="text-[20px] text-gray-900 font-semibold  leading-tight lg:text-[32px]">{productDetails?.title}</h3>

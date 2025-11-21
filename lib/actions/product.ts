@@ -71,6 +71,8 @@ export async function getProductsWithDetailsLeftJoin(slug: string, limit: number
               .from(manufacturerImages)
               .where(eq(manufacturerImages.manufacturerId, product.manufacturers.id))
           : Promise.resolve([]),
+          // breadcrumbs
+    
       ]);
 
     // Вычисляем средний рейтинг
@@ -530,4 +532,38 @@ export async function getTopProductsInCategory(
     .limit(limit);
 
   return topProducts;
+}
+
+export async function buildCategoryChain(categoryId: string) {
+  const result = await db.execute<{ id: string; name: string; slug: string }>(sql`
+    WITH RECURSIVE category_path AS (
+      SELECT id, name, slug, parent_id, 1 as level
+      FROM ${categories}
+      WHERE id = ${categoryId}
+      
+      UNION ALL
+      
+      SELECT c.id, c.name, c.slug, c.parent_id, cp.level + 1
+      FROM ${categories} c
+      INNER JOIN category_path cp ON c.id = cp.parent_id
+    )
+    SELECT id, name, slug
+    FROM category_path
+    ORDER BY level DESC
+  `);
+  
+  return result.rows;
+}
+// Получить путь категории для построения URL с search params
+export async function buildCategoryPath(breadcrumbs: Array<{ slug: string }>) {
+  return breadcrumbs.map((b) => b.slug).join(",");
+}
+
+
+export async function buildCategoryUrl(
+  currentSlug: string,
+  breadcrumbs: Array<{ slug: string }>
+) {
+  const path = await buildCategoryPath(breadcrumbs);
+  return `/categories/${currentSlug}`;
 }
