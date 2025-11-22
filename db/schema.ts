@@ -15,6 +15,7 @@ role: roleEnum('role').default('user').notNull(), // добавляем это �
  image: text('image'),
  createdAt: timestamp('created_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull(),
  updatedAt: timestamp('updated_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull(),
+ twoFactorEnabled: boolean("two_factor_enabled").notNull().default(false),
 banned: boolean("banned").notNull().default(false), // Добавьте эту строку
 
                 });
@@ -53,7 +54,13 @@ export const verification = pgTable("verification", {
  createdAt: timestamp('created_at').$defaultFn(() => /* @__PURE__ */ new Date()),
  updatedAt: timestamp('updated_at').$defaultFn(() => /* @__PURE__ */ new Date())
                 });
-
+export const twoFactor = pgTable("two_factor", {
+  id: text("id").primaryKey(),
+  secret: text("secret").notNull(),
+  backupCodes: text("backup_codes").notNull(),
+  userId: text("user_id").notNull().references(()=> user.id, { onDelete: 'cascade' }),
+});
+  
 export const categories = pgTable("categories", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 255 }).notNull().unique(),
@@ -325,7 +332,8 @@ export const schema = {
                     clientInfo,
                     contactUs,
                     contactPhones,
-                    contactUsTelephones,                  
+                    contactUsTelephones,  
+                    twoFactor,                 
                 }
 
 export type Product = typeof products.$inferSelect 
@@ -341,6 +349,7 @@ export type FilterCategory = typeof filterCategories.$inferSelect
 export type About = typeof about.$inferSelect
 export type Review = typeof reviews.$inferSelect 
 export type ContactUs = typeof contactUs.$inferSelect
+export type TwoFactor = typeof twoFactor.$inferSelect
 export type ContactPhone = typeof contactPhones.$inferSelect
 export type ContactTelephone = typeof contactUsTelephones.$inferSelect
 export type ClientInfo = typeof clientInfo.$inferSelect

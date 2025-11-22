@@ -65,55 +65,33 @@ const signInWithGithub = async () => {
  
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
-    const res = await signIn(values.email, values.password);
-   if (res.success) {
-   router.push("/dashboard");
-}
-console.log(res);
-// Если нужна 2FA
-if (res.requiresTwoFactor) {
-  router.push("/2fa");
-}
+   setIsLoading(true);
+   await authClient.signIn.email({
+    email: values.email,
+    password: values.password,
+   }, {
+    onError: error => {
+      console.log(error)
+    },
+    onSuccess: () => {
+      router.push("/")
+    },
+   })
+
+   
     setIsLoading(false);
   }
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card className="bg-[#101114]">
-        <CardHeader className="text-center">
-          <CardTitle className="text-xl">Welcome back</CardTitle>
-          <CardDescription>
-            Login with your Google account
-          </CardDescription>
-        </CardHeader>
+    <div className={cn("flex flex-col w-full text-black gap-6", className)} {...props}>
+      <Card className="bg-white border-none shadow-none">
         <CardContent>
           <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div className="grid gap-6">
-              <div className="flex flex-col gap-4">
-                
-                <Button variant="outline" className="w-full" onClick={signInWithGoogle} type="button">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path
-                      d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                  Login with Google
-                </Button>
-                <Button variant="outline" className="w-full" onClick={signInWithGithub} type="button">
-                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                    <path
-                                      d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
-                                      fill="currentColor"
-                                    />
-                                  </svg>
-                                  Signup with Github
-                                </Button>
-              </div>
+              
               <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
                 <span className=" text-muted-foreground relative z-10 px-2">
-                  Or continue with
+                  Войти
                 </span>
               </div>
               <div className="grid gap-6">
@@ -123,16 +101,15 @@ if (res.requiresTwoFactor) {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="example@gmail.com" {...field} />
+                <input placeholder="Email"   className="bg-gray-100 border border-gray-200 py-3 focus:outline-none focus:ring-blue-500 transition duration-200 focus:ring-2 px-3 rounded-md text-gray-600" {...field} />
               </FormControl>
-            
               <FormMessage />
             </FormItem>
           )}
         />
                 </div>
+                
                 <div className="grid gap-3">
                   <div className="flex flex-col gap-2">
                     <FormField
@@ -140,34 +117,33 @@ if (res.requiresTwoFactor) {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input placeholder="********" {...field} 
+                <input placeholder="Пароль"   className="bg-gray-100 border border-gray-200 py-3 focus:outline-none focus:ring-blue-500 transition duration-200 focus:ring-2 px-3 rounded-md text-gray-600" {...field} 
                 type="password"/>
               </FormControl>
-              
+             
               <FormMessage />
             </FormItem>
           )}
         />
                     <Link
                       href="/forgot-password"
-                      className="ml-auto text-sm underline-offset-4 hover:underline"
+                      className="ml-auto text-blue-500 text-sm underline-offset-4 hover:underline"
                     >
-                      Forgot your password?
+                      Забыли пароль?
                     </Link>
                   </div>
                   
                 </div>
-                <Button type="submit" className="bg-white text-black px-6 py-3 rounded-full  cursor-pointer hover:text-gray-400 hover:bg-transparent hover:border border-white border transition duration-300 inter " disabled={isLoading} >
+                <Button type="submit" className="bg-blue-500 text-white w-full  h-[48px] hover:bg-blue-600" disabled={isLoading} >
 
-             {isLoading ? <Loader2Icon className="size-4 animate-spin"></Loader2Icon> : "Login"}
+             {isLoading ? <Loader2Icon className="size-4 animate-spin"></Loader2Icon> : "Войти"}
                 </Button>
               </div>
-              <div className="text-center text-sm">
-                Don&apos;t have an account?{" "}
-                <Link href="/signup" className="underline underline-offset-4">
-                  Sign up
+              <div className="text-center text-black text-sm">
+                Уже есть аккаунт?{" "}
+                <Link href="/signup" className="underline  text-blue-500 underline-offset-4">
+                  Зарегистрироваться
                 </Link>
               </div>
             </div>
@@ -176,8 +152,8 @@ if (res.requiresTwoFactor) {
         </CardContent>
       </Card>
       <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
+        Нажимая на кнопку "Войти", вы соглашаетесь с 
+        <a href="#" className="underline underline-offset-4 text-blue-500">Политикой конфиденциальности</a>.
       </div>
     </div>
   )

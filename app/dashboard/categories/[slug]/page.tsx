@@ -9,7 +9,7 @@ import ImagesSlider from "@/components/images/images-slider-category";
 import {getCategoryImages} from "@/lib/actions/image-actions";
 import { CategoryForm } from "@/components/forms/category-form";
 import { FilterCategoryForm } from "@/components/forms/filter-category-form";
-import { CreateImagesToCategoryForm } from "@/components/forms/add-image-to-category-form";
+import { CreateImagesToCategoryForm } from "@/components/forms/add/add-image-to-category-form";
 import { Plus } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {

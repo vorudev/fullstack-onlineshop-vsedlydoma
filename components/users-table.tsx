@@ -1,6 +1,6 @@
 'use client';
 import { getUsers } from "@/lib/actions/admin";
-import { ChangeUserForm } from "@/components/forms/change-user-form";
+import { ChangeUserForm } from "@/components/forms/auth/change-user-form";
 import { Button } from "@/components/ui/button";
 import type { User } from "@/db/schema";
 import Link from "next/link";

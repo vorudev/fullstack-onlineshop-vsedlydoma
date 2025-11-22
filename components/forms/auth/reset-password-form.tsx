@@ -33,8 +33,8 @@ import { Loader2Icon } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
  
 const formSchema = z.object({
- password: z.string().min(8),
-confirmPassword: z.string().min(8),
+ password: z.string().min(8, "пароль должен содержать хотя бы 8 символов"),
+confirmPassword: z.string().min(8, "пароль должен содержать хотя бы 8 символов"),
  
 })
 
@@ -43,8 +43,11 @@ export function ResetPasswordForm({
   ...props
 }: React.ComponentProps<"div">) {
     const searchParams = useSearchParams();
+
     const token = searchParams.get("token") as string;
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const router = useRouter();
    const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -61,7 +64,8 @@ export function ResetPasswordForm({
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     if (values.password !== values.confirmPassword) {
-      toast.error("Passwords do not match");
+      setError("Пароли не совпадают");
+      setIsLoading(false);
       return;
     }
 const { error } = await authClient.resetPassword({
@@ -69,22 +73,23 @@ const { error } = await authClient.resetPassword({
 token, 
 });
     if (error) {
-      toast.error(error.message);
+      setError("Произошла ошибка");
+      
      
     } else {
-      toast.success("Password reset successfully");
-      router.push("/signin");
+      setSuccess("Пароль успешно изменен!");
+      setTimeout(() => {
+        router.push("/signin");
+      }, 500);
     }
     setIsLoading(false);
   }
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
-        <CardHeader className="text-center">
-          <CardTitle className="text-xl">Reset Password</CardTitle>
-          <CardDescription>
-            Enter your email to reset your password
-          </CardDescription>
+      <Card className="bg-white border-none shadow-none">
+        <CardHeader className="text-center text-black">
+          <CardTitle className="text-xl">Восстановление пароля</CardTitle>
+          
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -99,9 +104,8 @@ token,
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>New Password</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your new password" {...field} type="password"/>
+                <input placeholder="Введите новый пароль" {...field} type="password" className="bg-gray-100 border border-gray-200 py-3 focus:outline-none focus:ring-blue-500 transition duration-200 focus:ring-2 px-3 rounded-md text-gray-600"/>
               </FormControl>
             
               <FormMessage />
@@ -115,9 +119,8 @@ token,
           name="confirmPassword"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Confirm Password</FormLabel>
               <FormControl>
-                <Input placeholder="Confirm your new password" {...field} type="password"/>
+                <input placeholder="Подтвердите новый пароль" {...field} type="password" className="bg-gray-100 border border-gray-200 py-3 focus:outline-none focus:ring-blue-500 transition duration-200 focus:ring-2 px-3 rounded-md text-gray-600"/>
               </FormControl>
             
               <FormMessage />
@@ -125,19 +128,18 @@ token,
           )}
         />
                 </div>
-                <div className="grid gap-3">
-                  
-                  
-                </div>
-                <Button type="submit" className="bg-[rgb(35,25,22)] text-[rgb(228,224,212)] w-full h-[48px] bdog text-[12px] uppercase " disabled={isLoading} >
+               
+                <Button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white w-full h-[48px] text-[12px] uppercase" disabled={isLoading} >
 
-             {isLoading ? <Loader2Icon className="size-4 animate-spin"></Loader2Icon> : "Continue"}
+             {isLoading ? <Loader2Icon className="size-4 animate-spin"></Loader2Icon> : "Подтвердить"}
                 </Button>
+                {error && <p className="text-red-500 text-center text-xs">{error}</p>}
+                {success && <p className="text-green-500 text-center text-xs">{success}</p>}
               </div>
-              <div className="text-center text-sm">
-                Don&apos;t have an account?{" "}
-                <Link href="/signup" className="underline underline-offset-4">
-                  Sign up
+              <div className="text-center text-black text-sm">
+                Нет аккаунта?{" "}
+                <Link href="/signup" className="underline text-blue-500 underline-offset-4">
+                  Зарегистрироваться
                 </Link>
               </div>
             </div>
@@ -146,8 +148,8 @@ token,
         </CardContent>
       </Card>
       <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
+        Нажимая на кнопку "Подтвердить", вы соглашаетесь с {" "}
+        <a href="#" className="underline text-blue-500 underline-offset-4">Политика конфиденциальности</a>.
       </div>
     </div>
   )

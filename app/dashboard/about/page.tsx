@@ -1,7 +1,7 @@
-import { AddAboutInfo } from "@/components/forms/add-about-info";
+import { AddAboutInfo } from "@/components/forms/add/add-about-info";
 import {getAboutInfo} from "@/lib/actions/about-info";
 import { Pencil, Plus, User, MapPin } from "lucide-react";
-import { AddAboutClientInfo } from "@/components/forms/add-about-client-info";
+import { AddAboutClientInfo } from "@/components/forms/add/add-about-client-info";
 import {
     Dialog,
     DialogContent,

@@ -62,7 +62,7 @@ database: drizzleAdapter(db, {
     }
   },
   
-plugins: [admin(), nextCookies(), phoneNumber()],
+plugins: [admin(), nextCookies(), phoneNumber(), twoFactor()],
 });
 
 export type Session = typeof auth.$Infer.Session;

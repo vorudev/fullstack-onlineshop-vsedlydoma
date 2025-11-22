@@ -1,6 +1,6 @@
 import { getManufacturerBySlug } from "@/lib/actions/manufacturer";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { CreateImagesToManufacturerForm } from "@/components/forms/add-image-to-manufacturer-form";
+import { CreateImagesToManufacturerForm } from "@/components/forms/add/add-image-to-manufacturer-form";
 import { Button } from "@/components/ui/button";
 import { getManufacturerImages } from "@/lib/actions/image-actions";
 import ImagesSlider from "@/components/images/images-slider-manufacturer";

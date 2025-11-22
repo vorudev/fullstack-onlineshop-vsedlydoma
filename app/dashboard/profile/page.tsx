@@ -1,7 +1,7 @@
 'use client';
 import { useSession } from "@/lib/auth-client";
-import { ResetPasswordForm } from "@/components/forms/reset-password-form";
-import { ChangePasswordForm } from "@/components/forms/change-password-form";
+import { ResetPasswordForm } from "@/components/forms/auth/reset-password-form";
+import { ChangePasswordForm } from "@/components/forms/auth/change-password-form";
 export default function ProfilePage() {
     const { data: session } = useSession();
     return (

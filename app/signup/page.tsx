@@ -1,18 +1,18 @@
 
 import Link from "next/link"
 
-import {  SignupForm } from "@/components/forms/signup-form"
+import {  SignupForm } from "@/components/forms/auth/signup-form"
 
 export default function SignupPage() {
 
   return (
-    <div className="bg-[#101114] flex border-t border-neutral-800 flex-col items-center justify-center gap-6 p-6 md:p-10">
+    <div className="bg-white flex border-t  min-h-screen border-neutral-800 flex-col items-center gap-6 p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6 items-center">
   <Link href="/">
           <img
-            src='/images/logo.png'
+            src='/logo.webp'
             alt="Логотип"
-            className="h-6 w-auto"
+            className="h-15 w-auto"
           />
           </Link>
         <SignupForm />

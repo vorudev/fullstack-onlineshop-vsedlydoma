@@ -1,4 +1,4 @@
-import { Eye, Heart, ShoppingCart, MapPin, MapPinned,Newspaper, Grid3x3, PhoneCall, Building2, TextSelect  } from "lucide-react";
+import { Eye, ShoppingCart, MapPin, MapPinned,Newspaper, Grid3x3, PhoneCall, Building2, TextSelect, Heart  } from "lucide-react";
 import Map from "./map";
 import CategoriesTable from "../categories-table-user-2";
 import { getRandomProductsFast, getProducts } from "@/lib/actions/product";
@@ -139,13 +139,13 @@ const manufacturersWithImages = manufacturers?.map(manufacturer => {
   href="/news"
    className="min-w-[50vw] md:min-w-[40vw] lg:min-w-[20vw] md:w-full xl:w-[30%] xl:min-w-0 bg-green-100 rounded-xl shadow py-4 pl-4 snap-center flex-col flex  justify-between lg:hidden gap-10 relative  overflow-hidden">
    <div className="flex flex-col">
-    <h3 className="text-lg xl:text-xl font-semibold ">Новости и статьи</h3>
-    <p className="text-gray-600 text-sm xl:text-base ">Последние новости и статьи</p>
+    <h3 className="text-lg xl:text-xl font-semibold ">Избранное</h3>
+    <p className="text-gray-600 text-sm xl:text-base "></p>
     </div> 
   
     
     <div className="absolute -bottom-4 -right-5 text-green-500/50">
-    <Newspaper className="w-30 h-30" />
+    <Heart className="w-30 h-30" />
     </div>
   </Link>
    

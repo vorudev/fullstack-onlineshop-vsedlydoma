@@ -40,6 +40,8 @@ export function ForgotPasswordForm({
   ...props
 }: React.ComponentProps<"div">) {
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const router = useRouter();
    const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -59,20 +61,23 @@ const { error } = await authClient.forgetPassword({
   redirectTo: "/reset-password",
 });
     if (error) {
-      toast.error(error.message);
+      setError("Произошла ошибка");
      
     } else {
-      toast.success("Password reset link sent to your email");
+      setSuccess("Письмо отправлено");
+      setTimeout(() => {
+        router.push("/reset-password");
+      }, 500);
     }
     setIsLoading(false);
   }
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
+    <div className={cn("flex flex-col gap-6 ", className)} {...props}>
+      <Card className="bg-white border-none shadow-none">
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Forgot Password</CardTitle>
-          <CardDescription>
-            Enter your email to reset your password
+          <CardTitle className="text-xl text-black">Восстановление пароля</CardTitle>
+          <CardDescription className="text-gray-600">
+            Введите ваш email для восстановления пароля
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -88,9 +93,9 @@ const { error } = await authClient.forgetPassword({
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+             
               <FormControl>
-                <Input placeholder="example@gmail.com" {...field} />
+                <input placeholder="Email" {...field} className="bg-gray-100 border border-gray-200 py-3 focus:outline-none focus:ring-blue-500 transition duration-200 focus:ring-2 px-3 rounded-md text-gray-600"/>
               </FormControl>
             
               <FormMessage />
@@ -98,19 +103,18 @@ const { error } = await authClient.forgetPassword({
           )}
         />
                 </div>
-                <div className="grid gap-3">
-                  
-                  
-                </div>
-                <Button type="submit" className="bg-[rgb(35,25,22)] text-[rgb(228,224,212)] w-full h-[48px] bdog text-[12px] uppercase " disabled={isLoading} >
+               
+                <Button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white w-full h-[48px] text-[12px] uppercase" disabled={isLoading} >
 
-             {isLoading ? <Loader2Icon className="size-4 animate-spin"></Loader2Icon> : "Continue"}
+             {isLoading ? <Loader2Icon className="size-4 animate-spin"></Loader2Icon> : "Подтвердить" }
                 </Button>
+                {error && <p className="text-red-500 text-center text-xs">{error}</p>}
+                {success && <p className="text-green-500 text-center text-xs">{success}</p>}
               </div>
-              <div className="text-center text-sm">
-                Don&apos;t have an account?{" "}
-                <Link href="/signup" className="underline underline-offset-4">
-                  Sign up
+              <div className="text-center text-sm text-black">
+                Нет аккаунта?{" "}
+                <Link href="/signup" className="underline text-blue-500 underline-offset-4">
+                  Зарегистрироваться
                 </Link>
               </div>
             </div>
@@ -119,8 +123,8 @@ const { error } = await authClient.forgetPassword({
         </CardContent>
       </Card>
       <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
+        Нажимая на кнопку "Подтвердить", вы соглашаетесь с
+        <a href="# " className="underline text-blue-500 underline-offset-4">Политикой конфиденциальности</a>.
       </div>
     </div>
   )

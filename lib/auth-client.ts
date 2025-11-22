@@ -9,7 +9,7 @@ export const authClient = createAuthClient({
         twoFactorClient(
             {
                 onTwoFactorRedirect: () => {
-                     '/two-factor'
+                     window.location.href = '/2fa'
                 },
             }
         ),

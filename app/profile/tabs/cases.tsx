@@ -1,10 +1,11 @@
 'use client'
  import { Pencil } from "lucide-react" 
- import { ChangePasswordForm } from "@/components/forms/change-password-form"
+ import { ChangePasswordForm } from "@/components/forms/auth/change-password-form"
  import Pagination from "@/components/pagination"
- import { ChangeUserNameForm } from "@/components/forms/change-user-name-form"
+ import { ChangeUserNameForm } from "@/components/forms/auth/change-user-name-form"
  import { useSession} from "@/lib/auth-client"
- import AddPhoneToUser from "@/components/forms/add-phone-to-user"
+ import { TwoFactorAuthForm } from "@/components/forms/auth/two-factor-form"
+ import AddPhoneToUser from "@/components/forms/add/add-phone-to-user"
  import {
     Dialog,
     DialogContent,
@@ -14,6 +15,7 @@
  } from "@/components/ui/dialog"
  import SearchBar from "@/components/searchbar-client"
  import OrderHistoryTable from "@/components/frontend/order-history-table"
+import Link from "next/link"
  interface Props {
     orders: {
     orderItems: {
@@ -100,6 +102,19 @@ export function Security() {
    <ChangePasswordForm />
     </div>
 
+        </div>
+    )
+}
+export function TwoFactorAuth() {
+    return (
+        <div className="flex flex-col relative gap-4 bg-white rounded-xl p-5 ">
+            <h3 className="text-[16px] text-gray-400">Двухфакторная аутентификация</h3>
+<div className="flex flex-col lg:w-1/3 items-start">
+ <Link href="/2fa-enable"className="bg-blue-500 hover:bg-blue-600 text-white rounded-xl w-full h-[48px] text-[12px] uppercase flex items-center justify-center">
+ <p className="text-center">
+    Управление двухфакторной аутентификацией
+ </p></Link>
+     </div>
 
         </div>
     )

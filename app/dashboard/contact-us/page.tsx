@@ -1,8 +1,8 @@
-import { AddContactUsPhones } from "@/components/forms/add-contact-us-phones";
+import { AddContactUsPhones } from "@/components/forms/add/add-contact-us-phones";
 import {getContactUs} from "@/lib/actions/contact-us";
-import { AddContactUsTelephone } from "@/components/forms/add-contact-us-telephones";
+import { AddContactUsTelephone } from "@/components/forms/add/add-contact-us-telephones";
 import { Pencil, Plus, User, MapPin } from "lucide-react";
-import { AddContactUsInfo } from "@/components/forms/add-contact-us-info";
+import { AddContactUsInfo } from "@/components/forms/add/add-contact-us-info";
 import {
     Dialog,
     DialogContent,
