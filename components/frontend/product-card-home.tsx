@@ -1,8 +1,9 @@
- 'use client'
+'use client'
  import { Heart, ShoppingCart , ChartNoAxesColumn, Star} from "lucide-react";
 import { getAverageRatingByProductId } from "@/lib/actions/reviews";
 import { getProductImages } from "@/lib/actions/image-actions";
 import { AddToCart } from "@/app/products/add-to-cart-prop";
+import {useCart} from "@/app/context/cartcontext";
 import Link from "next/link";
 import { AddToFavorite } from "@/app/products/add-to-favorite-prop";
 import { ProductImage } from "@/db/schema";
@@ -36,8 +37,9 @@ interface ProductUnited {
 }
 }
 export default function ProductCard( { product}: ProductUnited) {
-  
+  const {addToCart, cart} = useCart();
     const rounded = Math.round(product.averageRating);
+  const isInCart = cart.some(item => item.product.id === product.id);
  const getRatingColor = (rating: number) => {
   if (rating >= 4.5) return 'text-green-600';
   if (rating >= 4.0) return 'text-emerald-600';
@@ -98,14 +100,14 @@ function getReviewText(count: number): string {
           </div>
           </div>
         </div>
-           <div className="lg:hidden"><Link className="relative overflow-hidden" href={`/product/${product.slug}`}>
-            <ImagesSliderCardFull images={product.images} title={product.title} />
-              
-              
-            </  Link>
+           <div className="lg:hidden">
+            <Link className="relative overflow-hidden flex items-center justify-center" href={`/product/${product.slug}`}>
+            <img src={product.images[0]?.imageUrl} alt={product.title} className="w-[156px] h-[156px] object-contain transition-transform duration-300 group-hover:scale-105" />
+            </Link>
             
-            <div className="p-5 flex flex-col lg:flex-row gap-2 lg:gap-1 lg:p-0">
+            <div className=" p-1 flex flex-col lg:flex-row gap-2 lg:gap-1 lg:p-0">
               <Link href={`/product/${product.slug}`}>
+              <h3 className="text-[16px] font-semibold text-gray-900">{product.price} руб</h3>
               <h3 className="text-gray-900  lg:text-[16px] text-[14px] line-clamp-2">
                 {product.title}
               </h3>
@@ -123,15 +125,11 @@ function getReviewText(count: number): string {
               </Link>
               
              
-              <div className="flex lg:flex-row flex-col gap-3 lg:items-center items-start  ">
-                 <div className="text-[16px]
-                 font-semibold text-gray-900 lg:w-1/2">
-                  <h3>{product.price} руб</h3></div>
-             <div className="lg:w-1/2 flex flex-row  items-center justify-end gap-2"> 
-              <AddToFavorite product={product}/>
-              <AddToCart product={product}/>
-
-              </div>
+              <div className="flex flex-col pt-1 gap-3 items-start ">
+                 
+             <button onClick={() => addToCart(product)} className={`flex w-full items-center justify-center gap-2 px-4 py-2 rounded-md border transition-colors ${isInCart ? 'bg-white border-blue-600 text-blue-600 ' : 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer'}`}>
+             {isInCart ? 'В корзине' : 'В корзину'}
+            </button>
 
              
               </div>

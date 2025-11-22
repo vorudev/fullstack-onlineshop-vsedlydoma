@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import React from "react";
 import { useRef, useEffect } from "react";
-import ProductCard from "./product-card-full";
+import ProductCard from "./product-card-home";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
@@ -38,10 +38,34 @@ interface SliderHomeProps {
 }
 const ProductsSlider = ({ products }: SliderHomeProps = { products: [] }) => {
     const [currentSlide, setCurrentSlide] = useState(0);
-    const [slidesPerView, setSlidesPerView] = useState(1);
-    const maxIndex = Math.max(0, Math.ceil(products.length / slidesPerView) - 3);
+   // const [slidesPerView, setSlidesPerView] = useState(1);
+    function useInitialWindowWidth() {
+  const [width, setWidth] = useState<number | null>(null);
+
+  useEffect(() => {
+    setWidth(window.innerWidth);
+  }, []);
+
+  return width;
+}
+
+const windowWidth = useInitialWindowWidth();
+  
+  // Определяем количество слайдов согласно вашим breakpoints
+  const getSlidesPerView = () => {
+    if (!windowWidth) return 2; // default значение при SSR
+    if (windowWidth >= 1280) return 3;
+    if (windowWidth >= 1024) return 2;
+    if (windowWidth >= 768) return 4;
+    if (windowWidth >= 640) return 3;
+    return 2;
+  };
+
+  const slidesPerView = getSlidesPerView();
+  const maxIndex = Math.max(0, Math.ceil(products.length / 1) - slidesPerView);
+    // const maxIndex = Math.max(0, Math.ceil(products.length / slidesPerView) - 3);
   return (
-    <div className="w-full max-w-7xl mx-auto group">
+    <div className="w-full max-w-7xl mx-auto group px-2">
 
       <div className="relative ">
         {/* Кастомная кнопка назад */}
@@ -53,7 +77,7 @@ const ProductsSlider = ({ products }: SliderHomeProps = { products: [] }) => {
         <Swiper
   modules={[Navigation, Pagination]}
   spaceBetween={16}
-  slidesPerView={1}
+  slidesPerView={2}
 onSlideChange={(swiper) => setCurrentSlide(swiper.activeIndex)}
   grabCursor={true}
   navigation={{
@@ -65,7 +89,8 @@ onSlideChange={(swiper) => setCurrentSlide(swiper.activeIndex)}
     clickable: true,
   }}
   breakpoints={{
-    640: { slidesPerView: 2 },
+    640: { slidesPerView: 3 },
+    768: { slidesPerView: 4 },
     1024: { slidesPerView: 2 },
     1280: { slidesPerView: 3 },
   }}
