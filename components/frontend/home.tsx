@@ -115,14 +115,14 @@ const manufacturersWithImages = manufacturers?.map(manufacturer => {
         <SliderHome products={productsWithDetailAndImages || []} />
         
            </div>
-           <div className="flex lg:hidden overflow-x-auto gap-4 px-4 md:px-0 snap-x snap-mandatory " style={{ 
+           <div className="flex overflow-x-auto gap-4 px-4 md:px-0 snap-x snap-mandatory " style={{ 
       scrollbarWidth: 'none',
       msOverflowStyle: 'none',
     }}>
   
   
 
-   <div className="min-w-[80vw] md:min-w-[40vw] lg:min-w-[20vw] md:w-full xl:w-[30%] xl:min-w-0 bg-orange-100 rounded-xl shadow py-4 pl-4 snap-center flex-col flex  justify-between lg:hidden gap-10 relative  overflow-hidden">
+   <div className="min-w-[80vw] md:min-w-[40vw] lg:min-w-[30vw] md:w-full xl:w-[60%] xl:min-w-0 bg-orange-100 rounded-xl shadow py-4 pl-4 snap-center flex-col flex  justify-between gap-10 relative  overflow-hidden">
    <div className="flex flex-col pr-2">
     <h3 className="text-lg xl:text-xl font-semibold ">Есть вопрос? Свяжитесь с нами!</h3>
     <p className="text-gray-600 text-sm xl:text-base ">Наши специалисты всегда готовы помочь и разобраться в вашем вопросе</p>
@@ -137,15 +137,17 @@ const manufacturersWithImages = manufacturers?.map(manufacturer => {
   </div>
   <Link
   href="/news"
-   className="min-w-[50vw] md:min-w-[40vw] lg:min-w-[20vw] md:w-full xl:w-[30%] xl:min-w-0 bg-green-100 rounded-xl shadow py-4 pl-4 snap-center flex-col flex  justify-between lg:hidden gap-10 relative  overflow-hidden">
+   className="min-w-[50vw] md:min-w-[40vw] lg:min-w-[20vw] md:w-full xl:w-[40%] xl:min-w-0 bg-green-100 rounded-xl shadow py-4 pl-4 snap-center flex-col flex  justify-between  gap-10 relative  overflow-hidden">
    <div className="flex flex-col">
-    <h3 className="text-lg xl:text-xl font-semibold ">Избранное</h3>
-    <p className="text-gray-600 text-sm xl:text-base "></p>
+    <h3 className="text-lg xl:text-xl font-semibold ">
+  Новости
+    </h3>
+    <p className="text-gray-600 text-sm xl:text-base ">Последние новости, статьи и новые поступления</p>
     </div> 
   
     
     <div className="absolute -bottom-4 -right-5 text-green-500/50">
-    <Heart className="w-30 h-30" />
+    <Newspaper className="w-30 h-30" />
     </div>
   </Link>
    
