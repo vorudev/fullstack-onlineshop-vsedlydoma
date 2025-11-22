@@ -289,6 +289,29 @@ export const contactUs = pgTable("contact_us", {
 }, (table) => ({
     titleIdx: index("contact_us_title_idx").on(table.title),
 }));
+export const news = pgTable("news", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    title: varchar("title", { length: 255 }).notNull(),
+    description: text("description").notNull(),
+    slug: varchar("slug", { length: 255 }).notNull().unique(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => ({
+    titleIdx: index("news_title_idx").on(table.title),
+}));
+export const newsImages = pgTable("news_images", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    newsId: uuid("news_id").references(() => news.id),
+    imageUrl: text("image_url").notNull(), // URL для доступа к изображению
+  storageType: text("storage_type").notNull().default("url"), // 'url' | 'upload'
+  storageKey: text("storage_key"), // ключ файла в хранилище (если upload)
+  order: integer("order").default(0),
+  isFeatured: boolean("is_featured").default(false),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => ({
+    newsIdIdx: index("news_images_news_id_idx").on(table.newsId),
+}));
 export const contactPhones = pgTable("contact_phones", {
     id: uuid("id").primaryKey().defaultRandom(),
     phone: varchar("phone", { length: 255 }).notNull(),
@@ -333,7 +356,9 @@ export const schema = {
                     contactUs,
                     contactPhones,
                     contactUsTelephones,  
-                    twoFactor,                 
+                    twoFactor,
+                    news,
+                    newsImages               
                 }
 
 export type Product = typeof products.$inferSelect 
@@ -347,6 +372,8 @@ export type Manufacturer = typeof manufacturers.$inferSelect
 export type Filter = typeof filters.$inferSelect
 export type FilterCategory = typeof filterCategories.$inferSelect
 export type About = typeof about.$inferSelect
+export type News = typeof news.$inferSelect
+export type NewsImage = typeof newsImages.$inferSelect
 export type Review = typeof reviews.$inferSelect 
 export type ContactUs = typeof contactUs.$inferSelect
 export type TwoFactor = typeof twoFactor.$inferSelect

@@ -253,6 +253,13 @@
       "when": 1763813476793,
       "tag": "0035_dashing_jazinda",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1763851668213,
+      "tag": "0036_graceful_jazinda",
+      "breakpoints": true
     }
   ]
 }

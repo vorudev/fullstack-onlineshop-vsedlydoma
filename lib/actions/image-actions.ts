@@ -1,6 +1,6 @@
 'use server'
 import { db } from "@/db/drizzle";
-import { productImages, ProductImage, categoryImages, CategoryImage, manufacturerImages, ManufacturerImage } from "@/db/schema";
+import { productImages, ProductImage, categoryImages, CategoryImage, manufacturerImages, ManufacturerImage, newsImages, NewsImage } from "@/db/schema";
 import { put, del } from '@vercel/blob';
 import { eq, and } from "drizzle-orm";
 import { headers } from "next/headers";
@@ -168,3 +168,50 @@ export async function uploadManufacturerImage(file: File) {
         }
     }
         
+    export async function uploadNewsImage(file: File) {
+        // ✅ Проверяем права и выбрасываем ошибку
+        const session = await auth.api.getSession({
+          headers: await headers()
+        });
+        
+        if (!session || session.user.role !== 'admin') {
+          throw new Error('Unauthorized'); // или создайте кастомную ошибку
+        }
+        
+        const blob = await put(`news/${Date.now()}-${file.name}`, file, {
+          access: 'public',
+          addRandomSuffix: true,
+        });
+       
+        return {
+          url: blob.url,
+          storageKey: blob.pathname,
+        };
+      }
+      export async function deleteNewsImage(storageKey: string) {
+        const session = await auth.api.getSession({
+              headers: await headers()
+            })
+            if (!session || session.user.role !== 'admin') {
+              return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+            }
+        await del(storageKey);
+        }
+        export async function getNewsImages(newsId: string) {
+            try {
+                const images = await db.select().from(newsImages).where(eq(newsImages.newsId, newsId));
+                return images;
+            } catch (error) {
+                console.error("Error fetching news images:", error);
+                throw new Error("Failed to fetch news images");
+            }
+        }
+        export async function getFeaturedNewsImage(newsId: string) {
+            try {
+                const image = await db.select().from(newsImages).where(and(eq(newsImages.newsId, newsId), eq(newsImages.isFeatured, true))).limit(1);
+                return image[0];
+            } catch (error) {
+                console.error("Error fetching featured news image:", error);
+                throw new Error("Failed to fetch featured news image");
+            }
+        }
