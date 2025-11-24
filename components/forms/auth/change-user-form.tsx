@@ -23,7 +23,7 @@ import { set, z } from "zod"
 import { phoneNumber } from "better-auth/plugins";
 
 interface ChangeUserFormProps {
-    user: Omit<User, "createdAt" | "updatedAt" | "emailVerified" | "image" | "phoneNumberVerified" >;
+    user: Omit<User, "createdAt" | "updatedAt" | "emailVerified" | "image" | "phoneNumberVerified"|"twoFactorEnabled">;
 }
 const formSchema = z.object({
   name: z.string().min(2, {

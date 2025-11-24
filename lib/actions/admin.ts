@@ -94,6 +94,7 @@ export const getAllUsers = (
           name: user.name,
           email: user.email,
           role: user.role, 
+          twoFactorEnabled: user.twoFactorEnabled,
           phoneNumber: user.phoneNumber,
           banned: user.banned
         })

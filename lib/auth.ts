@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { admin, phoneNumber } from "better-auth/plugins"
+import { admin, phoneNumber, organization } from "better-auth/plugins"
 import { schema } from "@/db/schema";
 import { twoFactor } from "better-auth/plugins";
 import { db } from "@/db/drizzle"; // your drizzle instance
@@ -62,7 +62,7 @@ database: drizzleAdapter(db, {
     }
   },
   
-plugins: [admin(), nextCookies(), phoneNumber(), twoFactor()],
+plugins: [admin(), nextCookies(), phoneNumber(), twoFactor(), organization()],
 });
 
 export type Session = typeof auth.$Infer.Session;
