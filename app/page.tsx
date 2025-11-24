@@ -4,6 +4,7 @@ import Header from "@/components/frontend/header";
 import NavMenuMobile from "@/components/frontend/nav-menu-mobile";
 import { getCategories } from "@/lib/actions/product-categories";
 import {Suspense} from 'react';
+import Footer from "@/components/frontend/footer";
 export default async function Home() {
 
   return (
@@ -12,7 +13,9 @@ export default async function Home() {
 <Header />
 <HomePage />
  <NavMenuMobile />
+   <Footer />
     </main>
+  
     </Suspense>
   );
 }
