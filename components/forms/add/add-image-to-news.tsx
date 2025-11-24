@@ -3,8 +3,8 @@ import { createProductAttribute, updateProductAttribute } from "@/lib/actions/at
 import { z } from "zod";
 import { Link, Loader2, Upload } from "lucide-react";
 import { productImages, type Product } from "@/db/schema";
-import type { Category } from "@/db/schema";
-import type { CategoryImage } from "@/db/schema";
+import type { News } from "@/db/schema";
+import type { NewsImage } from "@/db/schema";
 import { createImage } from "@/lib/actions/image-actions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -28,16 +28,17 @@ import { Input } from "@/components/ui/input"
 import { or } from "drizzle-orm";
 
 interface CreateImagesToProductFormProps {
-  category: Category
-  images?: CategoryImage[]
+  news: News
+  images?: NewsImage[]
 }
 
 const formSchema = z.object({
-  categoryId: z.string().uuid(),
+  newsId: z.string().uuid(),
   imageUrl: z.string().optional(),
   file: z.any().optional(),
   order: z.number().nullable(),
   isFeatured: z.boolean().nullable(),
+  isArticle: z.boolean().nullable(),
   mode: z.enum(["url", "upload"]),
 }).refine((data) => {
   if (data.mode === "url") {
@@ -52,7 +53,7 @@ const formSchema = z.object({
   path: ["imageUrl"],
 })
 
-export function CreateImagesToCategoryForm({ category, images }: CreateImagesToProductFormProps) {
+export function CreateImagesToNewsForm({ news, images }: CreateImagesToProductFormProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -62,9 +63,10 @@ export function CreateImagesToCategoryForm({ category, images }: CreateImagesToP
     resolver: zodResolver(formSchema),
     defaultValues: {
       imageUrl: "",
-      categoryId: category.id,
+      newsId: news.id,
       order: null,
       isFeatured: false,
+      isArticle: false,
       mode: "upload",
     },
   })
@@ -93,11 +95,12 @@ export function CreateImagesToCategoryForm({ category, images }: CreateImagesToP
         // Upload file
         const formData = new FormData()
         formData.append("file", selectedFile)
-        formData.append("categoryId", values.categoryId)
+        formData.append("newsId", values.newsId)
         formData.append("order", values.order?.toString() || "0")
         formData.append("isFeatured", values.isFeatured?.toString() || "false")
+        formData.append("isArticle", values.isArticle?.toString() || "false")
 
-        const res = await fetch("/api/categories/images/upload", {
+        const res = await fetch("/api/news/images/upload", {
           method: "POST",
           body: formData,
         })
@@ -107,14 +110,15 @@ export function CreateImagesToCategoryForm({ category, images }: CreateImagesToP
         }
       } else if (values.mode === "url" && values.imageUrl) {
         // Add URL
-        const res = await fetch("/api/categories/images/url", {
+        const res = await fetch("/api/news/images/url", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            categoryId: values.categoryId,
+            newsId: values.newsId,
             imageUrl: values.imageUrl,
             order: values.order || 0,
             isFeatured: values.isFeatured || false,
+            isArticle: values.isArticle || false,
           }),
         })
 
@@ -272,6 +276,27 @@ export function CreateImagesToCategoryForm({ category, images }: CreateImagesToP
                 <FormLabel>Featured Image</FormLabel>
                 <FormDescription>
                   Set this as the main product image
+                </FormDescription>
+              </div>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="isArticle"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+              <FormControl>
+                <Checkbox
+                  checked={field.value ?? false}
+                  onCheckedChange={field.onChange}
+                  disabled={isLoading}
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel>Article Image</FormLabel>
+                <FormDescription>
+                  Set this as the article image
                 </FormDescription>
               </div>
             </FormItem>

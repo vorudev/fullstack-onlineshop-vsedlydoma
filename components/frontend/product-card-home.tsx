@@ -64,7 +64,14 @@ function getReviewText(count: number): string {
   
   return `${count} ${word}`;
 }
-
+  const sortedImages = product.images.sort((a, b) => {
+    if (a.isFeatured && !b.isFeatured) return -1;
+    if (!a.isFeatured && b.isFeatured) return 1;
+    if (a.order === null && b.order !== null) return 1;
+    if (a.order !== null && b.order === null) return -1;
+    if (a.order !== null && b.order !== null) return a.order - b.order;
+    return 0;
+  });
     return ( 
         <div className="bg-white rounded-2xl lg:max-w-[450px]  transition-all duration-300 overflow-hidden  group lg:p-[12px] lg:min-w-[300px]" key={product.id}> 
         <div className="hidden lg:block flex flex-col  px-2 py-2">
@@ -102,7 +109,7 @@ function getReviewText(count: number): string {
         </div>
            <div className="lg:hidden">
             <Link className="relative overflow-hidden flex items-center justify-center" href={`/product/${product.slug}`}>
-            <img src={product.images[0]?.imageUrl} alt={product.title} className="w-[156px] h-[156px] object-contain transition-transform duration-300 group-hover:scale-105" />
+            <img src={sortedImages[0]?.imageUrl} alt={product.title} className="w-[156px] h-[156px] object-contain transition-transform duration-300 group-hover:scale-105" />
             </Link>
             
             <div className=" p-1 flex flex-col lg:flex-row gap-2 lg:gap-1 lg:p-0">

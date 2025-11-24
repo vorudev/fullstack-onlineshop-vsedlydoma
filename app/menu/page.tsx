@@ -1,6 +1,6 @@
 'use client'
 import Link from "next/link";
-import { HeartIcon, ChevronRight, Info, MessageSquareDot, ShoppingCart, UserCircle } from "lucide-react";
+import { HeartIcon, ChevronRight, Info, MessageSquareDot, ShoppingCart, UserCircle, Newspaper } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
 export default function MenuPage() {
     const {data: session} = useSession();
@@ -10,7 +10,7 @@ export default function MenuPage() {
             <h2 className="text-[18px] font-semibold leading-tight">Войдите, что бы видеть информацию о своих заказах</h2>
             <Link href="/signin" className="text-white bg-blue-600 px-[15px] py-[10px] rounded-lg text-center font-semibold">Войти</Link>
             </div> }
-            {session?.user && <Link href="/profile" className="flex flex-col gap-2 bg-white rounded-xl border border-gray-200 p-[15px]">
+            {session?.user && <Link href="/profile" className="flex flex-col gap-5 bg-white rounded-xl border border-gray-200 p-[15px]">
           <div className="flex flex-row items-center gap-3">
           <UserCircle className="w-6 h-6 text-blue-600" /> <h2 className="text-[18px] font-semibold leading-tight">Привет, {session?.user.name}!</h2>
           </div>
@@ -31,6 +31,11 @@ export default function MenuPage() {
             <Link href="/contact-us" className="flex flex-row items-center gap-3 relative py-[16px] px-[12px]">
             <MessageSquareDot className="w-6 h-6 text-gray-400" />
             <h2 className="text-[15px]   leading-tight">Контакты</h2>
+            <ChevronRight className="w-5 h-5 text-gray-400 absolute right-3" />
+            </Link>
+            <Link href="/news" className="flex flex-row items-center gap-3 relative py-[16px] px-[12px]">
+            <Newspaper className="w-6 h-6 text-gray-400" />
+            <h2 className="text-[15px]   leading-tight">Новости</h2>
             <ChevronRight className="w-5 h-5 text-gray-400 absolute right-3" />
             </Link>
             <Link href="/cart" className="flex flex-row items-center gap-3 relative py-[16px] px-[12px]">

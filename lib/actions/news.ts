@@ -114,3 +114,17 @@ export const getAllNews = async (
         throw new Error("Failed to fetch news");
     }
 }
+export async function getNewBySlug(slug: string) {
+    try {
+        const newId = await db.select().from(news).where(eq(news.slug, slug));
+        const newImages = await db.select().from(newsImages).where(eq(newsImages.newsId, newId[0].id));
+        const newWithImages = {
+            ...newId[0],
+            images: newImages,
+        };
+        return newWithImages;
+    } catch (error) {
+        console.error("Error fetching news:", error);
+        throw new Error("Failed to fetch news");
+    }
+}

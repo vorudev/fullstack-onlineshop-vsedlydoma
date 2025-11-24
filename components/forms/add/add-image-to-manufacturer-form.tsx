@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useRouter } from "next/navigation";
-import { Checkbox } from "../ui/checkbox";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
 import type { AttributeCategory } from "@/db/schema";
 import {

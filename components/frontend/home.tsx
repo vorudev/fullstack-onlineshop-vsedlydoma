@@ -44,6 +44,7 @@ const manufacturersWithImages = manufacturers?.map(manufacturer => {
          
           <div className="flex overflow-x-auto gap-4 px-4 md:px-0 snap-x snap-mandatory " style={{ 
       scrollbarWidth: 'none',
+          scrollbarColor: 'transparent transparent',
       msOverflowStyle: 'none',
     }}>
   
@@ -117,6 +118,7 @@ const manufacturersWithImages = manufacturers?.map(manufacturer => {
            </div>
            <div className="flex overflow-x-auto gap-4 px-4 md:px-0 snap-x snap-mandatory " style={{ 
       scrollbarWidth: 'none',
+          scrollbarColor: 'transparent transparent',
       msOverflowStyle: 'none',
     }}>
   

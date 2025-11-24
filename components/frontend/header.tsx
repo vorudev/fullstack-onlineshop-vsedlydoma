@@ -33,7 +33,7 @@ export default async function Header() {
 <div className="flex flex-row gap-6 items-center "> 
     <Link href="/about" className="2xl:text-lg ">О нас</Link>
     <Link href="/contact-us" className="2xl:text-lg">Контакты</Link> 
-    <Link href="/categories" className="2xl:text-lg">Категории</Link>
+    <Link href="/news" className="2xl:text-lg">Новости</Link>
     <Link href="/profile" className="2xl:text-lg">Профиль</Link>
 </div>
 <p>8-800-555-35-35</p>

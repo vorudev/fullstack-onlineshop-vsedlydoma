@@ -307,6 +307,7 @@ export const newsImages = pgTable("news_images", {
   storageKey: text("storage_key"), // ключ файла в хранилище (если upload)
   order: integer("order").default(0),
   isFeatured: boolean("is_featured").default(false),
+  isArticle: boolean("is_article").default(false),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
 }, (table) => ({
