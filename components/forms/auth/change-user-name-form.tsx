@@ -26,9 +26,10 @@ interface ChangeUserNameFormProps {
     name: string;
 }
 const formSchema = z.object({
-    name: z.string().min(2, {
-        message: "Имя должно содержать не менее 2 символов",
-    }),
+     name: z.string()
+    .min(3, 'Имя пользователя слишком короткое')
+    .max(20, 'Имя пользователя слишком длинное')
+    .regex(/^[a-zA-Z0-9._-]+$/, 'Недопустимые символы в имени пользователя'),
 });
 
 export function ChangeUserNameForm({ name }: ChangeUserNameFormProps) {
@@ -69,12 +70,11 @@ export function ChangeUserNameForm({ name }: ChangeUserNameFormProps) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="">
         <FormField
           control={form.control}
-            name="name"
+          name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Имя</FormLabel>
               <FormControl>
-                <Input placeholder="User name" {...field} />
+                <input placeholder="Имя пользователя"   className="bg-gray-100 border border-gray-200 py-3 focus:outline-none focus:ring-blue-500 transition duration-200 focus:ring-2 px-3 rounded-md text-gray-600" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

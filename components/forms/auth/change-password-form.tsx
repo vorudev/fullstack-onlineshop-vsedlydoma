@@ -33,15 +33,30 @@ import { toast } from "sonner";
 import { Loader2Icon } from "lucide-react";
 
  const formSchema = z.object({
-  password: z.string().min(8, {
-    message: "Пароль должен содержать не менее 8 символов",
-  }),
-  confirmPassword: z.string().min(8, {
-    message: "Пароль должен содержать не менее 8 символов",
-  }),
-  currentPassword: z.string().min(8, {
-    message: "Пароль должен содержать не менее 8 символов",
-  }),
+  password: z
+    .string()
+    .min(8, 'Пароль слишком короткий')
+    .max(50, 'Пароль слишком длинный')
+    .regex(
+      /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/,
+      'Пароль должен содержать хотя бы одну букву и одну цифру'
+    ),
+  confirmPassword: z
+    .string()
+    .min(8, 'Пароль слишком короткий')
+    .max(50, 'Пароль слишком длинный')
+    .regex(
+      /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/,
+      'Пароль должен содержать хотя бы одну букву и одну цифру'
+    ),
+  currentPassword: z
+    .string()
+    .min(8, 'Пароль слишком короткий')
+    .max(50, 'Пароль слишком длинный')
+    .regex(
+      /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/,
+      'Пароль должен содержать хотя бы одну букву и одну цифру'
+    ),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Пароли не совпадают",
   path: ["confirmPassword"], // This sets the error on confirmPassword field
@@ -86,14 +101,13 @@ return (
     <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 pt-3 w-full">
             <div className="grid gap-6">    
-                <FormField
+                 <FormField
           control={form.control}
           name="currentPassword"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Текущий пароль</FormLabel>
               <FormControl>
-                <Input type="password" {...field} />
+                <input placeholder="Текущий пароль"   className="bg-gray-100 border border-gray-200 py-3 focus:outline-none focus:ring-blue-500 transition duration-200 focus:ring-2 px-3 rounded-md text-gray-600" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -104,9 +118,8 @@ return (
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Новый пароль</FormLabel>
               <FormControl>
-                <Input type="password" {...field} />
+                <input placeholder="Новый пароль"   className="bg-gray-100 border border-gray-200 py-3 focus:outline-none focus:ring-blue-500 transition duration-200 focus:ring-2 px-3 rounded-md text-gray-600" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -117,9 +130,8 @@ return (
           name="confirmPassword"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Подтвердите новый пароль</FormLabel>
               <FormControl>
-                <Input type="password" {...field } />
+                <input placeholder="Подтвердите новый пароль"   className="bg-gray-100 border border-gray-200 py-3 focus:outline-none focus:ring-blue-500 transition duration-200 focus:ring-2 px-3 rounded-md text-gray-600" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

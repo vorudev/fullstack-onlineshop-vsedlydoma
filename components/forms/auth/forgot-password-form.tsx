@@ -30,10 +30,18 @@ import { z } from "zod"
 import { toast } from "sonner";
 import { Loader2Icon } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
- 
+
+
 const formSchema = z.object({
-  email: z.string().email(),
-})
+  email: z
+    .string()
+    .trim()
+    .min(5, "Email слишком короткий")
+    .max(50, "Email слишком длинный")
+    .email("Неверный формат email")
+    .transform((val) => val.replace(/[<>{}[\]\\'"`;]/g, "")) // простая базовая санитизация
+});
+
 
 export function ForgotPasswordForm({
   className,

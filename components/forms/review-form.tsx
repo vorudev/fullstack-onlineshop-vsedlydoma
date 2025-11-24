@@ -155,14 +155,11 @@ const [success, setSuccess] = useState(false);
        
         <FormField
           control={form.control}
-            name="comment"
+          name="comment"
           render={({ field }) => (
             <FormItem>
-              <FormLabel></FormLabel>
               <FormControl>
-                <Textarea placeholder="Комментарий"   {...field} 
-                  
-                 />
+                <input placeholder="Комментарий"   className="bg-gray-100 border border-gray-200 py-3 focus:outline-none focus:ring-blue-500 transition duration-200 focus:ring-2 px-3 rounded-md text-gray-600" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -173,9 +170,8 @@ const [success, setSuccess] = useState(false);
             name="author_name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel></FormLabel>
               <FormControl>
-                <Input  {...field}   placeholder="Имя"/> 
+                <input  {...field}  className="bg-gray-100 border border-gray-200 py-3 focus:outline-none focus:ring-blue-500 transition duration-200 focus:ring-2 px-3 rounded-md text-gray-600" placeholder="Имя"/> 
               </FormControl>
               <FormMessage />
             </FormItem>

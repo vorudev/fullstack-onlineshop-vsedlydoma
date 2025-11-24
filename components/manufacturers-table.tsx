@@ -46,7 +46,10 @@ const router = useRouter();
                   {manufacturer.name}
 
               </TableCell>
-              <TableCell>{manufacturer.description}</TableCell>
+              <TableCell> {manufacturer.description != null && manufacturer?.description?.length > 100
+    ? manufacturer?.description.slice(0, 100) + "..."
+    : manufacturer?.description}
+</TableCell>
               <TableCell>{manufacturer.slug}</TableCell>
               <TableCell className="text-right">
                 <div className="flex flex-row justify-end gap-2">

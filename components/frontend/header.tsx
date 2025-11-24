@@ -28,7 +28,7 @@ export default async function Header() {
         <header className="bg-white hidden xl:max-w-[1400px] lg:max-w-[1000px] lg:flex flex-col text-black mx-auto ">
             <nav className="flex flex-row justify-between py-5 px-6 text-gray-800">
 <div className="flex flex-row gap-2 items-center ">
-   < MapPin className="w-4 h-4" /> <p className=" 2xl:text-lg"> Минск</p>
+   < MapPin className="w-4 h-4" /> <p className=" 2xl:text-lg"> Минск, Аэродромная улица, 3</p>
 </div>
 <div className="flex flex-row gap-6 items-center "> 
     <Link href="/about" className="2xl:text-lg ">О нас</Link>

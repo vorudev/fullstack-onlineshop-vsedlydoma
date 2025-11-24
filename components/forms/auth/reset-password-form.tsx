@@ -33,10 +33,24 @@ import { Loader2Icon } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
  
 const formSchema = z.object({
- password: z.string().min(8, "пароль должен содержать хотя бы 8 символов"),
-confirmPassword: z.string().min(8, "пароль должен содержать хотя бы 8 символов"),
+  password: z
+    .string()
+    .min(8, 'Пароль слишком короткий')
+    .max(50, 'Пароль слишком длинный')
+    .regex(
+      /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/,
+      'Пароль должен содержать хотя бы одну букву и одну цифру'
+    ),
+  confirmPassword: z
+    .string()
+    .min(8, 'Пароль слишком короткий')
+    .max(50, 'Пароль слишком длинный')
+    .regex(
+      /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/,
+      'Пароль должен содержать хотя бы одну букву и одну цифру'
+    ),
+});
  
-})
 
 export function ResetPasswordForm({
   className,

@@ -1,4 +1,5 @@
 'use server';
+import { z } from 'zod';
 
 import { db } from "@/db/drizzle";
 import { Product, products, productAttributes, AttributeCategory, attributeCategories, orderItems, orders, categories, productImages, reviews, Manufacturer, manufacturers, manufacturerImages } from "@/db/schema";
@@ -225,6 +226,81 @@ const productsWithDetails = result.map(product => ({
     throw new Error("Failed to fetch random products");
   }
 };
+const serverSearchSchema = z
+  .string()
+  .max(200, 'Поисковый запрос слишком длинный')
+  .transform((val) => val.trim())
+  // Удаляем все потенциально опасные символы
+  .transform((val) => 
+    val
+      .replace(/[<>{}[\]\\]/g, '') // Удаляем скобки и слеши
+      .replace(/['"`;]/g, '') // Удаляем кавычки и точку с запятой
+      .replace(/--/g, '') // Удаляем SQL комментарии
+      .replace(/\/\*/g, '') // Удаляем многострочные комментарии
+      .replace(/\*\//g, '')
+  )
+  // Блокируем SQL команды
+  .refine(
+    (val) => !/(union|select|insert|update|delete|drop|truncate|exec|execute|declare|cast|convert|script|alert|eval|expression)/gi.test(val),
+    'Недопустимые символы в запросе'
+  )
+  // Блокируем специальные SQL символы
+  .refine(
+    (val) => !/(\||&&|;|--|\/\*|\*\/|xp_|sp_)/gi.test(val),
+    'Недопустимые символы в запросе'
+  )
+  // Проверка на пустую строку после очистки
+  .refine((val) => val.length > 0, 'Пустой поисковый запрос')
+  .catch(''); // Возвращаем пустую строку при ошибке
+
+const pageSchema = z.coerce
+  .number()
+  .int()
+  .positive()
+  .min(1)
+  .max(10000)
+  .catch(1);
+
+const pageSizeSchema = z.coerce
+  .number()
+  .int()
+  .positive()
+  .min(1)
+  .max(100)
+  .catch(20);
+
+const uuidSchema = z
+  .string()
+  .uuid()
+  
+
+const slugSchema = z
+  .string()
+  .regex(/^[a-z0-9-]+$/, 'Недопустимые символы в категории/производителе')
+  .max(100)
+
+function sanitizeString(str: string | null | undefined): string {
+  if (!str) return '';
+  
+  return str
+    .trim()
+    .slice(0, 200) // Ограничиваем длину
+    .replace(/[<>{}[\]\\'"`;]/g, '') // Удаляем опасные символы
+    .replace(/javascript:/gi, '')
+    .replace(/on\w+=/gi, '')
+    .replace(/--/g, '')
+    .replace(/\/\*|\*\//g, '');
+}
+
+/**
+ * Экранирование спецсимволов для LIKE запросов
+ */
+function escapeLikePattern(str: string): string {
+  return str
+    .replace(/\\/g, '\\\\') // Экранируем обратный слеш
+    .replace(/%/g, '\\%')   // Экранируем %
+    .replace(/_/g, '\\_');  // Экранируем _
+}
 export const getAllProducts = async ({
   page = 1,
   pageSize = 20,
@@ -233,39 +309,61 @@ export const getAllProducts = async ({
   manufacturer
 }: GetProductsParams = {}) => {
   try {
-    const offset = (page - 1) * pageSize;
-   
-    const conditions = [];
-   
-    if (search) {
-  const searchConditions = [
-    ilike(products.title, `%${search}%`),
-    ilike(products.description, `%${search}%`),
-    ilike(products.slug, `%${search}%`),
-    ilike(products.sku, `%${search}%`),
-    sql`CAST(${products.id} AS TEXT) ILIKE ${`%${search}%`}`, 
-     // Приводим UUID к тексту
-
-  ];
-  
-  // Только если у тебя есть числовое поле, например orderNumber
-  if (!isNaN(Number(search))) {
-    searchConditions.push(
-      eq(products.price, Number(search)) // Замени orderNumber на реальное числовое поле
-    );
-  }
-  
-  conditions.push(or(...searchConditions));
-}
+    // Валидация всех параметров
+    const validatedPage = pageSchema.parse(page);
+    const validatedPageSize = pageSizeSchema.parse(pageSize);
     
-    if (category) {
-      conditions.push(eq(products.categoryId, category));
+    // Двойная санитизация поискового запроса
+    const sanitizedSearch = sanitizeString(search);
+    const validatedSearch = serverSearchSchema.parse(sanitizedSearch);
+    
+    // Валидация category и manufacturer (должны быть slugs)
+    const validatedCategory = category ? slugSchema.parse(category) : null;
+    const validatedManufacturer = manufacturer ? slugSchema.parse(manufacturer) : null;
+
+    const offset = (validatedPage - 1) * validatedPageSize;
+    const conditions = [];
+
+    // Обработка поискового запроса
+    if (validatedSearch) {
+      // Экранируем спецсимволы для LIKE
+      const escapedSearch = escapeLikePattern(validatedSearch);
+      const searchPattern = `%${escapedSearch}%`;
+
+      const searchConditions = [
+        ilike(products.title, searchPattern),
+        ilike(products.description, searchPattern),
+        ilike(products.slug, searchPattern),
+        ilike(products.sku, searchPattern),
+      ];
+
+      // Поиск по UUID только если строка похожа на UUID
+      const uuidResult = uuidSchema.safeParse(validatedSearch);
+      if (uuidResult.success) {
+        searchConditions.push(
+          eq(products.id, uuidResult.data)
+        );
+      }
+
+      // Поиск по числовым полям (цена)
+      const numericSearch = Number(validatedSearch);
+      if (!isNaN(numericSearch) && numericSearch > 0 && numericSearch < 1000000) {
+        searchConditions.push(
+          eq(products.price, numericSearch)
+        );
+      }
+
+      conditions.push(or(...searchConditions));
     }
-   
-    if (manufacturer) {
-      conditions.push(eq(products.manufacturerId, manufacturer));
+
+    // Добавляем фильтры по категории и производителю
+    if (validatedCategory) {
+      conditions.push(eq(products.categoryId, validatedCategory));
     }
-   
+
+    if (validatedManufacturer) {
+      conditions.push(eq(products.manufacturerId, validatedManufacturer));
+    }
     // Базовые запросы
     let query = db
       .select()

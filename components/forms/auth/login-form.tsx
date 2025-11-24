@@ -32,10 +32,23 @@ import { Loader2Icon } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
  
 const formSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
-})
+  email: z
+    .string()
+    .trim()
+    .min(5, "Email слишком короткий")
+    .max(50, "Email слишком длинный")
+    .email("Неверный формат email")
+    .transform((val) => val.replace(/[<>{}[\]\\'"`;]/g, "")),
 
+  password: z
+    .string()
+    .min(8, 'Пароль слишком короткий')
+    .max(50, 'Пароль слишком длинный')
+    .regex(
+      /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/,
+      'Пароль должен содержать хотя бы одну букву и одну цифру'
+    )
+});
 export function LoginForm({
   className,
   ...props

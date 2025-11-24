@@ -20,7 +20,13 @@ import { Button } from "@/components/ui/button"
 
 
 const TwoFactorAuthSchema = z.object({
-    password: z.string().min(6, "Пароль должен содержать не менее 6 символов"),
+    password: z.string()
+       .min(8, 'Пароль слишком короткий')
+       .max(50, 'Пароль слишком длинный')
+       .regex(
+         /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/,
+         'Пароль должен содержать хотя бы одну букву и одну цифру'
+       )
 })
 
 type TwoFactorAuthSchema = z.infer<typeof TwoFactorAuthSchema>
