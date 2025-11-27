@@ -7,10 +7,11 @@ export default function MenuLayout({ children }: { children: React.ReactNode }) 
     <>
 
       <Header />
-
+ <main className="bg-gray-100">
         {children}
            <NavMenuMobile />
            <Footer />
+           </main>
     </>
   );
 }

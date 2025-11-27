@@ -94,21 +94,19 @@ return (
     <Form {...form}>
         <form onSubmit={form.handleSubmit(isEnabled ? handleDisableTwoFactorAuth : handleEnableTwoFactorAuth)} className="space-y-8">
             <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Пароль</FormLabel>
-                        <FormControl>
-                            <Input placeholder="Пароль" type="password" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                            Введите ваш пароль для подтверждения
-                        </FormDescription>
-                        <FormMessage />
-                    </FormItem>
-                )}
-            />
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <input placeholder="Пароль"   className="bg-gray-100 border border-gray-200 py-3 focus:outline-none focus:ring-blue-500 transition duration-200 focus:ring-2 px-3 rounded-md text-gray-600" {...field} 
+                type="password"/>
+              </FormControl>
+             
+              <FormMessage />
+            </FormItem>
+          )}
+        />
             <Button type="submit" disabled={isSubmitting} 
              className={`bg-blue-500 hover:bg-blue-600 text-white w-full h-[48px] text-[12px] uppercase ${isEnabled ? "bg-red-500 hover:bg-red-600" : "bg-blue-500 hover:bg-blue-600"}`}>
                 {isEnabled ? "Отключить" : "Включить"}

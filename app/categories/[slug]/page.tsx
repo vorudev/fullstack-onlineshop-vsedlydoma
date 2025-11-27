@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { notFound } from 'next/navigation';
+import CategorySkeleton from '@/components/frontend/skeletons/category-skeleton';
 import { getCategoryWithNavigation, buildCategoryUrl } from '@/lib/actions/categories';
 import { getFeaturedCategoryImage } from '@/lib/actions/image-actions';
 import Header from '@/components/frontend/header';
@@ -34,11 +35,29 @@ export default async function CategoryPage({ params }: PageProps) {
 
 
   return ( <>
- <Suspense fallback={<div>Loading...</div>}>
+
     <div className=" xl:max-w-[1400px] lg:max-w-[1000px] flex text-black lg:mx-auto py-2 px-[16px] min-h-screen   lg:py-0 lg:px-0 bg-gray-100">
 
       <div className="flex lg:p-6 flex-col gap-2 lg:gap-2 w-full py-2 ">
-
+ <Suspense fallback={
+  <div className="flex lg:p-6 flex-col gap-2 lg:gap-2 w-full py-2 ">
+     <nav className="text-sm text-gray-600">
+      <div className="flex items-center gap-2">
+        <div className="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
+        <span className="text-gray-400">/</span>
+        <div className="h-4 w-20 bg-gray-200 rounded animate-pulse"></div>
+        <span className="text-gray-400">/</span>
+        <div className="h-4 w-24 bg-gray-200 rounded animate-pulse"></div>
+      </div>
+    </nav>
+    <div className="h-7 w-40 bg-gray-200 rounded animate-pulse"></div>
+  <div className="grid grid-cols-1 pt-2 md:grid-cols-1 lg:grid-cols-4 xl:grid-cols-5 lg:gap-6 gap-1">
+    {Array.from({ length: 10 }).map((_, index) => (
+      <CategorySkeleton key={index} />
+    ))}
+    </div>
+    </div>
+  }> 
         <nav className=" text-sm text-gray-600">
           {breadcrumbs.map((crumb, index) => (
             <span key={crumb.id}>
@@ -76,9 +95,9 @@ export default async function CategoryPage({ params }: PageProps) {
   </div>
 
         )}
+        </Suspense>
       </div>
     </div>
-</Suspense>
     </>
   );
 }
