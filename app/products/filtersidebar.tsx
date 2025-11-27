@@ -1,18 +1,21 @@
 // components/FilterSidebar.tsx
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { motion, AnimatePresence } from 'framer-motion';
 import { X, Settings2, ChevronUp, ChevronDown} from "lucide-react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import FilterCategorySkeleton from "@/components/frontend/skeletons/filters-skeleton";
 import ProductList from "./sort";
 import type ProductUnited from "./page";
+import Pagination from "@/components/frontend/pagination-client";
 
 interface Filter {
   id: string;
   name: string;
   slug: string;
 }
-type SortOption = 'default' | 'price-asc' | 'price-desc';
+type SortOption = 'default' | 'price-asc' | 'price-desc' | 'rating-desc' | 'rating-asc';
 interface Filter {
   id: string;
   name: string;
@@ -45,6 +48,12 @@ interface FilterCategoryWithFilters {
 
 interface FilterSidebarProps {
 filterCategories: FilterCategoryWithFilters[];
+
+  page: number;
+  totalPages: number;
+  total: number;
+  limit: number;
+
 avaliableManufacturers: { id: string; name: string }[]
 categorySlug: string | undefined;
 productsWithDetails: {
@@ -75,11 +84,12 @@ productsWithDetails: {
 }
 
 
-export default function FilterSidebar({ filterCategories, avaliableManufacturers, categorySlug, productsWithDetails }: FilterSidebarProps) {
+export default function FilterSidebar({ filterCategories, page, totalPages, total, limit, avaliableManufacturers, categorySlug, productsWithDetails }: FilterSidebarProps) {
   const router = useRouter();
     const pathname = usePathname();
     const [sortBy, setSortBy] = useState<SortOption>('default');
   const [expandedCategories, setExpandedCategories] = useState(['price']);
+  const [isLoading, setIsLoading] = useState(true);
   const searchParams = useSearchParams();
   const [open, setOpen] = useState(false);
   const [priceFrom, setPriceFrom] = useState<number | undefined>(undefined);
@@ -179,6 +189,10 @@ export default function FilterSidebar({ filterCategories, avaliableManufacturers
           return productsCopy.sort((a, b) => a.price - b.price);
         case 'price-desc':
           return productsCopy.sort((a, b) => b.price - a.price);
+        case 'rating-desc':
+          return productsCopy.sort((a, b) => b.averageRating - a.averageRating);
+        case 'rating-asc':
+          return productsCopy.sort((a, b) => a.averageRating - b.averageRating);
         default:
           return productsCopy;
       }
@@ -191,6 +205,16 @@ export default function FilterSidebar({ filterCategories, avaliableManufacturers
         : [...prev, categoryId]
     );
   };
+ useEffect(() => {
+    // Имитация небольшой задержки для показа скелетона
+    // Или просто сразу показываем данные
+    if (allFilterCategories && allFilterCategories.length > 0) {
+
+   setIsLoading(false);
+
+    }
+  }, [allFilterCategories]);
+    
   return (
     <>
     <div className="flex flex-row gap-2 justify-between ">
@@ -204,6 +228,8 @@ export default function FilterSidebar({ filterCategories, avaliableManufacturers
           <option value="default" className="outline-none ring-none px-0 flex">По умолчанию</option>
           <option value="price-asc" >Цена: по возрастанию</option>
           <option value="price-desc" >Цена: по убыванию</option>
+          <option value="rating-desc" >Рейтинг: по убыванию</option>
+          <option value="rating-asc" >Рейтинг: по возрастанию</option>
         </select>
         <button onClick={() => setOpen(!open)} className="lg:hidden flex flex-row gap-1 items-center"><Settings2 className="w-5 h-5 text-gray-400"/>Фильтры</button>
     </div>
@@ -326,73 +352,86 @@ export default function FilterSidebar({ filterCategories, avaliableManufacturers
       {/* Заголовок */}
     
 
-      {/* Список категорий */}
-      <div className="">
-        {allFilterCategories.map(category => (
-          <div key={category.id} className=" cursor-pointer">
-            {/* Заголовок категории */}
-            <button
-              onClick={() => toggleCategory(category.id)}
-              className="w-full px-4 py-3 flex items-center justify-between hover:bg-blue-100 transition duration-200 hover:text-blue-600 "
-            >
-              <span className="">{category.name}</span>
-              {expandedCategories.includes(category.id) ? (
-                <ChevronUp className="w-5 h-5 text-gray-500" />
-              ) : (
-                <ChevronDown className="w-5 h-5 text-gray-500" />
-              )}
-            </button>
+     {isLoading ?  <div className="">
+    {Array(15).fill(0).map((_, index) => (
+      <FilterCategorySkeleton key={index} />
+    ))}
+  </div> : <div className="">
+  {allFilterCategories.map(category => (
+    <div key={category.id} className="cursor-pointer">
+      {/* Заголовок категории */}
+      <button
+        onClick={() => toggleCategory(category.id)}
+        className="w-full px-4 py-3 flex items-center justify-between hover:bg-blue-100 transition duration-200 hover:text-blue-600"
+      >
+        <span className="">{category.name}</span>
+        <motion.div
+          animate={{ rotate: expandedCategories.includes(category.id) ? 180 : 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <ChevronDown className="w-5 h-5 text-gray-500" />
+        </motion.div>
+      </button>
 
-            {/* Содержимое категории */}
-            {expandedCategories.includes(category.id) && (
-              <div className="px-4 pb-4">
-                
-                {category.id === 'price' ? (
-                  // Фильтр цены
-                  <div className="space-y-3 pt-2">
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="number"
-                        placeholder="От"
-                        value={priceFrom || ''}
-                        onChange={(e) => setPriceFrom(Number(e.target.value) || undefined)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 transition-all duration-200 focus:ring-blue-600/50 focus:border-transparent"
-                      />
-                      <span className="text-gray-400">—</span>
-                      <input
-                        type="number"
-                        placeholder="До"
-                        value={priceTo || ''}
-                        onChange={(e) => setPriceTo(Number(e.target.value) || undefined)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 transition-all duration-200 focus:ring-blue-600/50  focus:border-transparent"
-                      />
-                    </div>
+      {/* Содержимое категории с анимацией */}
+      <AnimatePresence initial={false}>
+        {expandedCategories.includes(category.id) && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            <div className="px-4 pb-4">
+              {category.id === 'price' ? (
+                // Фильтр цены
+                <div className="space-y-3 pt-2">
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="number"
+                      placeholder="От"
+                      value={priceFrom || ''}
+                      onChange={(e) => setPriceFrom(Number(e.target.value) || undefined)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 transition-all duration-200 focus:ring-blue-600/50 focus:border-transparent"
+                    />
+                    <span className="text-gray-400">—</span>
+                    <input
+                      type="number"
+                      placeholder="До"
+                      value={priceTo || ''}
+                      onChange={(e) => setPriceTo(Number(e.target.value) || undefined)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 transition-all duration-200 focus:ring-blue-600/50 focus:border-transparent"
+                    />
                   </div>
-                ) : (
-                  // Обычные чекбоксы
-                  <div className="space-y-2 pt-2 max-h-60 overflow-y-auto">
-                   
-                    {category.filters.map(filter => (
-                      <label
-                        key={filter.id}
-                        className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded transition-colors"
-                      > 
-                        <input
-                          type="checkbox"
-                          checked={selectedFilters[filter.slug]?.includes(filter.id) || false}
-                          onChange={(e) => handleFilterChange(filter.slug, filter.id, e.target.checked)}
-                          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
-                        />
-                        <span className="text-sm text-gray-700">{filter.name}</span>
-                      </label>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+                </div>
+              ) : (
+                // Обычные чекбоксы
+                <div className="space-y-2 pt-2 max-h-60 overflow-y-auto">
+                  {category.filters.map(filter => (
+                    <label
+                      key={filter.id}
+                      className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded transition-colors"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedFilters[filter.slug]?.includes(filter.id) || false}
+                        onChange={(e) => handleFilterChange(filter.slug, filter.id, e.target.checked)}
+                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
+                      />
+                      <span className="text-sm text-gray-700">{filter.name}</span>
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  ))}
+</div>
+}
 
       {/* Кнопка применения */}
       <div className="p-4 border-t border-gray-200">
@@ -404,7 +443,16 @@ export default function FilterSidebar({ filterCategories, avaliableManufacturers
       </div>
     </div>
     
-      <ProductList  products={sortedProducts}  />
+      <div className="flex flex-col w-full gap-2">
+        <ProductList  products={sortedProducts}  />
+       <div className="w-full max-w-[600px] mx-auto"> <Pagination
+                            currentPage={page}
+                            totalPages={totalPages}
+                            total={total}
+                            limit={limit}
+                          />
+                          </div>
+        </div>
       </div>
       </>
   );

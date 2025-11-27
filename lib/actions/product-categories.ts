@@ -301,6 +301,7 @@ const productsWithDetails = result.map(product => ({
           page,
           totalPages: Math.ceil(count / limit),
           total: count,
+
         },
         availableManufacturers,
       };

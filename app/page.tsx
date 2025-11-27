@@ -8,7 +8,7 @@ import Footer from "@/components/frontend/footer";
 export default async function Home() {
 
   return (
-<Suspense fallback={<div>Loading...</div>}>
+
     <main className="">
 <Header />
 <HomePage />
@@ -16,6 +16,6 @@ export default async function Home() {
    <Footer />
     </main>
   
-    </Suspense>
+
   );
 }

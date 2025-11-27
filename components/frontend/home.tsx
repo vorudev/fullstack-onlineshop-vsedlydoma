@@ -8,11 +8,13 @@ import ProductCard from "./product-card-full";
 import Link from "next/link";
 import { getRandomManufacturers } from "@/lib/actions/manufacturer";
 import { getProductImages } from "@/lib/actions/image-actions";
+import CategoriesTableSkeleton from "./skeletons/categories-table-2-skeleton";
 import UserGreetingHome from "./user-greeting-home";
 import { getAverageRatingByProductId } from "@/lib/actions/reviews";
 import { getCategories } from "@/lib/actions/product-categories";
 import { getAboutInfo } from "@/lib/actions/about-info";
 export default async function HomePage () {
+  
 const [categories, {productsWithDetails, images}, {manufacturers, ManufacturerImages}, about ] = await Promise.all([
   getCategories(),
   getRandomProductsFast(), 
@@ -39,7 +41,9 @@ const manufacturersWithImages = manufacturers?.map(manufacturer => {
     return (
       
         <div className=" min-h-screen mx-auto  xl:max-w-[1400px] lg:max-w-[1000px]  text-black">
-          <div className=" absolute z-10 hidden lg:flex"><CategoriesTable categories={categories} /></div>
+         <div className="absolute z-10 hidden lg:flex">
+  <CategoriesTable categories={categories} />
+</div>
           <div className="lg:ml-81 ml-0 overflow-hidden md:pt-10 lg:pt-5 pt-4 flex flex-col gap-7  md:px-10">
          
           <div className="flex overflow-x-auto gap-4 px-4 md:px-0 snap-x snap-mandatory " style={{ 

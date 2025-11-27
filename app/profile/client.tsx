@@ -51,7 +51,7 @@ export default function ProfilePage({ orders, pagination }: Props) {
         }
     }
     return ( 
-        <div className="text-black min-h-screen xl:max-w-[1400px] mx-auto lg:max-w-[1000px] pb-40 ">
+        <div className="text-black lg:min-h-screen xl:max-w-[1400px] mx-auto lg:max-w-[1000px] pb-40 ">
             <div className="flex flex-col gap-6 py-4 px-0 ">
                 <h1 className="text-[24px] font-semibold px-8">Профиль</h1>
                 <div className="flex flex-row gap-3 px-8">

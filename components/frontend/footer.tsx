@@ -3,9 +3,10 @@ import Image from "next/image";
 
 export default function Footer() {
   return (
-    <footer className="mt-10 bg-[#F7F7F8] border-t border-gray-200 px-4 py-6 mb-[52px] lg:mb-0">
+    <footer className="mt-10  bg-[#F7F7F8] border-t border-gray-200 px-4 py-6 mb-[52px] lg:mb-0">
       {/* Верхние ссылки */}
-      <div className="grid grid-cols-2 gap-4 text-[15px]">
+      <div className="xl:max-w-[1400px] lg:max-w-[1000px] mx-auto">
+      <div className=" grid grid-cols-2 gap-4 text-[15px]">
         <Link href="/categories" className="text-gray-700 seft-start">Каталог</Link>
         <Link href="/manufacturers" className="text-gray-700">Производители</Link>
 
@@ -38,6 +39,7 @@ export default function Footer() {
         © {new Date().getFullYear()} Все для дома.  
         <br />
         Все права защищены.
+      </div>
       </div>
     </footer>
   );

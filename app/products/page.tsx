@@ -2,6 +2,7 @@
 import ProductList from "./sort";
 import { getCategoryBySlug } from "@/lib/actions/product-categories";
 import FilterSidebar from "./filtersidebar";
+
 import { buildCategoryUrl } from "@/lib/actions/categories";
 import { getFilteredProducts } from '@/lib/actions/product-categories';
 import { getFilterCategoriesWithFiltersByProductCategory } from '@/lib/actions/filter-categories';
@@ -9,7 +10,7 @@ import { getCategoryWithNavigation } from "@/lib/actions/categories";
 import { getProductImages } from '@/lib/actions/image-actions';
 
 import { notFound } from "next/navigation";
-import Pagination from "@/components/pagination";
+import Pagination from "@/components/frontend/pagination-client";
 import Link from "next/link";
 interface PageProps {
   searchParams: Promise<{
@@ -17,6 +18,7 @@ interface PageProps {
     chain: string;
     priceFrom: string;
     priceTo: string;
+    limit?: string;
     page?: string;
 
     [key: string]: string | string[] | undefined;
@@ -27,12 +29,13 @@ export default async function ProductsPage({ searchParams }: PageProps) {
   const categorySlug = resolvedSearchParams.category as string | undefined;
   const selectedFilters: Record<string, string[]> = {};
   const page = Number(resolvedSearchParams.page) || 1;
+  const limit = Number(resolvedSearchParams.limit) || 20;
   if (categorySlug) {
     Object.keys(resolvedSearchParams).forEach(key => {
     const value = resolvedSearchParams[key];
     
     // Пропускаем category и chain
-    if (value && key !== 'category' && key !== 'chain' && key !== 'priceFrom' && key !== 'priceTo') { 
+    if (value && key !== 'category' && key !== 'chain' && key !== 'priceFrom' && key !== 'priceTo' && key !== 'page' && key !== 'limit') { 
       selectedFilters[key] = Array.isArray(value) ? value : value.split(',');
     }
   });
@@ -49,7 +52,7 @@ const [
   filterCategoriesWithFilters,
   
 ] = await Promise.all([
-  getFilteredProducts(category.id, selectedFilters, page, 20, priceFrom, priceTo),
+  getFilteredProducts(category.id, selectedFilters, page, limit, priceFrom, priceTo),
   getFilterCategoriesWithFiltersByProductCategory(category.id),
 ])
 const productsWithDetailAndImages = productsWithDetails?.map(product => {
@@ -83,17 +86,18 @@ const productsWithDetailAndImages = productsWithDetails?.map(product => {
         <h1 className="text-2xl font-bold">{category.name}</h1>
         <p className="text-gray-600">{pagination.total} товаров</p>
            
-            <Pagination
-                    currentPage={pagination.page}
-                    totalPages={pagination.totalPages}
-                    total={pagination.total}
-                  />
+            
             <FilterSidebar 
             filterCategories={filterCategoriesWithFilters} 
             categorySlug={categorySlug} 
             avaliableManufacturers={availableManufacturers}
             productsWithDetails={productsWithDetailAndImages}
+            page={page}
+            totalPages={pagination.totalPages}
+            total={pagination.total}
+            limit={limit}
             />
+           
         </div>
     );
 }

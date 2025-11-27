@@ -109,15 +109,22 @@ export default function DesktopSection({productDetails}: ProductUnited) {
        </div>
        <div className="flex flex-col gap-3 xl:hidden items-start">
         <div className="flex flex-col items-start  gap-2">
-          <div className={productDetails?.inStock === 'В наличии' ? 'flex items-center gap-1.5 bg-green-50 px-3 py-1.5 rounded-[6px]' : 'flex items-center gap-1.5 bg-red-50 px-3 py-1.5 rounded-[6px]'}>
-            <div className={productDetails?.inStock === 'В наличии' ? 'w-2 h-2 bg-green-500 rounded-full' : 'w-2 h-2 bg-red-500 rounded-full'}></div>
-            <span className={productDetails?.inStock === 'В наличии' ? 'text-[13px] text-green-700 font-medium' : 'text-[13px] text-red-700 font-medium'}>{productDetails?.inStock}</span>
-          </div>
-          <h3 className="text-[28px] text-gray-900 font-bold leading-tight">{productDetails?.price} руб</h3>
+          
+         {productDetails?.inStock === 'В наличии' ?  <div className="flex flex-col "> 
+
+        <div className={`${productDetails?.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-1 rounded-md self-start`}>
+    <p className={`text-[12px] text-gray-600 ${productDetails?.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>{productDetails?.inStock}</p>
+    </div>
+      <h1 className="text-[28px] text-gray-900 font-semibold">
+{productDetails?.price} руб
+        </h1>
+        </div> :  <div className={`${productDetails?.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-2 rounded-md self-start`}>
+    <p className={`text-[16px] text-gray-600  font-semibold ${productDetails?.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>Уточните наличие</p>
+    </div>}
         </div>
        <div className="flex flex-col gap-2 items-center w-full">
           
-          <button className="bg-blue-600 w-full text-white cursor-pointer px-6 py-3 rounded-[8px] font-semibold flex-1 justify-center"
+          <button className={isInCart ? 'border border-blue-600  w-full text-blue-600 cursor-pointer px-6 py-3 rounded-[8px] font-semibold flex-1 justify-center' : 'bg-blue-600 border w-full text-white cursor-pointer px-6 py-3 rounded-[8px] font-semibold flex-1 justify-center'}
           onClick={() => addToCart({
       
           averageRating: productDetails?.averageRating,
@@ -136,12 +143,12 @@ export default function DesktopSection({productDetails}: ProductUnited) {
           images: productDetails?.images,
           })}
           >
-            В корзину
+           {isInCart ? 'В корзине' : 'В корзину'}
           </button>
           <button className="bg-white border-2 border-gray-200 cursor-pointer flex items-center gap-2 text-gray-700 p-3 rounded-[8px]"
           onClick={() => addToFavorite(productDetails)}
           >
-            <Heart className="w-[20px] h-[20px]" /> В избранное
+            <Heart className={isInFavorite ? 'w-[20px] h-[20px] text-red-600 fill-red-600' : 'w-[20px] h-[20px]'} /> {isInFavorite ? 'В избранном' : 'В избранное'}
           </button>
         </div>
       </div>
@@ -184,11 +191,19 @@ export default function DesktopSection({productDetails}: ProductUnited) {
     
       <div className="xl:flex hidden flex-col gap-3 items-end">
         <div className="flex flex-col items-end gap-2">
-          <div className={productDetails?.inStock === 'В наличии' ? 'flex items-center gap-1.5 bg-green-50 px-3 py-1.5 rounded-[6px]' : 'flex items-center gap-1.5 bg-red-50 px-3 py-1.5 rounded-[6px]'}>
+          
+          {productDetails?.inStock === 'В наличии' ?  <div className="flex flex-col "> 
+
+        <div className={productDetails?.inStock === 'В наличии' ? 'flex items-center gap-1.5 bg-green-50 px-3 py-1.5 rounded-[6px]' : 'flex items-center gap-1.5 bg-red-50 px-3 py-1.5 rounded-[6px]'}>
             <div className={productDetails?.inStock === 'В наличии' ? 'w-2 h-2 bg-green-500 rounded-full' : 'w-2 h-2 bg-red-500 rounded-full'}></div>
             <span className={productDetails?.inStock === 'В наличии' ? 'text-green-700' : 'text-red-700'}>{productDetails?.inStock}</span>
           </div>
-          <h3 className="text-[28px] text-gray-900 font-bold leading-tight">{productDetails?.price} руб</h3>
+      <h1 className="text-[28px] text-gray-900 font-semibold">
+{productDetails?.price} руб
+        </h1>
+        </div> :  <div className={`${productDetails?.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-2 rounded-md self-start`}>
+    <p className={`text-[16px] text-gray-600  font-semibold ${productDetails?.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>Уточните наличие</p>
+    </div>}
         </div>
         <div className="flex flex-col gap-2 items-center w-full">
           

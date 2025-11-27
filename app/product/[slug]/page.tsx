@@ -31,7 +31,7 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
   return (
    <main className="lg:bg-gray-100 bg-white min-h-screen">
 <div className="  xl:max-w-[1400px] lg:max-w-[1000px] flex flex-col  text-black lg:mx-auto py-2 min-h-screen  lg:py-0 lg:px-0 pb-30">
-  <div className="pt-2 pl-[16px]"><nav className=" text-sm text-gray-600">
+  <div className="pt-2 lg:pt-5 pl-[16px]"><nav className=" text-sm text-gray-600">
                     {breadcrumbs.map((crumb: { id: string; name: string; slug: string }, index) => (
                       <span key={crumb.id}>
                         <Link

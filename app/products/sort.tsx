@@ -1,12 +1,13 @@
 
 'use client'
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import ProductCardFull from '@/components/frontend/product-card-full';
 import { ProductImage } from '@/db/schema'
 import { Product } from '@/db/schema';
 import { Review } from '@/db/schema';
 type SortOption = 'default' | 'price-asc' | 'price-desc';
+import ProductCardSkeleton from '@/components/frontend/skeletons/product-card-full-skeleton'; 
 
 
 
@@ -37,8 +38,15 @@ interface ProductUnited {
 }
 
 export default function ProductList({products}: {products: ProductUnited[]}) {
+  const [isLoading, setIsLoading] = useState(true);
 
-
+ useEffect(() => {
+    // Имитация небольшой задержки для показа скелетона
+    // Или просто сразу показываем данные
+    if (products && products.length > 0) {
+  setIsLoading(false);
+    }
+  }, [products]);
   // Сортируем продукты на основе выбранной опции
 
 
@@ -49,7 +57,11 @@ export default function ProductList({products}: {products: ProductUnited[]}) {
       style={{
     gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
   }}>
-        {products?.map((product) => (
+        {isLoading ? (
+          Array(12).fill(0).map((_, index) => (
+            <ProductCardSkeleton key={index} />
+          ))
+        ) : products?.map((product) => (
           <ProductCardFull
             key={product.id}
             product={product}

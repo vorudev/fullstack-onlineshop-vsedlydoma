@@ -1,18 +1,18 @@
-import { Suspense } from "react";
 import Header from "@/components/frontend/header";
-import {getContactUs} from "@/lib/actions/contact-us";
 import NavMenuMobile from "@/components/frontend/nav-menu-mobile";
+import Footer from "@/components/frontend/footer";
 
 export default function CategoryLayout({ children }: { children: React.ReactNode }) {
 
     return (
-    <>
-<Suspense fallback={<div>Loading...</div>}>
+        <>
+    <main className="bg-gray-100 lg:bg-white "> 
     <Header />
            
             {children}
 
     <NavMenuMobile />
-</Suspense>
+    <Footer />
+    </main>
     </>
 )}

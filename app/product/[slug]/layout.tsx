@@ -1,6 +1,6 @@
 import Header from "@/components/frontend/header";
 import NavMenuMobile from "@/components/frontend/nav-menu-mobile";
-
+import Footer from "@/components/frontend/footer";
 export default function ProductLayout({
     children,
   }: {
@@ -9,9 +9,11 @@ export default function ProductLayout({
     return (
       <>
         <Header />
-
+ <main className="min-h-screen lg:bg-gray-100">
         {children}
                 <NavMenuMobile />
+                <Footer />
+                </main>
       </>
     );
   }

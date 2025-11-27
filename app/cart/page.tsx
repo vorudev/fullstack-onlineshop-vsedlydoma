@@ -1,4 +1,3 @@
-import { getFeaturedImage } from "@/lib/actions/image-actions";
 
 import CartPage from "./cart-client";
 

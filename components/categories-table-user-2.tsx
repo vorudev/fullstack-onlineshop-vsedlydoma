@@ -1,7 +1,8 @@
 
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
+import CategoriesTableSkeleton from "@/components/frontend/skeletons/categories-table-2-skeleton";
 import { ChevronRight, ChevronDown, Pencil,  } from "lucide-react";
 import Link from "next/link";
 import { FilterCategoryForm } from "./forms/filter-category-form";
@@ -43,7 +44,7 @@ type CategoriesTableProps = {
 export default function CategoriesTable({ categories }: CategoriesTableProps) {
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const [hoveredSubcategory, setHoveredSubcategory] = useState<string | null>(null);
-
+const [isLoading, setIsLoading] = useState(true);
   // Функция для построения дерева категорий
   const buildCategoryTree = (
     categories: Category[],
@@ -59,8 +60,19 @@ export default function CategoriesTable({ categories }: CategoriesTableProps) {
     return categories.some((cat) => cat.parentId === categoryId);
   };
 const rootCategories = buildCategoryTree(categories);
-  // Рендеринг подкатегорий при hover (внуки и глубже)
+  // Рендеринг подкатегорий при hover (внуки и глубже)\ useEffect(() => {
+      // Имитация небольшой задержки для показа скелетона
+      useEffect(() => { // Или просто сразу показываем данные
+      if (categories && categories.length > 0) {
+  
+     setIsLoading(false);
+  
+      }
+    }, [categories]);
+      
 return (
+  <>
+  {isLoading ? <CategoriesTableSkeleton /> : (
   <div className="flex ">
     {/* Левая панель - родительские категории */}
     <div className="w-80  px-3  py-3 rounded-xl   overflow-y-auto shadow-">
@@ -199,5 +211,7 @@ return (
       </div>
     )}
   </div>
+  )}
+  </>
 );
 }
