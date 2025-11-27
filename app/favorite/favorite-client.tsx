@@ -14,8 +14,17 @@ export default function FavoritePage() {
  
     
     return (  <div className=" min-h-screen xl:max-w-[1400px] mx-auto lg:max-w-[1000px] ">
-      <div className="pt-6 px-6"> <h1 className="text-[24px] font-semibold text-gray-900">Избранное</h1></div>
-        <div className="flex flex-col py-5 px-6">
+      <div className="pt-6 px-[12px]"> <div className="flex flex-col gap-1 lg:hidden"> 
+                <h1 className="text-[22px] font-semibold text-gray-900">Избранное</h1>
+                <div className="flex flex-row justify-between items-center bg-white py-3 px-2 rounded-md ">
+                <p className="text-[14px] font-semibold text-gray-900">{favorite.length} товара</p>
+                <div className="">
+                    <button onClick={() => clearFavorite()} className="text-blue-500 cursor-pointer text-[14px] transition-colors flex-shrink-0">Очистить избранное</button>
+                </div>
+                </div>
+               </div></div>
+      
+        <div className="flex flex-col py-5 px-[12px]">
             {favorite.length === 0 ? (
                 <div className="w-full h-full flex items-center justify-center">
                     <p className="bdog md:text-[12px] text-[11px] uppercase">Избранное пусто</p>

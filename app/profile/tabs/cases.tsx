@@ -97,29 +97,22 @@ const session = useSession()
 export function Security() {
     return (
        <div className="flex flex-col relative gap-4 bg-white rounded-xl p-5 ">
-            <h3 className="text-[16px] text-gray-400">Изменить пароль</h3>
+        <h3 className="text-[16px] text-gray-400">Двухфакторная аутентификация</h3>
 <div className="flex flex-col lg:w-1/3 items-start">
-   <ChangePasswordForm />
-    </div>
-
-        </div>
-    )
-}
-export function TwoFactorAuth() {
-    return (
-        <div className="flex flex-col relative gap-4 bg-white rounded-xl p-5 ">
-            <h3 className="text-[16px] text-gray-400">Двухфакторная аутентификация</h3>
-<div className="flex flex-col lg:w-1/3 items-start">
- <Link href="/2fa-enable"className="bg-blue-500 hover:bg-blue-600 text-white rounded-xl w-full h-[48px] text-[12px] uppercase flex items-center justify-center">
+ <Link href="/2fa-enable"className="bg-blue-500 hover:bg-blue-600 text-white rounded-md w-full h-[48px] text-[12px] uppercase flex items-center justify-center">
  <p className="text-center">
     Управление двухфакторной аутентификацией
  </p></Link>
      </div>
+            <h3 className="text-[16px] text-gray-400">Изменить пароль</h3>
+<div className="flex flex-col lg:w-1/3 items-start">
+   <ChangePasswordForm />
+    </div>
+    
 
         </div>
     )
 }
-
 export function Orders({ orders, pagination }: Props) {
     return (
         <OrderHistoryTable orders={orders} pagination={pagination} />

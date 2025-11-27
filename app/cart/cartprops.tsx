@@ -1,20 +1,22 @@
 import React from "react";
 import { useCart } from "../context/cartcontext"; // Adjust the import path as necessary
 import { useState, useEffect, useCallback } from "react";
-import type { CartItem } from "../context/cartcontext";
+import type { CartItem, ValidatedCartItem } from "../context/cartcontext";
 import { useFavorite } from "../context/favoritecontext";
 import Image from "next/image";
+import {useRouter} from "next/navigation";
 import { Heart, Star, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { getFeaturedImage } from "@/lib/actions/image-actions";
 import { ProductImage } from "@/db/schema";
 import ImagesSliderCardFull from "./images-slider-card-full";
 type CartItemProps = {
-  item: CartItem;
+  item: ValidatedCartItem
 };
 
 export const CartItemComponent = ({ item }: CartItemProps) => {
-  const { updateQuantity, removeFromCart } = useCart();
+  const router = useRouter();
+  const { updateQuantity, removeFromCart, validateCart } = useCart();
   const { addToFavorite, removeFromFavorite } = useFavorite();
   const [image, setImage] = useState<ProductImage | null>(null);
 
@@ -28,7 +30,7 @@ export const CartItemComponent = ({ item }: CartItemProps) => {
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
-
+ 
     if (/^\d*$/.test(val)) {
       setInputValue(val);
     }
@@ -96,7 +98,7 @@ function getReviewText(count: number): string {
   
   return `${count} ${word}`;
 }
-const featuredImage = item.product.images.find(img => img.isFeatured) || item.product.images[0];
+const featuredImage = item?.product?.images?.find(img => img.isFeatured) || item?.product?.images?.[0];
 
 
 
@@ -113,16 +115,21 @@ const featuredImage = item.product.images.find(img => img.isFeatured) || item.pr
     <div className="flex gap-4 w-full items-start " >
     {/* Image Section */}
     <div className="flex-shrink-0 hidden items-center justify-center lg:flex flex-col  overflow-hidden w-full lg:w-[180px]">
-       <Link className="relative overflow-hidden lg:max-w-[180px] lg:max-h-[150px]  " href={`/product/${item.product.slug}`}>
-            <ImagesSliderCardFull images={item.product.images} title={item.product.title} />
+       <Link className="relative overflow-hidden lg:max-w-[180px] lg:max-h-[150px]  " href={`/product/${item?.product?.slug}`}>
+            <ImagesSliderCardFull images={item?.product?.images} title={item?.product?.title} />
           </Link>
-      <p className="text-gray-400 text-[12px] text-center">{item.product.sku}</p>
+      <p className="text-gray-400 text-[12px] text-center">{item?.product?.sku}</p>
     </div>
 
     {/* Content Section */}
     <div className="flex-1 flex-col gap-10 py-3 px-2 hidden lg:flex">
       <div className="flex justify-between items-start gap-4">
+        <div className="flex flex-col gap-1">
         <h2 className="text-base lg:font-medium text-[16px] cl text-gray-900 flex-1">{item.product.title}</h2>
+      <div className={`${item.product.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-1 rounded-md self-start`}>
+    <p className={`text-[12px] text-gray-600 ${item.product.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>{item.product.inStock}</p>
+    </div>
+        </div>
         <button 
           className="text-gray-400 hover:text-red-500 cursor-pointer transition-colors flex-shrink-0" 
           onClick={() => removeFromCart(item.product.id)}
@@ -137,6 +144,7 @@ const featuredImage = item.product.images.find(img => img.isFeatured) || item.pr
           <input
             type="number"
             min={1}
+            max={100}
             value={inputValue}
             onChange={handleChange}
             onBlur={handleBlur}
@@ -164,7 +172,7 @@ const featuredImage = item.product.images.find(img => img.isFeatured) || item.pr
      
     <div className="flex lg:hidden flex-row items-start  gap-2">
       <div className="relative w-[80px] h-[80px] overflow-hidden  ">
-        <Image src={featuredImage?.imageUrl} alt={item.product.title} fill className="object-contain"/>
+        <Image src={featuredImage?.imageUrl } alt={item.product.title} fill className="object-contain"/>
       </div>
 
    <div className="flex flex-col justify-between h-full  flex-1 lg:hidden"> 
@@ -190,6 +198,7 @@ const featuredImage = item.product.images.find(img => img.isFeatured) || item.pr
           <input
             type="number"
             min={1}
+            max={100}
             value={inputValue}
             onChange={handleChange}
             onBlur={handleBlur}

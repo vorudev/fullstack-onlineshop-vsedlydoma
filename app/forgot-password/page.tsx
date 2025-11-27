@@ -4,7 +4,7 @@ import { ForgotPasswordForm } from "@/components/forms/auth/forgot-password-form
 
 export default function LoginPage() {
   return (
-    <div className="bg-white flex border-t  min-h-screen border-neutral-800 flex-col items-center gap-6 p-6 md:p-10">
+    <div className="bg-white flex flex-col items-center gap-6 p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6 items-center">
   <Link href="/">
           <img

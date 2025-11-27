@@ -1,6 +1,6 @@
 'use client'
 import { User2 } from "lucide-react"
-import {Profile, Security, Orders, TwoFactorAuth} from "./tabs/cases"
+import {Profile, Security, Orders} from "./tabs/cases"
 import { useSession } from "@/lib/auth-client"
 import {useState} from "react"
 interface Props {
@@ -46,8 +46,7 @@ export default function ProfilePage({ orders, pagination }: Props) {
                 return <Security />;
             case "orders":
                 return <Orders orders={orders} pagination={pagination} />;
-            case "twoFactorAuth":
-                return <TwoFactorAuth />;
+            
           
         }
     }
@@ -63,34 +62,64 @@ export default function ProfilePage({ orders, pagination }: Props) {
     <p className="text-[16px] text-gray-400 font-semibold">{session?.user?.phoneNumber || "Телефон не указан"}</p>
  </div>
                 </div>
-                <div className="flex lg:flex-row lg:gap-5 overflow-x-auto w-full gap-2 px-8 md:px-0 snap-x lg:justify-start lg:ml-11 snap-mandatory " style={{ 
-      scrollbarWidth: 'none',
-      msOverflowStyle: 'none',
-    }}>
-  
+               <div className="
+  w-full 
+  px-4
 
-<div className="  min-w-[25vw] lg:min-w-[0vw] flex justify-center py-2">
-<button
- onClick={() => setActiveTab("profile")}
- className={` font-semibold text-[18px] transition border-b-2 duration-300 ${activeTab === "profile" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-400"}`}> Профиль
-</button>
+">
+  <div
+    className="
+      
+      mx-auto
+      lg:mx-0 
+      flex 
+      lg:max-w-[400px]
+      bg-white
+      rounded-xl
+      gap-4 
+      justify-center
+      
+      overflow-x-auto 
+      scrollbar-hide 
+      px-4 
+      py-3 
+      snap-x 
+      snap-mandatory
+    "
+  >
+    {[
+      { key: "profile", label: "Профиль" },
+      { key: "security", label: "Безопасность" },
+      { key: "orders", label: "Мои заказы" },
+    ].map((tab) => (
+      <button
+        key={tab.key}
+        onClick={() => setActiveTab(tab.key)}
+        className={`
+          relative 
+          font-medium 
+          whitespace-nowrap 
+          lg:text-[16px] 
+          text-[14px] 
+
+          snap-start
+          transition-colors
+          ${
+            activeTab === tab.key
+              ? "text-blue-600"
+              : "text-gray-500 hover:text-gray-700"
+          }
+        `}
+      >
+        {tab.label}
+
+        {/* underline */}
+      
+      </button>
+    ))}
   </div>
-  <div className="  min-w-[30vw] lg:min-w-[0vw] flex justify-center py-2">
-<button
- onClick={() => setActiveTab("security")}
- className={` font-semibold text-[18px] border-b-2 transition duration-300 ${activeTab === "security" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-400"}`}>Безопасность</button>
-  </div>
-  <div className="  min-w-[30vw] lg:min-w-[0vw] flex justify-center py-2">
-    <button
-    onClick={() => setActiveTab("orders")}
-    className={` font-semibold text-[18px] border-b-2 transition duration-300 ${activeTab === "orders" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-400"}`}>Мои заказы</button>
-    </div>
-    <div className="  min-w-[80vw] lg:min-w-[0vw] flex justify-center py-2">
-    <button
-    onClick={() => setActiveTab("twoFactorAuth")}
-    className={` font-semibold text-[18px] border-b-2 transition duration-300 ${activeTab === "twoFactorAuth" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-400"}`}>Двухфакторная аутентификация</button>
-    </div>
-                </div>
+</div>
+
                 <div className="px-4 "> {/* поправить padding */}
                     <ActiveStatusDisplay />
                 </div>

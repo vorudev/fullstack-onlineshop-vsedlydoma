@@ -40,7 +40,13 @@ interface ProductUnited {
 export interface CartItem {
  product: ProductUnited['product'];
  quantity: number;
+
 }
+export interface ValidatedCartItem {
+product: ProductUnited['product'];
+ quantity: number;
+
+};
 
 export interface CartContextType {
   cart: CartItem[];
@@ -48,8 +54,12 @@ export interface CartContextType {
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
+  updatedCart?: ValidatedCartItem[];
+  validationErrors: string[];
+  isValidating: boolean;
+  validateCart: () => void;
   totalItems: number;
-  totalPrice: number;
+  totalPrice?: number;
   distinctItems: number;
   isInCart: (productId: string) => boolean;
   getItemQuantity: (productId: string) => number;
@@ -121,6 +131,9 @@ const loadCart = (): CartItem[] => {
 
 export const CartProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   const [cart, setCart] = useState<CartItem[]>(() => loadCart());
+  const [updatedCart, setUpdatedCart] = useState<ValidatedCartItem[]>();
+const [isValidating, setIsValidating] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   // Сохранение в localStorage при изменении корзины
   useEffect(() => {
@@ -183,11 +196,42 @@ export const CartProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   );
 
   const totalPrice = useMemo(
-    () => cart.reduce((sum, { product, quantity }) => sum + product.price * quantity, 0),
-    [cart]
+    () => updatedCart?.reduce((sum, { product, quantity }) => sum + product.price * quantity, 0),
+    [updatedCart]
   );
 
   const distinctItems = useMemo(() => cart.length, [cart]);
+
+
+
+const validateCart = async () => {
+  try {
+    setValidationErrors([]);
+    setIsValidating(true);
+    const response = await fetch('/api/cart/validate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items: cart }),
+    });
+
+    if (!response.ok) {
+      setValidationErrors(['Ошибка при валидации корзины, пожалуйста, попробуйте снова']);
+      return;
+    }
+
+    const data = await response.json();
+
+    // Фильтруем null, на всякий случай
+    const updatedItems = (data.updatedItems || []).filter(Boolean);
+
+    setUpdatedCart(updatedItems);
+    setIsValidating(false);
+  } catch (error) {
+    setValidationErrors(['Произошла ошибка при валидации корзины, пожалуйста, попробуйте снова']);
+    setIsValidating(false);
+  }
+};
+
 
   const value = useMemo(
     () => ({
@@ -196,10 +240,14 @@ export const CartProvider: React.FC<{children: ReactNode}> = ({ children }) => {
       removeFromCart,
       updateQuantity,
       clearCart,
+      validateCart,
       totalItems,
+      updatedCart,
       totalPrice,
       distinctItems,
       isInCart,
+      isValidating,
+      validationErrors,
       getItemQuantity,
     }),
     [
@@ -208,10 +256,15 @@ export const CartProvider: React.FC<{children: ReactNode}> = ({ children }) => {
       removeFromCart, 
       updateQuantity, 
       clearCart, 
+      validateCart,
+      
       totalItems, 
+      updatedCart,
       totalPrice, 
       distinctItems,
       isInCart,
+      isValidating,
+      validationErrors,
       getItemQuantity,
     ]
   );

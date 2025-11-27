@@ -6,16 +6,24 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import OrderForm from "@/components/forms/order-form";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
 import Map from "@/components/frontend/map";
 export default function Checkout() {
-    const { cart } = useCart();
+    const { cart, updatedCart, validationErrors, isValidating, validateCart } = useCart();
     const [open, setOpen] = useState(false);
+    useEffect(() => {
+        validateCart();
+      }, [cart]);
+        const outOfStockItems = updatedCart?.filter(
+        item => item.product.inStock === "Нет в наличии" || item.product.inStock === "Уточнить на наличие"
+    ) || [];
+    
+    const hasOutOfStockItems = outOfStockItems.length > 0;
     return (
-        <div className="text-black min-h-screen xl:max-w-[1400px] mx-auto lg:max-w-[1000px] pb-40 ">
+        <div className="text-black min-h-screen xl:max-w-[1400px] mx-auto lg:max-w-[1000px] pb-70 lg:pb-40 ">
             <div className="flex flex-col py-2 px-8 lg:ml-11">
                 <div className="flex flex-row items-center gap-2">
             <Link href="/" className="relative  w-[150px] h-[100px] ">
@@ -26,12 +34,12 @@ export default function Checkout() {
           <div className="relative border-l "> <button 
             onClick={() => setOpen(!open)}
             className=" text-black  text-[14px] rounded-xl flex flex-row items-center gap-2">
-              Оформляем  {cart.length} товара <br />  на сумму {cart.reduce((acc, item) => acc + item.product.price * item.quantity, 0).toFixed(2)} руб
+              Оформляем  {updatedCart?.length} товара <br />  на сумму {updatedCart?.reduce((acc, item) => acc + item.product.price * item.quantity, 0).toFixed(2)} руб
              <div className="flex flex-row ml-2 items-center gap-2 text-gray-300 rounded bg-white ">   {open ? <ChevronUp /> : <ChevronDown />}</div>
                 </button>
                 {open && (
-                    <div className="flex flex-col absolute z-50 bg-white shadow-lg rounded-xl px-3 py-3 top-[50px]  w-[400px] -left-[100px] ">
-                        {cart.map(item => (
+                    <div className="flex flex-col absolute z-50 bg-white shadow-lg rounded-xl px-3 py-3 top-[50px]  lg:w-[400px] -left-[100px] ">
+                        {updatedCart?.map(item => (
                             <Link href={`/product/${item.product.slug}`} key={item.product.id} className="flex flex-row border-b py-2 border-gray-200 items-center gap-3 w-full justify-between">
                             
               
@@ -42,7 +50,32 @@ export default function Checkout() {
                         ))}
                     </div>
                 )}
-                </div></div>
+                 
+                </div>
+                </div>
+                {hasOutOfStockItems && (
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 my-4 lg:w-2/3">
+                        <div className="flex flex-row items-start gap-3">
+                            <div className="text-yellow-600 mt-1">⚠️</div>
+                            <div className="flex flex-col gap-2">
+                                <h3 className="text-[14px] font-semibold text-yellow-800">
+                                    Внимание! Некоторых товаров нет в наличии
+                                </h3>
+                                <p className="text-[14px] text-yellow-700">
+                                    В вашем заказе есть товары, которых нет в наличии или требуется уточнение наличия. 
+                                    После оформления заказа мы свяжемся с вами для подтверждения и уточнения сроков.
+                                </p>
+                                <div className="flex flex-col gap-1 mt-2">
+                                    {outOfStockItems.map(item => (
+                                        <p key={item.product.id} className="text-[13px] text-yellow-600">
+                                            • {item.product.title} - {item.product.inStock}
+                                        </p>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
            <div className="flex flex-col"> <div className="flex flex-col">
 <div className="flex flex-row items-center gap-6">
 <div className="bg-white rounded-full w-6 h-6 flex items-center justify-center font-semibold text-gray-600 border-gray-300 border">1</div>
@@ -124,7 +157,7 @@ export default function Checkout() {
                 <div className="flex py-4 px-2 flex-col  lg:w-2/3 w-full gap-5">
 <div className=" py-2 flex flex-row rounded-md w-full h-[200px]">
 
-<OrderForm items={cart} />
+ {updatedCart && <OrderForm items={updatedCart} />}
 </div>
 </div>
 </div>

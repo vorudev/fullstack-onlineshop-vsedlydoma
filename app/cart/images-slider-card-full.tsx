@@ -26,7 +26,7 @@ export default function ImagesSlider({ images, title }: Images) {
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
 
   // Сортируем изображения: сначала featured, потом по order
-  const sortedImages = images.sort((a, b) => {
+  const sortedImages = images?.sort((a, b) => {
     if (a.isFeatured && !b.isFeatured) return -1;
     if (!a.isFeatured && b.isFeatured) return 1;
     if (a.order === null && b.order !== null) return 1;
@@ -41,7 +41,7 @@ export default function ImagesSlider({ images, title }: Images) {
       scrollbarWidth: 'none',
       msOverflowStyle: 'none',
     }}>
-    {sortedImages.map((image) => (
+    {sortedImages?.map((image) => (
       <div 
         key={image.id}
         className="flex-shrink-0 snap-start lg:snap-center w-[180px] h-[150px] lg:w-[180px] lg:h-[140px]   aspect-[1/1.15] lg:aspect-[1/1] relative rounded-lg overflow-hidden"

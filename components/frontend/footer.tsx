@@ -6,14 +6,14 @@ export default function Footer() {
     <footer className="mt-10 bg-[#F7F7F8] border-t border-gray-200 px-4 py-6 mb-[52px] lg:mb-0">
       {/* Верхние ссылки */}
       <div className="grid grid-cols-2 gap-4 text-[15px]">
-        <a href="/categories" className="text-gray-700">Каталог</a>
-        <a href="/manufacturers" className="text-gray-700">Производители</a>
+        <Link href="/categories" className="text-gray-700 seft-start">Каталог</Link>
+        <Link href="/manufacturers" className="text-gray-700">Производители</Link>
 
-        <a href="/about" className="text-gray-700">О нас</a>
-        <a href="/contacts" className="text-gray-700">Контакты</a>
+        <Link href="/about" className="text-gray-700">О нас</Link>
+        <Link href="/contacts" className="text-gray-700">Контакты</Link>
 
-        <a href="/privacy-policy" className="text-gray-700">Политика конфиденциальности</a>
-        <a href="/privacy-policy" className="text-gray-700">Политика обработки персональных данных</a>
+        <Link href="/privacy-policy" className="text-gray-700">Политика конфиденциальности</Link>
+        <Link href="/privacy-policy" className="text-gray-700">Политика обработки персональных данных</Link>
       </div>
 
       {/* Социальные сети */}

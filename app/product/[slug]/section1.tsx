@@ -162,9 +162,19 @@ export default function ProductPage({productDetails, internals}: United) {
         </div>
 
     <div className="flex items-center lg:hidden justify-between pt-5">
+  {productDetails?.inStock === 'В наличии' ?  <div className="flex flex-col "> 
     <h1 className="text-[24px] text-gray-900 font-semibold">
 {productDetails?.price} руб
+        </h1> 
+        <div className={`${productDetails?.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-1 rounded-md self-start`}>
+    <p className={`text-[12px] text-gray-600 ${productDetails?.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>{productDetails?.inStock}</p>
+    </div>
+      <h1 className="text-[24px] text-gray-900 font-semibold">
+{productDetails?.price} руб
         </h1>
+        </div> :  <div className={`${productDetails?.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-2 rounded-md self-start`}>
+    <p className={`text-[16px] text-gray-600  font-semibold ${productDetails?.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>Уточните наличие</p>
+    </div>}
         <div className="flex items-center flex-row gap-3">
             <button 
             onClick={() => addToFavorite(productDetails)}
