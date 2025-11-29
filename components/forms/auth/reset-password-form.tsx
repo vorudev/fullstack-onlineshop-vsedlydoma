@@ -31,6 +31,7 @@ import { z } from "zod"
 import { toast } from "sonner";
 import { Loader2Icon } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
+import { translateError } from "@/components/toast-helper";
  
 const formSchema = z.object({
   password: z
@@ -87,11 +88,12 @@ const { error } = await authClient.resetPassword({
 token, 
 });
     if (error) {
-      setError("Произошла ошибка");
+      const errorMessage = error.message || "Ошибка входа";
+      toast.error(translateError(errorMessage));
       
      
     } else {
-      setSuccess("Пароль успешно изменен!");
+      toast.success("Пароль успешно изменен!");
       setTimeout(() => {
         router.push("/signin");
       }, 500);

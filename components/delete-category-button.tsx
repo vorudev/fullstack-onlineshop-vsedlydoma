@@ -30,6 +30,8 @@ export default function DeleteCategoryButton({ categoryId }: DeleteCategoryButto
       router.refresh();
     } catch (error) {
       console.error("Error deleting category:", error);
+      router.refresh();
+      setIsOpen(false)
     } finally {
       setIsLoading(false);
     }
@@ -45,15 +47,15 @@ export default function DeleteCategoryButton({ categoryId }: DeleteCategoryButto
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Are you sure?</DialogTitle>
+          <DialogTitle>Вы уверены?</DialogTitle>
           <DialogDescription>
-            This action cannot be undone. This will permanently delete the category from the database.
+            Это действие не может быть отменено. Это будет навсегда удалить категорию из базы данных. Связанные с ней товары будут без категории
           </DialogDescription>
         </DialogHeader>
         <div className="flex justify-end">
           <Button onClick={handleDelete} disabled={isLoading}>
             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-            Delete
+            Удалить
           </Button>
         </div>
       </DialogContent>

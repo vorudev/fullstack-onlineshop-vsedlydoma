@@ -29,7 +29,6 @@ const formSchema = z.object({
      name: z.string()
     .min(3, 'Имя пользователя слишком короткое')
     .max(20, 'Имя пользователя слишком длинное')
-    .regex(/^[a-zA-Z0-9._-]+$/, 'Недопустимые символы в имени пользователя'),
 });
 
 export function ChangeUserNameForm({ name }: ChangeUserNameFormProps) {

@@ -1,5 +1,6 @@
 'use client'
 import { User2 } from "lucide-react"
+import LogoutButton from "@/components/forms/auth/logout-button"
 import {Profile, Security, Orders} from "./tabs/cases"
 import { useSession } from "@/lib/auth-client"
 import {useState} from "react"
@@ -123,7 +124,9 @@ export default function ProfilePage({ orders, pagination }: Props) {
                 <div className="px-4 "> {/* поправить padding */}
                     <ActiveStatusDisplay />
                 </div>
+                <div className="px-[32px] "><LogoutButton /></div>
             </div>
+            
         </div>
     )
 }

@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from "@/db/drizzle";
-import { categories, Category, filters, manufacturers, productImages, reviews } from "@/db/schema";
+import { categories, Category, filters, manufacturers, productImages, reviews, categoryImages, filterCategories } from "@/db/schema";
 import { eq, ilike, or, gte, lte  } from "drizzle-orm";
 import { ProductImage } from "@/db/schema";
 import { headers } from "next/headers";
@@ -652,16 +652,27 @@ export async function updateCategory(category: Omit<Category, "createdAt" | "upd
 
 export async function deleteCategory(id: string) {
     try {
-      const session = await auth.api.getSession({
+        const session = await auth.api.getSession({
             headers: await headers()
-          })
-          if (!session || session.user.role !== 'admin') {
+        })
+        
+        if (!session || session.user.role !== 'admin') {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-          }
+        }
+        
+
+         await db.update(products)
+            .set({ categoryId: null })
+            .where(eq(products.categoryId, id));
+         await db.delete(categoryImages).where(eq(categoryImages.categoryId, id));
+
+        // Затем удаляем категорию
         await db.delete(categories).where(eq(categories.id, id));
+        
+        return NextResponse.json({ success: true });
+        
     } catch (error) {
         console.error("Error deleting category:", error);
         throw new Error("Failed to delete category");
     }
 }
-

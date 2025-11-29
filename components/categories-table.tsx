@@ -207,7 +207,7 @@ export default function CategoriesTable({ categories }: CategoriesTableProps) {
       </div>
 
       {/* Таблица */}
-      <div className="borderrounded-lg overflow-hidden shadow-sm">
+      <div className="overflow-hidden shadow-sm">
         <table className="w-full">
           <thead className=" border-b ">
             <tr>
@@ -228,7 +228,7 @@ export default function CategoriesTable({ categories }: CategoriesTableProps) {
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white">
+          <tbody className="">
             {rootCategories.length > 0 ? (
               rootCategories.map((category) => renderCategoryRow(category, 0))
             ) : (

@@ -104,7 +104,11 @@ export function CategoryForm({category, categories: initialCategories}: Category
         } else {
             await createCategory(categoryData);
         }
-        form.reset();
+        form.reset({
+            name: "",
+            description: "",
+            parentId: values.parentId, // Сохраняем текущее значение категории
+        });
         setIsLoading(false);
         router.refresh();
     } catch (error) {

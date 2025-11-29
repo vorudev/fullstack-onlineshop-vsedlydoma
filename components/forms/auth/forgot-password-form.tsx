@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { translateError } from "@/components/toast-helper";
 import {
   Card,
   CardContent,
@@ -48,8 +49,6 @@ export function ForgotPasswordForm({
   ...props
 }: React.ComponentProps<"div">) {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
   const router = useRouter();
    const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -66,15 +65,16 @@ export function ForgotPasswordForm({
     setIsLoading(true);
 const { error } = await authClient.forgetPassword({
   email: values.email,
-  redirectTo: "/reset-password",
+  redirectTo: "/",
 });
     if (error) {
-      setError("Произошла ошибка");
+     const errorMessage = error.message || "Ошибка входа";
+      toast.error(translateError(errorMessage))
      
     } else {
-      setSuccess("Письмо отправлено");
+      toast.success("Письмо отправлено");
       setTimeout(() => {
-        router.push("/reset-password");
+        router.push("/");
       }, 500);
     }
     setIsLoading(false);
@@ -116,8 +116,7 @@ const { error } = await authClient.forgetPassword({
 
              {isLoading ? <Loader2Icon className="size-4 animate-spin"></Loader2Icon> : "Подтвердить" }
                 </Button>
-                {error && <p className="text-red-500 text-center text-xs">{error}</p>}
-                {success && <p className="text-green-500 text-center text-xs">{success}</p>}
+
               </div>
               <div className="text-center text-sm text-black">
                 Нет аккаунта?{" "}
@@ -131,7 +130,7 @@ const { error } = await authClient.forgetPassword({
         </CardContent>
       </Card>
       <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
-        Нажимая на кнопку "Подтвердить", вы соглашаетесь с
+        Нажимая на кнопку "Подтвердить", вы соглашаетесь с {""}
         <a href="# " className="underline text-blue-500 underline-offset-4">Политикой конфиденциальности</a>.
       </div>
     </div>

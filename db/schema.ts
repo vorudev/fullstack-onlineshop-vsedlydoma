@@ -186,6 +186,7 @@ export const reviews = pgTable("reviews", {
   productIdx: index("reviews_product_idx").on(table.product_id),
   userIdx: index("reviews_user_idx").on(table.user_id),
 }));
+
 export const manufacturers = pgTable("manufacturers", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 255 }).notNull().unique(),
@@ -333,6 +334,18 @@ export const contactUsTelephones = pgTable("contact_us_telephones", {
 }, (table) => ({
     contactUsIdIdx: index("contact_us_telephones_contact_us_id_idx").on(table.contactUsId),
 }));
+export const telegramSubscribers = pgTable("telegram_subscribers", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    chatId: varchar("chat_id", { length: 255 }).notNull().unique(),
+    username: varchar("username", { length: 255 }),
+    firstName: varchar("first_name", { length: 255 }),
+    isActive: boolean("is_active").default(true),
+    lastActive: timestamp("last_active").defaultNow(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => ({
+    chatIdIdx: index("telegram_subscribers_chat_id_idx").on(table.chatId),
+}));
 export const schema = {
                 
                     products, 
@@ -359,7 +372,8 @@ export const schema = {
                     contactUsTelephones,  
                     twoFactor,
                     news,
-                    newsImages               
+                    newsImages,
+                    telegramSubscribers               
                 }
 
 export type Product = typeof products.$inferSelect 
@@ -374,6 +388,7 @@ export type Filter = typeof filters.$inferSelect
 export type FilterCategory = typeof filterCategories.$inferSelect
 export type About = typeof about.$inferSelect
 export type News = typeof news.$inferSelect
+export type TelegramSubscriber = typeof telegramSubscribers.$inferSelect
 export type NewsImage = typeof newsImages.$inferSelect
 export type Review = typeof reviews.$inferSelect 
 export type ContactUs = typeof contactUs.$inferSelect

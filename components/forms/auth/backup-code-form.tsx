@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import {useRouter} from "next/navigation"
 import { authClient } from "@/lib/auth-client"
+import { toast } from "sonner"
+import { translateError } from "@/components/toast-helper"
 
 const backupCodeSchema = z.object({
     code: z.string().min(1, "Код должен содержать хотя бы 1 символ")
@@ -27,9 +29,13 @@ export function BackupCodeForm() {
     async function onSubmit(values: BackupCodeFormSchema) {
         await authClient.twoFactor.verifyBackupCode(values,
         {
-        onError: error => {
-            console.log(error)
-        },
+        onError: (ctx) => {
+      // ctx.error содержит объект ошибки
+      const errorMessage = ctx.error.message || "Ошибка входа";
+      toast.error(translateError(errorMessage));
+      console.log(ctx.error);
+
+    },
         onSuccess: () => {
             router.push("/")
         },

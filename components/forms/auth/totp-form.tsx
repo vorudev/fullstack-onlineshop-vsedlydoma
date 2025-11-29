@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import {useRouter} from "next/navigation"
 import { authClient } from "@/lib/auth-client"
+import { translateError } from "@/components/toast-helper"
+import { toast } from "sonner"
 
 const totpSchema = z.object({
     code: z.string().length(6, "Код должен содержать 6 символов"),
@@ -27,9 +29,12 @@ export function TotpForm() {
     async function onSubmit(values: TOTPFormSchema) {
         await authClient.twoFactor.verifyTotp(values,
         {
-        onError: error => {
-            console.log(error)
-        },
+        onError: (ctx) => {
+      // ctx.error содержит объект ошибки
+      const errorMessage = ctx.error.message || "Ошибка входа";
+      toast.error(translateError(errorMessage));
+      console.log(ctx.error);
+    },
         onSuccess: () => {
             router.push("/")
         },

@@ -1,6 +1,6 @@
 'use server'
 import { db } from "@/db/drizzle";
-import { productImages, ProductImage, categoryImages, CategoryImage, manufacturerImages, ManufacturerImage, newsImages, NewsImage } from "@/db/schema";
+import { productImages, ProductImage, categoryImages, CategoryImage, manufacturerImages, ManufacturerImage, newsImages, NewsImage} from "@/db/schema";
 import { put, del } from '@vercel/blob';
 import { eq, and } from "drizzle-orm";
 import { headers } from "next/headers";

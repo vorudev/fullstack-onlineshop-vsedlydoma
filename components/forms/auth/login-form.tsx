@@ -3,6 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+ import { translateError } from "@/components/toast-helper";
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
@@ -54,6 +55,7 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const [isLoading, setIsLoading] = useState(false);
+
   const router = useRouter();
    const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -83,13 +85,19 @@ const signInWithGithub = async () => {
     email: values.email,
     password: values.password,
    }, {
-    onError: error => {
-      console.log(error)
+    onError: (ctx) => {
+      // ctx.error содержит объект ошибки
+      const errorMessage = ctx.error.message || "Ошибка входа";
+      toast.error(translateError(errorMessage));
+      console.log(ctx.error);
+      setIsLoading(false);
     },
     onSuccess: () => {
-      router.push("/")
-    },
-   })
+      toast.success("Вход выполнен успешно");
+      router.push("/");
+    }
+  });
+   
 
    
     setIsLoading(false);
@@ -165,7 +173,7 @@ const signInWithGithub = async () => {
         </CardContent>
       </Card>
       <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
-        Нажимая на кнопку "Войти", вы соглашаетесь с 
+        Нажимая на кнопку "Войти", вы соглашаетесь с {""} 
         <a href="#" className="underline underline-offset-4 text-blue-500">Политикой конфиденциальности</a>.
       </div>
     </div>

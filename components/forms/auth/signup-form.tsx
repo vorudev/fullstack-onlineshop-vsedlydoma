@@ -1,6 +1,7 @@
 'use client';
 import { zodResolver } from "@hookform/resolvers/zod"
 import Link from "next/link";
+import { translateError } from "@/components/toast-helper"
 import { useForm } from "react-hook-form"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -35,8 +36,7 @@ import { authClient } from "@/lib/auth-client";
 export const formSchema = z.object({
   username: z.string()
     .min(3, 'Имя пользователя слишком короткое')
-    .max(20, 'Имя пользователя слишком длинное')
-    .regex(/^[a-zA-Z0-9._-]+$/, 'Недопустимые символы в имени пользователя'),
+    .max(20, 'Имя пользователя слишком длинное'),
 
   email: z.string()
     .trim()
@@ -75,10 +75,10 @@ export function SignupForm({
     setIsLoading(true);
     const { success, message } = await signUp(values.email, values.password, values.username);
     if (success) {
-      toast.success(message as string);
-      router.push("/dashboard");
+      toast.success("Вы успешно зарегистрировались");
+      router.push("/");
     } else {
-      toast.error(message as string);
+        toast.error(translateError(message))
     }
     setIsLoading(false);
   }

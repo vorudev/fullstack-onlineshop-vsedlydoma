@@ -1,8 +1,9 @@
 import Image from "next/image";
 import { PlusIcon, UserPlusIcon } from "lucide-react";
 import SearchBar from "@/components/searchbar";
-import Pagination from "@/components/pagination";
+import Pagination from "@/components/frontend/pagination-admin";
 import { Button } from "@/components/ui/button";
+
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { CategoryForm } from "@/components/forms/category-form";
 import CategoriesTable from "@/components/categories-table";
@@ -12,17 +13,19 @@ interface PageProps {
   searchParams: Promise<{ // Добавляем Promise
     page?: string;
     search?: string;
+    limit?: string;
   }>;
 
 }
 export default async function Home( { searchParams }: PageProps) {
-  const { page, search } = await searchParams;
+  const { page, search, limit } = await searchParams;
   const currentPage = Number(page) || 1;
+  const limitNumber = Number(limit) || 21;
   const searchQuery = search || '';
 const { categories, pagination } = await getAllCategories(
   {
      page: currentPage,
-    pageSize: 21,
+    pageSize: limitNumber,
     search: searchQuery,
   }
 ); // Fetch categories
@@ -50,11 +53,12 @@ const { categories, pagination } = await getAllCategories(
         </p>
       )}
       <CategoriesTable categories={categories} />
-       <Pagination 
+      <div className="mt-4 text-black max-w-[600px] mx-auto">  <Pagination 
               currentPage={pagination.page}
               totalPages={pagination.totalPages}
               total={pagination.total}
-            />
+              limit={limitNumber}
+            /></div>
     </div>
   );
 }

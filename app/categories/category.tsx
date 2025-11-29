@@ -17,7 +17,7 @@ export default async function Category({ category }: CategoryProps) {
        className="bg-white rounded-2xl p-[16px] lg:p-[24px] hover:shadow-xl transition-all duration-300 overflow-hidden  group flex flex-col items-center " key={category.id}> 
         <div className="w-full hidden lg:flex h-[150px] max-w-[182px] relative items-center justify-center">
               <Image
-                src={featuredImage?.imageUrl || "https://via.placeholder.com/150"}
+                src={featuredImage?.imageUrl || "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM="}
                 alt={category.name}
                 loading="lazy"
                 width={120}

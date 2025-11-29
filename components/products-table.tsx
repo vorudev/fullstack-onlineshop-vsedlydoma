@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Search } from 'lucide-react';
+import { MoreHorizontal, Search, Trash2 } from 'lucide-react';
+import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -14,6 +15,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { ProductForm } from './forms/product-form';
 import DeleteProductButton from './delete-product-button';
 import { Manufacturer } from '@/db/schema';
@@ -33,7 +42,33 @@ import AttributesTable from './attributes-table';
 import { Pencil } from 'lucide-react';
 import DeleteUserButton from './delete-product-button';
 
-export default function ProductsTable({ products, categories, manufacturers }: { products: Product[]; categories: any, manufacturers: Manufacturer[] }) {
+interface ProductWithImages {
+    images: {
+        id: string;
+        productId: string;
+        imageUrl: string;
+        storageType: string;
+        storageKey: string | null;
+        order: number | null;
+        isFeatured: boolean | null;
+        createdAt: Date | null;
+    }[];
+    averageRating: number;
+    reviewCount: number;
+    id: string;
+    categoryId: string | null;
+    inStock: string | null;
+    price: number;
+    slug: string;
+    title: string;
+    description: string;
+    manufacturerId: string | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+    sku: string | null;
+
+} 
+export default function ProductsTable({ products, categories, manufacturers }: { products: ProductWithImages[]; categories: any, manufacturers: Manufacturer[] }) {
   return (
     <div className="space-y-4">
       {/* Поле поиска */}
@@ -42,53 +77,103 @@ export default function ProductsTable({ products, categories, manufacturers }: {
       {/* Показать количество результатов */}
  
       <Table>
-        <TableCaption>A list of your products</TableCaption>
-    
-        <TableBody className="" >
-         
-        
-            {products.map((product) => (
-              
-              <TableRow className="flex items-center justify-center" key={product.id} >
-                <Link  href={`/dashboard/products/${product.slug}`} className='border-r w-full '>
-                <TableCell className="font-medium" >{product.sku}</TableCell>
-                
-                
-                </Link>
-
-                <TableCell className="inline border-r ">{product.title}</TableCell>
-                <TableCell className="inline border-r ">{product.price} руб</TableCell> 
-
-               
-                <TableCell className="text-right border-r ">{product.slug}</TableCell>
-                <TableCell className="text-right">{product.id}</TableCell>
-                <TableCell className="text-right">
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="ghost">
-                        <Pencil className="size-4" />
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Update Product</DialogTitle>
-                        <ProductForm product={product} categories={categories}  manufacturers={manufacturers}/>
-                      </DialogHeader>
-                    </DialogContent>
-                  </Dialog>
-
-                  
-
-                  
-
-                  <DeleteUserButton productId={product.id} />
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[80px]">Фото</TableHead>
+              <TableHead className="w-[120px]">Артикул</TableHead>
+              <TableHead>Название</TableHead>
+              <TableHead className="w-[120px]">Цена</TableHead>
+              <TableHead className="w-[120px]">Статус</TableHead>
+              <TableHead className="w-[80px] text-right">Действия</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {products.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} className="h-24 text-center">
+                  Товары не найдены
                 </TableCell>
               </TableRow>
+            ) : (
+              products.map((product) => (
+                <TableRow key={product.id} className="hover:bg-muted/50">
+                  {/* Image */}
+                  <TableCell>
+                    <div className="relative h-12 w-12 rounded-md overflow-hidden bg-gray-100">
+                      <img
+                        src={product?.images[0]?.imageUrl || "https://via.placeholder.com/150"}
+                        alt={product.title}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  </TableCell>
 
-            ))
-          }
-        </TableBody>
-      </Table>
+                  {/* SKU */}
+                  <TableCell className="font-mono text-sm">
+                    {product.sku}
+                  </TableCell>
+
+                  {/* Title */}
+                  <TableCell className="font-medium max-w-[300px]">
+                    <a
+                      href={`/dashboard/products/${product.slug}`}
+                      className="hover:underline line-clamp-2"
+                    >
+                      {product.title}
+                    </a>
+                  </TableCell>
+
+                  {/* Price */}
+                  <TableCell className="font-semibold">
+                    {product.price} руб
+                  </TableCell>
+
+
+                  {/* Status */}
+                  <TableCell>
+                   {product.inStock ? product.inStock : 'Не указано'}
+                  </TableCell>
+
+                  {/* Actions */}
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Действия</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem>
+                          <Pencil className="mr-2 h-4 w-4" />
+                          Редактировать
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="text-red-600">
+                        <Dialog>
+                        <DialogTrigger asChild>
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Удалить
+                        </DialogTrigger>
+                        <DialogContent>
+                        <DialogHeader>
+                        <DialogTitle>Удалить товар</DialogTitle>
+                        </DialogHeader>
+                        <DialogDescription>
+                        Вы уверены, что хотите удалить товар?
+                        </DialogDescription>
+                        <DeleteProductButton productId={product.id} />
+                        </DialogContent>
+                        </Dialog>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
     </div>
   );
 }

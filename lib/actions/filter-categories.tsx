@@ -97,6 +97,7 @@ export async function deleteFilterCategory(id: string) {
             if (!session || session.user.role !== 'admin') {
               return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
             }
+            await db.delete(filters).where(eq(filters.categoryId, id));
         await db.delete(filterCategories).where(eq(filterCategories.id, id));
     } catch (error) {
         console.error("Error deleting filter category:", error);

@@ -10,13 +10,31 @@ const Toaster = ({ ...props }: ToasterProps) => {
     <Sonner
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
-      style={
-        {
-          "--normal-bg": "var(--popover)",
-          "--normal-text": "var(--popover-foreground)",
-          "--normal-border": "var(--border)",
-        } as React.CSSProperties
-      }
+      position="top-right"
+      expand={false}
+      closeButton
+      duration={4000}
+      toastOptions={{
+        classNames: {
+          toast:
+            "group toast group-[.toaster]:bg-white group-[.toaster]:text-slate-800 group-[.toaster]:border-blue-100 group-[.toaster]:shadow-xl group-[.toaster]:border-2",
+          description: "group-[.toast]:text-slate-600",
+          actionButton:
+            "group-[.toast]:bg-blue-600 group-[.toast]:text-white group-[.toast]:hover:bg-blue-700 group-[.toast]:font-medium group-[.toast]:px-4",
+          cancelButton:
+            "group-[.toast]:bg-slate-100 group-[.toast]:text-slate-700 group-[.toast]:hover:bg-slate-200",
+          closeButton:
+            "group-[.toast]:bg-white group-[.toast]:text-slate-400 group-[.toast]:border-slate-200 group-[.toast]:hover:text-slate-600",
+          success: 
+            "group-[.toaster]:bg-white group-[.toaster]:border-blue-600 group-[.toaster]:text-slate-800",
+          error: 
+            "group-[.toaster]:bg-white group-[.toaster]:border-red-500 group-[.toaster]:text-slate-800",
+          warning:
+            "group-[.toaster]:bg-white group-[.toaster]:border-amber-500 group-[.toaster]:text-slate-800",
+          info:
+            "group-[.toaster]:bg-white group-[.toaster]:border-blue-400 group-[.toaster]:text-slate-800",
+        },
+      }}
       {...props}
     />
   )
