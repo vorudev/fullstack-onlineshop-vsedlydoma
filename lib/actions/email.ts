@@ -1,6 +1,7 @@
 'use server';
 import { Resend } from "resend";
 import { OrderConfirmationEmail } from '@/components/email/order-conformation';
+import OrderNotificationAdmin from '@/components/email/order-notification-admin';
 import type { OrderItem, Order} from '@/db/schema';
 
 const resend = new Resend(process.env.RESEND_API_KEY as string);
@@ -15,6 +16,7 @@ export async function sendOrderEmails(params: SendOrderEmailsParams) {
 
   const results = {
     customerEmail: { success: false, id: null as string | null, error: null as string | null },
+    adminEmail: { success: false, id: null as string | null, error: null as string | null },
   };
 if (!params.order.customerEmail || !params.order.customerName || !params.order.createdAt || !params.order.sku) {
   throw new Error('Customer email is missing');
@@ -39,9 +41,28 @@ if (!params.order.customerEmail || !params.order.customerName || !params.order.c
       results.customerEmail.success = true;
       results.customerEmail.id = customerEmailResult.data.id;
     }
+    const adminEmailResult = await resend.emails.send({
+      from: fromEmail,
+      to: 'fleptagyt@gmail.com',
+      subject: `Новый заказ ${params.order?.sku}`,
+      react: OrderNotificationAdmin({
+        sku: params.order?.sku,
+        customerName: params.order?.customerName,
+        customerEmail: params.order?.customerEmail || '',
+        customerPhone: params.order?.customerPhone || '',
+        notes: params.order?.notes || '',
+        items: params.items,
+        total: params.order.total,
+        createdAt: params.order.createdAt.toISOString(),
+      }),
+    });
+    if (adminEmailResult.data) {
+      results.adminEmail.success = true;
+      results.adminEmail.id = adminEmailResult.data.id;
+    }
   } catch (error) {
-    console.error('Failed to send customer email:', error);
-    results.customerEmail.error = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Failed to send admin email:', error);
+    results.adminEmail.error = error instanceof Error ? error.message : 'Unknown error';
   }
 
 

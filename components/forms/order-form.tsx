@@ -4,6 +4,8 @@ import { z } from "zod";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation";
+import { translateError } from "../toast-helper";
+import { toast } from "sonner";
 
 import { Textarea } from "../ui/textarea";
 import { Loader2Icon } from "lucide-react";
@@ -159,11 +161,13 @@ export default function OrderForm( {items}: OrderFormProps) {
             if (result) {
                 setSuccess(true);
                 clearCart();
+                toast.success('Заказ успешно оформлен');
                 router.push(`/order/${result.orderId}`);
             }
            
         } catch (error) {
             setError(true);
+            toast.error(translateError(error as string));
             // Показать error message
         } finally {
             setIsLoading(false);

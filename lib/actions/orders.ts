@@ -5,7 +5,7 @@ import { orders, Order } from "@/db/schema";
 import { user, User } from "@/db/schema";
 import { NextResponse } from "next/server";
 import { sendOrderEmails } from "./email";
-
+import { sendTelegramNotification } from "./telegram";
 import { products, Product } from "@/db/schema";
 import { orderItems, OrderItem } from "@/db/schema";
 import { headers } from "next/headers";
@@ -376,20 +376,18 @@ export async function createOrder(orderInput: CreateOrderData, orderItemsInput: 
     
     // userId будет либо ID пользователя, либо null для гостевых заказов
     const userId = session?.user?.id ?? null;
-    await rateLimitbyIp(5, 15 * 60 * 1000);
+   // await rateLimitbyIp(5, 15 * 60 * 1000);
     
     try { 
         const total = orderItemsInput.reduce((acc, item) => acc + item.price * item.quantity, 0);
         
-        const sanitizedOrder = {
-          name: sanitizeString(orderInput.customerName),
-          email: sanitizeString(orderInput.customerEmail),
-          phone: sanitizeString(orderInput.customerPhone),
-          notes: sanitizeString(orderInput.notes),
-          status: 'pending',
-        };
+        
         const order = await db.insert(orders).values({
-            ...sanitizedOrder,
+          customerName: orderInput.customerName,
+          customerEmail: orderInput.customerEmail,
+          customerPhone: orderInput.customerPhone,
+          notes: orderInput.notes,
+          status: 'pending',
             total,
             userId // может быть null для гостей
         }).returning();
@@ -400,7 +398,35 @@ export async function createOrder(orderInput: CreateOrderData, orderItemsInput: 
         }));
         
         const orderItem = await db.insert(orderItems).values(orderItemsWithOrderId).returning();
-        await sendOrderEmails({ order: order[0], items: orderItem });
+         await sendOrderEmails({ order: order[0], items: orderItem });
+      await sendTelegramNotification(`
+🎉 <b>НОВЫЙ ЗАКАЗ!</b>
+
+📋 <b>Информация о заказе:</b>
+🆔 ID: <code>${order[0].sku}</code>
+💰 Сумма: <b>${order[0].total} ₽</b>
+
+👤 <b>Клиент:</b>
+━━━━━━━━━━━━━━━━━━
+- Имя: ${order[0].customerName}
+- Email: ${order[0].customerEmail}
+- Телефон: ${order[0].customerPhone}
+
+🛒 <b>Товары:</b>
+${orderItem.map(item => `• ${item.title} x ${item.quantity} — ${item.price} руб (SKU: ${item.productSku})`).join('\n')}
+
+📝 <b>Комментарий:</b>
+${order[0].notes || 'Нет комментария'}
+
+🕐 <b>Дата:</b> ${order[0].createdAt?.toLocaleDateString('ru-RU', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit'
+})}
+━━━━━━━━━━━━━━━━━━
+`.trim());
         return { order, orderItem, orderId: order[0].id || '' };
     } catch (error) {
         console.error("Error creating order:", error);

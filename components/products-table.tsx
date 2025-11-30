@@ -143,12 +143,7 @@ export default function ProductsTable({ products, categories, manufacturers }: {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Действия</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>
-                          <Pencil className="mr-2 h-4 w-4" />
-                          Редактировать
-                        </DropdownMenuItem>
+                      
                         <DropdownMenuItem className="text-red-600">
                         <Dialog>
                         <DialogTrigger asChild>
@@ -156,12 +151,8 @@ export default function ProductsTable({ products, categories, manufacturers }: {
                         Удалить
                         </DialogTrigger>
                         <DialogContent>
-                        <DialogHeader>
-                        <DialogTitle>Удалить товар</DialogTitle>
-                        </DialogHeader>
-                        <DialogDescription>
-                        Вы уверены, что хотите удалить товар?
-                        </DialogDescription>
+                       
+                    
                         <DeleteProductButton productId={product.id} />
                         </DialogContent>
                         </Dialog>

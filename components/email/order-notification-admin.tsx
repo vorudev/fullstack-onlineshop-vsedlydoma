@@ -21,6 +21,9 @@ interface OrderConfirmationEmailProps {
   items: OrderItem[];
   total: number;
   createdAt: string;
+  customerEmail: string;
+  notes: string | null;
+  customerPhone: string | null;
 }
 
 export const OrderConfirmationEmail = ({
@@ -29,28 +32,40 @@ export const OrderConfirmationEmail = ({
   items,
   total,
   createdAt,
-}: OrderConfirmationEmailProps) => (
+  customerEmail,
+  customerPhone,
+  notes}: OrderConfirmationEmailProps) => (
   <Html>
     <Head />
-    <Preview>Ваш заказ {sku} успешно оформлен</Preview>
+    <Preview>Новый заказ  номер: {sku}</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Heading style={h1}>Спасибо за заказ!</Heading>
+        <Heading style={h1}>Новый заказ!</Heading>
         
         <Text style={text}>
-          Здравствуйте, {customerName}!
-        </Text>
-        
-        <Text style={text}>
-          Ваш заказ <strong>{sku}</strong> успешно создан и принят в обработку.
+          Новый заказ <strong>{sku}</strong> создан.
         </Text>
 
         <Section style={orderInfo}>
           <Text style={orderInfoText}>
             <strong>Номер заказа:</strong> {sku}
+           
+
           </Text>
           <Text style={orderInfoText}>
             <strong>Дата:</strong> {new Date(createdAt).toLocaleString('ru-RU')}
+          </Text>
+          <Text style={orderInfoText}>
+            <strong>Клиент:</strong> {customerName}
+          </Text>
+          <Text style={orderInfoText}>
+            <strong>Email:</strong> {customerEmail}
+          </Text>
+          <Text style={orderInfoText}>
+            <strong>Телефон:</strong> {customerPhone ? customerPhone : 'Не указан'}
+          </Text>
+          <Text style={orderInfoText}>
+            <strong>Комментарий:</strong> {notes ? notes : 'Не указан'}
           </Text>
         </Section>
 
@@ -89,14 +104,8 @@ export const OrderConfirmationEmail = ({
           </Row>
         </Section>
 
-        <Text style={text}>
-          Мы свяжемся с вами в ближайшее время для подтверждения заказа.
-        </Text>
+       
 
-        <Text style={footer}>
-          С уважением,<br />
-          Команда вашего магазина
-        </Text>
       </Container>
     </Body>
   </Html>

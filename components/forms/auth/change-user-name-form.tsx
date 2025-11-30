@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { set, z } from "zod"
+import { toast } from "sonner";
 
 interface ChangeUserNameFormProps {
     name: string;
@@ -51,15 +52,17 @@ export function ChangeUserNameForm({ name }: ChangeUserNameFormProps) {
         
         if (data) {
             setMessage("Имя успешно изменено");
+            toast.success("Имя успешно изменено");
            
             router.refresh();
         } else {
             setErrorMessage("Ошибка при изменении имени");
+            toast.error("Ошибка при изменении имени");
            
         }
     } catch (error) {
         console.error("Failed to update user:", error);
-       
+        toast.error("Ошибка при изменении имени");       
     } finally {
         setIsLoading(false);
     }

@@ -72,10 +72,12 @@ const formSchema = z.object({
         try {
             await updatePhoneNumber(values.phoneNumber)
             setMessage("Телефон успешно добавлен")
+            toast.success("Телефон успешно добавлен")
             router.refresh()
         } catch (error) {
             const e = error as Error
             setErrorMessage("Ошибка при добавлении номера")
+            toast.error("Ошибка при добавлении номера")
         } finally {
             setIsLoading(false)
         }
