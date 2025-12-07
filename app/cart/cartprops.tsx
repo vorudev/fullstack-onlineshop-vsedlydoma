@@ -17,7 +17,7 @@ type CartItemProps = {
 export const CartItemComponent = ({ item }: CartItemProps) => {
   const router = useRouter();
   const { updateQuantity, removeFromCart, validateCart } = useCart();
-  const { addToFavorite, removeFromFavorite } = useFavorite();
+  const { addToFavorite, removeFromFavorite, favorite} = useFavorite();
   const [image, setImage] = useState<ProductImage | null>(null);
 
   const [inputValue, setInputValue] = useState(item.quantity.toString());
@@ -99,17 +99,8 @@ function getReviewText(count: number): string {
   return `${count} ${word}`;
 }
 const featuredImage = item?.product?.images?.find(img => img.isFeatured) || item?.product?.images?.[0];
-
-
-
   return (
-   
-   
-     
-     
-        
-       
-           <li key={item.product.id} className="flex gap-4 w-full  p-3 bg-white rounded-lg border ">
+<li key={item.product.id} className="flex gap-4 w-full  p-3 bg-white rounded-lg border ">
 
   <div className="flex flex-col items-between  lg:gap-0 lg:items-start w-full">
     <div className="flex gap-4 w-full items-start " >
@@ -125,18 +116,21 @@ const featuredImage = item?.product?.images?.find(img => img.isFeatured) || item
     <div className="flex-1 flex-col gap-10 py-3 px-2 hidden lg:flex">
       <div className="flex justify-between items-start gap-4">
         <div className="flex flex-col gap-1">
-        <h2 className="text-base lg:font-medium text-[16px] cl text-gray-900 flex-1">{item.product.title}</h2>
+        <Link href={`/product/${item?.product?.slug}`}><h2 className="text-base lg:font-medium text-[16px] cl text-gray-900 flex-1">{item.product.title}</h2></Link>
       <div className={`${item.product.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-1 rounded-md self-start`}>
     <p className={`text-[12px] text-gray-600 ${item.product.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>{item.product.inStock}</p>
     </div>
         </div>
-        <button 
+       <div className="flex items-center gap-2">
+       
+       <button 
           className="text-gray-400 hover:text-red-500 cursor-pointer transition-colors flex-shrink-0" 
           onClick={() => removeFromCart(item.product.id)}
           aria-label="Удалить товар"
         >
           <Trash2 className="w-5 h-5" />
-        </button>
+       </button>
+          </div>
       </div>
 
       <div className=" justify-between items-center hidden lg:flex">
@@ -172,7 +166,7 @@ const featuredImage = item?.product?.images?.find(img => img.isFeatured) || item
      
     <div className="flex lg:hidden flex-row items-start  gap-2">
       <div className="relative w-[80px] h-[80px] overflow-hidden  ">
-        <Image src={featuredImage?.imageUrl } alt={item.product.title} fill className="object-contain"/>
+       {featuredImage?.imageUrl ? <Image src={featuredImage?.imageUrl} alt={item.product.title} fill className="object-contain"/> : <p>Нет картинка товара</p>}
       </div>
 
    <div className="flex flex-col justify-between h-full  flex-1 lg:hidden"> 
@@ -183,9 +177,7 @@ const featuredImage = item?.product?.images?.find(img => img.isFeatured) || item
    </div>
 
     <div className="flex flex-col gap-2 justify-start h-full ">
-       <button onClick={() => addToFavorite(item.product)} className="text-gray-400 hover:text-red-500 cursor-pointer transition-colors flex-shrink-0">
-            <Heart className="w-5 h-5" />
-          </button>
+
  <button onClick={() => removeFromCart(item.product.id)} className="text-gray-400 hover:text-red-500 cursor-pointer transition-colors flex-shrink-0">
   <Trash2 className="w-5 h-5" />
  </button>

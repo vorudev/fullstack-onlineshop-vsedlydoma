@@ -5,11 +5,14 @@ import AdminOrdersTable from "./order-history";
 export default async function UsersPage({ params }: { params: Promise<{ id: string }> }) {
   // Ожидаем params перед использованием 
   const { id } = await params;
-  const orders = await getOrderByUserId(id);
+const [user, orders] = await Promise.all([
+  getUserById(id),
+  getOrderByUserId(id),
+]);
   return ( 
     <div>
 
-      <AdminOrdersTable orders={orders} />
+      <AdminOrdersTable orders={orders} user={user} />
     </div>
   )
 }

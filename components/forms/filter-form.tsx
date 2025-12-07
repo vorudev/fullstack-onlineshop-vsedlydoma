@@ -1,6 +1,6 @@
 'use client';
 import { z } from "zod";
-import { Loader2 } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -29,7 +29,7 @@ interface FilterFormProps {
 }
 
 const formSchema = z.object({
-    name: z.string().min(1, "Name is required"),
+    name: z.string().min(1, "Название обязательно"),
     displayOrder: z.number().nullable(),
     categoryId: z.string().uuid("Filter Category ID is required"),
 })
@@ -67,49 +67,30 @@ export function FilterForm({ filter, category }: FilterFormProps) {
     }
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex gap-3  flex-row ">
                  
                 <FormField
                     control={form.control}
                     name="name"
                     render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Значение</FormLabel>
-                            <FormDescription>Это значения для фильтра, например "красный"</FormDescription>
+                        <FormItem> 
+                          
                             <FormControl>
-                                <Input placeholder="Значение" {...field} />
+                                <Input placeholder="Введите новое значение (например, Красный)" {...field}  className="min-w-[350px]" />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
                
-                 <FormField
-                    control={form.control}
-                    name="displayOrder"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Порядок отображения</FormLabel>
-                            <FormControl>
-                                <Input 
-                    placeholder="Порядок отображения" 
-                    type="number" 
-                    {...field}
-                    value={field.value ?? ''}
-                    onChange={(e) => {
-                        const value = e.target.value;
-                        field.onChange(value === '' ? null : Number(value));
-                    }}
-                />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <Button disabled={isLoading} type="submit">
-                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Сохранить
-                </Button>
+                
+                <Button    
+                variant="outline"
+                type="submit"
+                className="gap-2"
+                >
+                
+ {isLoading ? <Loader2 className="animate-spin"></Loader2> : <div className="flex flex-row items-center gap-2"><Plus className="h-4 w-4" /> Добавить </div>} </Button>
             </form>
         </Form>
     )

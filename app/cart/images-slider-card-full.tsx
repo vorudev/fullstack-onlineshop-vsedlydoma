@@ -47,7 +47,7 @@ export default function ImagesSlider({ images, title }: Images) {
         className="flex-shrink-0 snap-start lg:snap-center w-[180px] h-[150px] lg:w-[180px] lg:h-[140px]   aspect-[1/1.15] lg:aspect-[1/1] relative rounded-lg overflow-hidden"
       >
         <Image
-          src={image.imageUrl}
+          src={image.imageUrl || 'https://media.istockphoto.com/id/1147544807/ru/%D0%B2%D0%B5%D0%BA%D1%82%D0%BE%D1%80%D0%BD%D0%B0%D1%8F/%D0%BD%D0%B5%D1%82-thumbnail-%D0%B8%D0%B7%D0%BE%D0%B1%D1%80%D0%B0%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5-%D0%B2%D0%B5%D0%BA%D1%82%D0%BE%D1%80-%D0%B3%D1%80%D0%B0%D1%84%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9.jpg?s=612x612&w=0&k=20&c=qA0VzNlwzqnnha_m2cHIws9MJ6vRGsZmys335A0GJW4='}
      fill
           alt={`${title}${image.isFeatured ? ' - главное фото' : ''}`}
           className="w-full h-full object-contain  "

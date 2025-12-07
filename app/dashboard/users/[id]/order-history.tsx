@@ -4,8 +4,8 @@ import Link from 'next/link';
 import { Calendar, ChevronDown, ChevronUp, Mail, Package, Phone, User } from 'lucide-react';
 
 interface Order {
-    orders: {
-        orderItems: {
+   orders: {
+    orderItems: {
         id: string;
         orderId: string | null;
         productId: string | null;
@@ -16,6 +16,20 @@ interface Order {
         createdAt: Date | null;
         updatedAt: Date | null;
     }[];
+    userInfo: {
+        id: string;
+        name: string;
+        role: "admin" | "user";
+        email: string;
+        emailVerified: boolean;
+        phoneNumber: string | null;
+        phoneNumberVerified: boolean;
+        image: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        twoFactorEnabled: boolean;
+        banned: boolean;
+    };
     id: string;
     userId: string | null;
     status: string;
@@ -26,27 +40,35 @@ interface Order {
     customerPhone: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;
+    
 }[]
-
+user: {
+    id: string;
+    name: string;
+    role: "admin" | "user";
+    email: string;
+    emailVerified: boolean;
+    phoneNumber: string | null;
+    phoneNumberVerified: boolean;
+    image: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+    twoFactorEnabled: boolean;
+    banned: boolean;
+}
     }
+
     
 
 
-export default function AdminOrdersTable({ orders }: Order) {
+export default function AdminOrdersTable({ orders, user }: Order) {
  const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
 
   
 
 
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('ru-RU', { 
-      style: 'currency', 
-      currency: 'RUB',
-      minimumFractionDigits: 0
-    }).format(price);
-  };
-
+  
   const toggleExpand = (orderId: string) => {
     if (expandedOrder === orderId) {
       setExpandedOrder(null);
@@ -69,19 +91,19 @@ export default function AdminOrdersTable({ orders }: Order) {
               <User className="w-6 h-6 text-blue-600" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold ">{customerInfo.customerName || 'Клиент'}</h2>
-              <p className="text-sm text-gray-500">ID: {customerInfo.userId || '—'}</p>
+              <h2 className="text-2xl font-bold ">{user.name || 'Клиент'}</h2>
+              <p className="text-sm text-gray-500">ID: {user.id || '—'}</p>
             </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex items-center gap-3 ">
               <Mail className="w-5 h-5 text-gray-400" />
-              <span className="text-sm">{customerInfo.customerEmail || '—'}</span>
+              <span className="text-sm">{user.email|| '-'}</span>
             </div>
             <div className="flex items-center gap-3 ">
               <Phone className="w-5 h-5 text-gray-400" />
-              <span className="text-sm">{customerInfo.customerPhone || '—'}</span>
+              <span className="text-sm">{user.phoneNumber || '—'}</span>
             </div>
             <div className="flex items-center gap-3 ">
               <Package className="w-5 h-5 text-gray-400" />
@@ -93,7 +115,7 @@ export default function AdminOrdersTable({ orders }: Order) {
             <div className="flex items-center gap-2">
 
               <span className="text-lg font-bold ">
-                Общая сумма: {formatPrice(totalRevenue)}
+                Общая сумма: {totalRevenue.toFixed(2)} руб
               </span>
             </div>
           </div>
@@ -144,13 +166,18 @@ export default function AdminOrdersTable({ orders }: Order) {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-semibold ">
-                          {formatPrice(order.total)}
+                          {order.total.toFixed(2)} руб
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm ">
                           {order.orderItems.length} {order.orderItems.length === 1 ? 'товар' : 'товара'}
                         </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <Link href={`/dashboard/order/${order.id}`}
+                        className="text-blue-600 hover:text-blue-800 transition-colors"
+                        >Перейти к заказу</Link>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right">
                         <button
@@ -170,6 +197,8 @@ export default function AdminOrdersTable({ orders }: Order) {
                       <tr>
                         <td colSpan={6} className="px-6 py-4 bg-neutral-900">
                           <div className="space-y-3">
+                            
+                            
                             <h4 className="font-semibold mb-3">Состав заказа:</h4>
                             {order.orderItems.map((item) => (
                               <div key={item.id} className="flex justify-between items-center p-3 rounded-lg">
@@ -179,10 +208,10 @@ export default function AdminOrdersTable({ orders }: Order) {
                                 </div>
                                 <div className="text-right">
                                   <div className="text-sm ">
-                                    {item.quantity} шт × {formatPrice(item.price)}
+                                    {item.quantity} шт × {item.price.toFixed(2)} руб
                                   </div>
                                   <div className="font-semibold ">
-                                    {formatPrice(item.quantity * item.price)}
+                                    {item.quantity * item.price} руб
                                   </div>
                                 </div>
                               </div>
@@ -191,7 +220,7 @@ export default function AdminOrdersTable({ orders }: Order) {
                             <div className="flex justify-between items-center pt-3 border-t">
                               <span className="text-sm text-gray-500">обновлено: {order.updatedAt?.toLocaleString()}                              </span>
                               <span className="text-lg font-bold ">
-                                Итого: {formatPrice(order.total)}
+                                Итого: {order.total.toFixed(2)} руб
                               </span>
                             </div>
                           </div>

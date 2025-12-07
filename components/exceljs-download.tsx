@@ -31,6 +31,7 @@ interface Order {
   updatedAt: Date | null;
   userId: string | null;
   status: string;
+  sku: string | null;
   notes: string | null;
   total: number; // Было totalPrice
   customerName: string | null;
@@ -92,7 +93,7 @@ const ExportToExcel: React.FC<ExportOrdersToExcelProps> = ({
       orders.forEach((order) => {
         // Добавляем заголовок заказа с датой
         worksheet.addRow({
-          invoice: `Счет-справка от ${today} (ID: ${order.id || 'N/A'})`,
+          invoice: `Счет-справка от ${today} (Номер заказа: ${order.sku || 'N/A'})`,
           price: '',
           quantity: '',
         });
@@ -123,7 +124,7 @@ const ExportToExcel: React.FC<ExportOrdersToExcelProps> = ({
       });
 
       // Форматируем цены как валюту
-      worksheet.getColumn('price').numFmt = '#,##0.00 ₽';
+      worksheet.getColumn('price').numFmt = '#,##0.00 руб';
 
       // Генерируем буфер
       const buffer = await workbook.xlsx.writeBuffer();

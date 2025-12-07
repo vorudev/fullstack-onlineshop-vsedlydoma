@@ -1,12 +1,12 @@
 'use server';
 
 import { db } from "@/db/drizzle";
-import { reviews, Review, user, products } from "@/db/schema";
+import { reviews, Review, user, products , productImages} from "@/db/schema";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { NextRequest, NextResponse } from "next/server";
 import {rateLimitbyKey} from "./limiter";
-import { eq, and, ne, sql, or, ilike, desc } from "drizzle-orm";
+import { eq, and, ne, sql, or, ilike, desc, inArray, asc } from "drizzle-orm";
 import rateLimit from "next-rate-limit";
 
 
@@ -112,7 +112,7 @@ export async function createReview(review: Omit<typeof reviews.$inferInsert, 'id
       author_name: sanitizeString(review.author_name),
     };
     await validateReviewEntities(sanitizedReview.user_id, sanitizedReview.product_id);
-    await checkDuplicateReview(sanitizedReview.user_id, sanitizedReview.product_id);
+   await checkDuplicateReview(sanitizedReview.user_id, sanitizedReview.product_id);
     await rateLimitbyKey(user.user.id, 5, 15 * 60 * 1000);
   
     const newReview = await db.insert(reviews).values(sanitizedReview).returning();
@@ -152,26 +152,23 @@ export const getApprovedReviewsByProductId = async (productId: string) => {
         throw new Error("Failed to fetch filtered reviews by product ID");
     }
 }
-export const getAllApprovedReviews = async ({
-  search = '',
+export const getAllApprovedReviewsByProductId = async ({
+  productId,
   page = 1,
   pageSize = 20,
-}: GetApprovedReviewsParams = {}) => {
+}: {
+  productId: string;
+  page?: number;
+  pageSize?: number;
+}) => {
     try { 
         const offset = (page - 1) * pageSize;
-        const conditions = [];
-        if (search) {
-            conditions.push(
-                or(
-                    ilike(reviews.id, `%${search}%`),
-                    ilike(reviews.user_id, `%${search}%`),
-                    ilike(reviews.product_id, `%${search}%`),
-                    ilike(reviews.rating, `%${search}%`),
-                    sql`CAST(${reviews.id} AS TEXT) ILIKE ${`%${search}%`}`,
-                )
-            );
-        }
-        const whereClause = and(...conditions);
+      
+      
+        const whereClause = and(
+          eq(reviews.status, 'approved'),
+          eq(reviews.product_id, productId)
+        );
         const [allReviews, [{ count }]] = await Promise.all([
             db
                 .select()
@@ -200,18 +197,167 @@ export const getAllApprovedReviews = async ({
     }
 }
     
-export async function getPendingReviews() {
+  
+export const getAllApprovedReviews = async ({
+  search = '',
+  page = 1,
+  pageSize = 20,
+}: GetApprovedReviewsParams = {}) => {
     try { 
-        const filteredReviews = await db
-        .select()
-        .from(reviews)
-        .where(eq(reviews.status, 'pending'));
-        return filteredReviews;
+        const offset = (page - 1) * pageSize;
+        const conditions = [];
+        if (search) {
+            conditions.push(
+                or(
+                    ilike(reviews.id, `%${search}%`),
+                    ilike(reviews.user_id, `%${search}%`),
+                    ilike(reviews.product_id, `%${search}%`),
+                    ilike(reviews.rating, `%${search}%`),
+                    sql`CAST(${reviews.id} AS TEXT) ILIKE ${`%${search}%`}`,
+                )
+            );
+        }
+        const whereClause = and(eq(reviews.status, 'approved'));
+        const [allReviews, [{ count }]] = await Promise.all([
+            db
+                .select()
+                .from(reviews)
+                .where(whereClause)
+                .limit(pageSize)
+                .offset(offset)
+                .orderBy(desc(reviews.createdAt)),
+            db
+                .select({ count: sql<number>`count(*)` })
+                .from(reviews)
+                .where(whereClause)
+        ]);
+        return {
+          allReviews,
+            pagination: {
+                page,
+                pageSize,
+                total: Number(count),
+                totalPages: Math.ceil(Number(count) / pageSize),
+            },
+        };
     } catch (error) {
-        console.error("Error fetching filtered reviews:", error);
-        throw new Error("Failed to fetch filtered reviews");
+        console.error("Error fetching products:", error);
+        throw new Error("Failed to fetch products");
     }
 }
+    
+interface GetPendingReviewsParams {
+  search?: string;
+  page?: number;
+  pageSize?: number;
+  rating?: number;
+  date?: 'newest' | 'oldest';
+  status?: string
+} 
+export const getAllPendingReviews = async ({
+  search = '',
+  page = 1,
+  pageSize = 20,
+  rating = 0,
+  date = 'newest',
+  status = '',
+}: GetPendingReviewsParams = {}) => {
+  try {
+    const offset = (page - 1) * pageSize;
+    
+    // Создаем массив для условий WHERE
+    const whereConditions = [];
+    whereConditions.push(eq(reviews.status, status));
+    
+  if (search) {
+    const searchConditions = [];
+    
+    // Если search - число, то ищем по id и rating точное совпадение
+    if (!isNaN(Number(search))) {
+        searchConditions.push(eq(reviews.rating, Number(search)));
+    }
+    
+    // Для текстовых полей используем ilike
+    searchConditions.push(ilike(reviews.user_id, `%${search}%`));
+    searchConditions.push(ilike(reviews.product_id, `%${search}%`));
+    
+    // Также ищем по id, приведенному к тексту (если id - число, то это преобразование в текст)
+    searchConditions.push(sql`CAST(${reviews.id} AS TEXT) ILIKE ${`%${search}%`}`);
+    
+    whereConditions.push(or(...searchConditions));
+}
+
+    
+    if (rating) {
+      whereConditions.push(eq(reviews.rating, rating));
+    }
+    
+    const whereClause = whereConditions.length > 0 
+      ? and(...whereConditions) 
+      : undefined;
+    
+    // Определяем порядок сортировки
+    const orderByClause = date === 'newest' 
+      ? desc(reviews.createdAt) 
+      : asc(reviews.createdAt);
+    
+    const [allReviews, [{ count }]] = await Promise.all([
+      db
+        .select()
+        .from(reviews)
+        .where(whereClause)
+        .orderBy(orderByClause)
+        .limit(pageSize)
+        .offset(offset),
+      db
+        .select({ count: sql<number>`count(*)` })
+        .from(reviews)
+        .where(whereClause)
+    ]);
+    
+    const productIds = allReviews.map(review => review.product_id);
+    const userIds = allReviews.map(review => review.user_id);
+    const [productsSku, images, userInfo] = await Promise.all([
+      db.select({sku: products.sku, id: products.id, title: products.title, slug: products.slug})
+        .from(products)
+        .where(inArray(products.id, productIds)),
+      db.select({
+        imageUrl: productImages.imageUrl, 
+        productId: productImages.productId, 
+        id: productImages.id, 
+        isFeatured: productImages.isFeatured
+      })
+        .from(productImages)
+        .where(inArray(productImages.productId, productIds)),
+      db.select()
+        .from(user)
+        .where(inArray(user.id, userIds))
+    ]);
+    
+    const reviewsWithProducts = allReviews.map(review => ({
+      ...review,
+      product: productsSku.find(product => product.id === review.product_id),
+      images: images.filter(img => img.productId === review.product_id)
+    }));
+    const reviewsWithUserInfo = reviewsWithProducts.map(review => ({
+      ...review,
+      user: userInfo.find(user => user.id === review.user_id)
+    }));
+    return {
+      reviewsWithUserInfo,
+      pagination: {
+        page,
+        pageSize,
+        total: Number(count),
+        totalPages: Math.ceil(Number(count) / pageSize),
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    throw new Error("Failed to fetch products");
+  }
+}
+    
 export async function getPendingReviewsCount() {
     try { 
         const result = await db

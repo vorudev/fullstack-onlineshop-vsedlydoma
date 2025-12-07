@@ -152,8 +152,6 @@ const productsWithDetails = result.map(product => ({
       }
     }
 
-    console.log("Filters by slug:", filtersBySlug);
-    console.log("Manufacturer IDs:", manufacturerIds);
 
     // 5. Строим условия для WHERE
     const hasAttributeFilters = Object.keys(filtersBySlug).length > 0;
@@ -193,10 +191,11 @@ const productsWithDetails = result.map(product => ({
         .limit(limit)
         .offset((page - 1) * limit);
 
-    const [{count}] = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(products)
-      .where(and(...whereConditions));
+   const [{count}] = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(products)
+    .innerJoin(subquery, eq(products.id, subquery.productId)) // ← ДОБАВИЛИ JOIN
+    .where(and(...whereConditions));
   
       const productIds = result.map(r => r.products.id);
        const [images, ratings] = await Promise.all([

@@ -9,10 +9,12 @@
  import { useState } from "react"
  import { useRouter } from "next/navigation"
 
- import { updatePhoneNumber } from "@/lib/actions/users"
+ import { updatePhoneNumber, addPhoneNumber } from "@/lib/actions/users"
  import { toast } from "sonner"
  import { Loader2Icon } from "lucide-react"
- 
+ interface PhoneProps {
+  phone? : string
+ }
 const belarusPhoneClientSchema = z
   .string()
   .min(1, 'Номер телефона обязателен')
@@ -56,7 +58,7 @@ const formSchema = z.object({
   phoneNumber: belarusPhoneClientSchema,
 });
 
- export default function AddPhoneToUser() {
+ export default function AddPhoneToUser(phone: PhoneProps) {
     const [isLoading, setIsLoading] = useState(false)
     const [message, setMessage] = useState("")
     const [errorMessage, setErrorMessage] = useState("")
@@ -67,21 +69,26 @@ const formSchema = z.object({
             phoneNumber: "",
         },
     })
-    const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        setIsLoading(true)
-        try {
-            await updatePhoneNumber(values.phoneNumber)
-            setMessage("Телефон успешно добавлен")
-            toast.success("Телефон успешно добавлен")
-            router.refresh()
-        } catch (error) {
-            const e = error as Error
-            setErrorMessage("Ошибка при добавлении номера")
-            toast.error("Ошибка при добавлении номера")
-        } finally {
-            setIsLoading(false)
-        }
+ const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIsLoading(true)
+try {
+  const result = await addPhoneNumber(values.phoneNumber)
+  setMessage(result.message)
+  toast.success(result.message)
+  router.refresh()
+  
+  // Показываем предупреждение через 2 секунды
+  setTimeout(() => {
+    toast.warning("Телефон добавится в базу в течении 15 минут, пожалуйста, подождите")
+  }, 2000)
+    } catch (error) {
+        const e = error as Error
+        setErrorMessage("Ошибка при добавлении номера")
+        toast.error(e.message) // Покажет сообщение об ошибке
+    } finally {
+        setIsLoading(false)
     }
+}
      const formatPhoneInput = (value: string) => {
     // Удаляем все кроме цифр и +
     let cleaned = value.replace(/[^\d+]/g, '');

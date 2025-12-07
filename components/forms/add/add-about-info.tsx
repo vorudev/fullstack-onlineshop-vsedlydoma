@@ -52,7 +52,17 @@ export function AddAboutInfo({ about }: AboutFormProps) {
     async function onSubmit(values: AboutFormValues) {
         setIsLoading(true);
         try {
-            createAboutInfo(values);
+            if (about) {
+               await updateAboutInfo({
+                ...values,
+                id: about.id
+            })
+            } else 
+            {
+                await createAboutInfo({
+                    ...values
+                })
+            }
             form.reset();
             setIsLoading(false);
             router.refresh();

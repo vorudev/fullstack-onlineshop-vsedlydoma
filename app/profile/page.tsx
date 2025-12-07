@@ -31,5 +31,5 @@ export default async function Profile({searchParams}: PageProps) {
             status: status,
         }
     );
-    return <ProfilePage orders={orders} pagination={pagination}  />
+    return <ProfilePage orders={orders} pagination={pagination} session={session}  />
 }

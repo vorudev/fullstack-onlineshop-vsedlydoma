@@ -135,31 +135,9 @@ export default function ProductsTable({ products, categories, manufacturers }: {
                   </TableCell>
 
                   {/* Actions */}
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                      
-                        <DropdownMenuItem className="text-red-600">
-                        <Dialog>
-                        <DialogTrigger asChild>
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Удалить
-                        </DialogTrigger>
-                        <DialogContent>
-                       
-                    
-                        <DeleteProductButton productId={product.id} />
-                        </DialogContent>
-                        </Dialog>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
+                 <TableCell className="text-right">
+ <DeleteProductButton productId={product.id} />
+</TableCell>
                 </TableRow>
               ))
             )}

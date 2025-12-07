@@ -26,11 +26,11 @@ interface UpdateOrderFormProps {
 }
 const formSchema = z.object({
     status: z.string(),
-    customerName: z.string().min(2, { message: "Name must be at least 2 characters." }).max(50, { message: "Name must be at most 50 characters." }),
-    customerEmail: z.string().email({ message: "Invalid email address." }),
-    customerPhone: z.string().min(10, { message: "Phone number must be at least 10 characters." }).max(15, { message: "Phone number must be at most 15 characters." }),
+    customerName: z.string().min(2, { message: "Имя должно содержать не менее 2 символов" }).max(50, { message: "Имя должно содержать не более 50 символов" }),
+    customerEmail: z.string().email({ message: "Неверный email адрес." }),
+    customerPhone: z.string().min(10, { message: "Номер телефона должен содержать не менее 10 символов" }).max(15, { message: "Номер телефона должен содержать не более 15 символов" }),
     notes: z.string().nullable(),
-    total: z.number().min(0, { message: "Total must be a positive number." }),
+    total: z.number().min(0, { message: "Общая стоимость должна быть положительной" }),
 
 });
 export function UpdateOrderForm({ order }: UpdateOrderFormProps) {
@@ -71,17 +71,17 @@ export function UpdateOrderForm({ order }: UpdateOrderFormProps) {
     name="status"
     render={({ field }) => (
         <FormItem>
-            <FormLabel>Status</FormLabel>
+            <FormLabel>Статус</FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                     <SelectTrigger>
-                        <SelectValue placeholder="Select status" />
+                        <SelectValue placeholder="Выберите статус" />
                     </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="completed">Completed</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
+                    <SelectItem value="pending">Оформлен</SelectItem>
+                    <SelectItem value="completed">Получен</SelectItem>
+                    <SelectItem value="cancelled">Отменен</SelectItem>
                 </SelectContent>
             </Select>
             <FormMessage />
@@ -143,7 +143,7 @@ export function UpdateOrderForm({ order }: UpdateOrderFormProps) {
                 />
                 <Button type="submit" disabled={isLoading}>
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Update Order
+                    Обновить за
                 </Button>
             </form>
         </Form>

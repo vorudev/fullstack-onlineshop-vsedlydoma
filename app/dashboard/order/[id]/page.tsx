@@ -53,7 +53,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
             <div className="flex items-center gap-3">
               <Package className="w-8 h-8 text-blue-600" />
               <div>
-                <h1 className="text-2xl font-bold text-neutral-100">Заказ #{order?.id}</h1>
+                <h1 className="text-2xl font-bold text-neutral-100">Заказ {order?.sku}</h1>
                 <p className="text-sm text-neutral-400">{order?.createdAt?.toDateString()}</p>
               </div>
             </div>
@@ -115,16 +115,17 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                 <div className="flex items-start gap-3">
                   <Phone className="w-5 h-5 text-neutral-500 mt-0.5" />
                   <div>
-                    <p className="text-xs text-neutral-400 uppercase tracking-wide">Телефон</p>
+                    <p className="text-xs text-neutral-400 uppercase tracking-wide">Телефон в заказе</p>
                     <p className="text-sm font-medium text-neutral-100">{order?.customerPhone}</p>
                   </div>
                 </div>
  <div className="flex items-start gap-3">
                   <Mail className="w-5 h-5 text-neutral-500 mt-0.5" />
                   <div>
-                    <p className="text-xs text-neutral-400 uppercase tracking-wide">Авторизация на сайте</p>
+                    <p className="text-xs text-neutral-400 uppercase tracking-wide">Аккаунт</p>
                     <p className="text-sm font-medium text-neutral-100">{order?.user?.name ?? 'Нет'}</p>
                     <p className="text-sm font-medium text-neutral-100">{order?.user?.email ?? ''}</p>
+                    <p className="text-sm font-medium text-neutral-100">{order?.user?.phoneNumber ?? 'Нет телефона'}</p>
                                          <p className="text-sm font-medium text-neutral-100">{order?.user?.id ?? ''}</p>
                   </div>
                 </div>
@@ -148,7 +149,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                   <span className="text-lg font-semibold text-neutral-100">Итого</span>
                 </div>
                 <span className="text-2xl font-bold text-neutral-100">
-                  {order?.total.toLocaleString('ru-RU', { minimumFractionDigits: 2 })}
+                  {order?.total.toFixed(2) + ' руб'}
                 </span>
               </div>
             </div>
@@ -197,14 +198,14 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                     <div className="text-right min-w-32">
                       <p className="text-xs text-neutral-400 uppercase tracking-wide">Цена</p>
                       <p className="text-lg font-semibold text-neutral-100">
-                        {item.price.toLocaleString('ru-RU', { minimumFractionDigits: 2 })}
+                        {item.price.toFixed(2)} руб
                       </p>
                     </div>
 
                     <div className="text-right min-w-32">
                       <p className="text-xs text-neutral-400 uppercase tracking-wide">Сумма</p>
                       <p className="text-lg font-bold text-blue-400">
-                        {(item.price * item.quantity).toLocaleString('ru-RU', { minimumFractionDigits: 2 })}
+                        {(item.price * item.quantity).toFixed(2)} руб
                       </p>
                     </div>
                     {item.id && (
@@ -219,24 +220,16 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
 
               {/* Подитог */}
               <div className="mt-6 pt-6 border-t border-neutral-800">
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-neutral-400">Подитог</span>
-                    <span className="font-medium text-neutral-100">
-                      {order?.total.toLocaleString('ru-RU', { minimumFractionDigits: 2 })}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-neutral-400">Доставка</span>
-                    <span className="font-medium text-neutral-100">$0.00</span>
-                  </div>
-                  <div className="flex justify-between text-lg font-bold pt-2 border-t border-neutral-800">
+
+                  
+                  
+                  <div className="flex justify-between text-lg font-bold">
                     <span className="text-neutral-100">Итого</span>
                     <span className="text-blue-400">
-                      {order?.total.toLocaleString('ru-RU', { minimumFractionDigits: 2 })}
+                      {order?.total.toFixed(2)} руб
                     </span>
                   </div>
-                </div>
+         
               </div>
             </div>
           </div>

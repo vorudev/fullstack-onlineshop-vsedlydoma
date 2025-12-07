@@ -45,8 +45,8 @@ interface CategoryFormProps {
   categories: {id: string, name: string}[]
 }
 export const formSchema = z.object({
-  name: z.string().min(1),
-    description: z.string().min(1),
+  name: z.string().min(1, "Название обязательно"),
+    description: z.string(),
     parentId: z.string().nullable(),
 })
 
@@ -101,14 +101,16 @@ export function CategoryForm({category, categories: initialCategories}: Category
         }
         if (category) {
             await updateCategory({ ...categoryData, id: category.id });
+
         } else {
             await createCategory(categoryData);
-        }
-        form.reset({
+            form.reset({
             name: "",
             description: "",
             parentId: values.parentId, // Сохраняем текущее значение категории
         });
+        }
+        
         setIsLoading(false);
         router.refresh();
     } catch (error) {
@@ -124,7 +126,7 @@ export function CategoryForm({category, categories: initialCategories}: Category
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Название категории</FormLabel>
+              <FormLabel>Название категории *</FormLabel>
               <FormControl>
                 <Input placeholder="Название категории" {...field} />
               </FormControl>
@@ -138,7 +140,8 @@ export function CategoryForm({category, categories: initialCategories}: Category
             name="parentId"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel>Категория</FormLabel>
+                <FormLabel>Родительская категория </FormLabel>
+                <FormDescription>(если это главная категория, оставьте пустым)</FormDescription>
                 <Popover open={categoryOpen} onOpenChange={setCategoryOpen}>
                   <PopoverTrigger asChild>
                     <FormControl>
@@ -203,7 +206,7 @@ export function CategoryForm({category, categories: initialCategories}: Category
             <FormItem>
               <FormLabel>Описание</FormLabel>
               <FormControl>
-                <Input placeholder="Описание категории" {...field} />
+                <Textarea placeholder="Описание категории" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

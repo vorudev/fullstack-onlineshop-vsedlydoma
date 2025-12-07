@@ -1,59 +1,52 @@
 
-import { getAllCancelledOrders } from "@/lib/actions/orders";
+import { getAllOrders } from "@/lib/actions/orders";
+import { getActiveOrders } from "@/lib/actions/orders";
+import { UpdateOrderForm } from "@/components/forms/update-order-form";
+import AddOrderItemForm from "@/components/forms/add/add-items-to-order-form";
 import ExportToExcel from "@/components/exceljs-download";
 import { getProducts } from "@/lib/actions/product";
-import SearchBar from "@/components/searchbar";
-import Pagination from "@/components/pagination";
-import OrdersTable from "@/components/orders-table-archive";
+import { OrdersTable } from "@/components/archive-orders-table";
+import { get } from "http";
 
 interface PageProps {
   searchParams: Promise<{ // Добавляем Promise
     page?: string;
     search?: string;
-
+    limit: number;
+    sortBy?: | "createdAt" | "total";
+    sortOrder?: "asc" | "desc";
+    userType?: 'all' | 'guests' | 'registered';
+    timeRange?: 'all' | 'today' | 'week' | 'month' | 'year';
   }>;
-
 }
-export default async function OrderPage( { searchParams }: PageProps) {
-    const { page, search} = await searchParams;
-      const currentPage = Number(page) || 1;
+export default async function OrderPage({searchParams} : PageProps) {
+  const { page, search, limit, sortBy, sortOrder, userType, timeRange} = await searchParams;
+  const currentPage = Number(page) || 1;
+  const limitNumber = Number(limit) || 20;
   const searchQuery = search || '';
-    const { orders, pagination} = await getAllCancelledOrders(
- { 
+  const { ordersWithDetails, pagination} = await getAllOrders({ 
   page: currentPage,
-  pageSize: 21,
-  search: searchQuery
- }
-    );
-
-
+  pageSize: limitNumber,
+  search: searchQuery,
+  status: 'cancelled',
+  sortBy: sortBy,
+  sortOrder: sortOrder,
+  userType: userType, 
+  timeRange: timeRange
+ })
     return (
-         <div className="w-full p-4">
-      <h1 className="text-2xl font-bold mb-4">Отмененные заказы</h1>
-      
-
-
-      {/* Панель фильтров */}
-      <div className="flex gap-4 my-4 items-center">
-        <SearchBar />
-      </div>
-
-      {/* Показываем активные фильтры */}
-      {(searchQuery ) && (
-        <div className="mb-4 text-gray-600">
-          {searchQuery && <span>Поиск: "{searchQuery}"</span>}
-         
-          <span className="ml-2">({pagination.total} найдено)</span>
-        </div>
-      )}
-
-      <OrdersTable orders={orders}  />   
-      
-      <Pagination
-        currentPage={pagination.page}
-        totalPages={pagination.totalPages}
-        total={pagination.total}
-      />
-    </div>
+        <OrdersTable 
+        currentPage={pagination.page} 
+        totalPages={pagination.totalPages}  
+        totalRevenue={pagination.totalRevenue} 
+        total={pagination.totalOrders}
+        totalUsers={pagination.totalUsers} 
+        orders={ordersWithDetails}  
+        limit={limitNumber}
+        guestOrders={pagination.guestOrders}
+        userType={userType}
+        timeRange={timeRange}
+        />
+       
     );
 }

@@ -1,0 +1,1 @@
+ALTER TABLE "orders" ALTER COLUMN "sku" SET DEFAULT '#' || upper(to_hex(floor(random() * 4294967295)::bigint));

@@ -101,7 +101,7 @@ token,
     setIsLoading(false);
   }
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn("flex flex-col gap-6", className)}>
       <Card className="bg-white border-none shadow-none">
         <CardHeader className="text-center text-black">
           <CardTitle className="text-xl">Восстановление пароля</CardTitle>

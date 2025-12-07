@@ -7,6 +7,8 @@ import "./globals.css";
 import { FavoriteProvider } from "./context/favoritecontext";
 import Header from "@/components/frontend/header";
 import NavMenuMobile from "@/components/frontend/nav-menu-mobile";
+import { ConsentManager } from "./consent-manager";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -31,19 +33,24 @@ export default function RootLayout({
 }>) {
 
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased dark bg-white`}
-      >
+        <html lang="en">
+          <body
+            className={`${geistSans.variable} ${geistMono.variable} antialiased dark bg-white`}
+          >
+    		<ConsentManager 
+        >
+    			
 
-      <FavoriteProvider>
-        <CartProvider>
+          <FavoriteProvider>
+            <CartProvider>
 
-          {children}
-<Toaster richColors />
-        </CartProvider>
-      </FavoriteProvider>
-      </body>
-    </html>
-  );
+              {children}
+    <Toaster richColors />
+            </CartProvider>
+          </FavoriteProvider>
+          
+    		</ConsentManager>
+    	</body>
+        </html>
+      )
 }

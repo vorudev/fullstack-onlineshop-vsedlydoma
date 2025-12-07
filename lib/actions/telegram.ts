@@ -1,18 +1,16 @@
 // app/actions/telegram.js
 'use server'
-
+import { db } from "@/db/drizzle";
+import { getTelegramChatIds } from "./admin";
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-
-// Список Chat IDs - добавьте свои
-const CHAT_IDS = [
-  '941485514',  // Замените на реальные Chat IDs
-  // Добавьте сюда Chat IDs тех, кому нужны уведомления
-];
 
 export async function sendTelegramNotification(message: string) {
   const results = [];
+  const chatIds = await getTelegramChatIds();
+  const ids = chatIds.map((chatId) => chatId.chatId);
   
-  for (const chatId of CHAT_IDS) {
+  
+  for (const chatId of ids) {
     try {
       const response = await fetch(
         `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
@@ -35,7 +33,6 @@ export async function sendTelegramNotification(message: string) {
         error: data.ok ? null : data.description,
       });
       
-      // Задержка чтобы не нарушить rate limit Telegram (30 msg/sec)
       await new Promise(resolve => setTimeout(resolve, 50));
       
     } catch (error) {
@@ -52,7 +49,7 @@ export async function sendTelegramNotification(message: string) {
   
   return {
     success: true,
-    total: CHAT_IDS.length,
+    total: ids.length,
     successful,
     failed,
     results,

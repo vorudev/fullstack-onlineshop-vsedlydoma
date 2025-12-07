@@ -8,21 +8,15 @@ import { ValidatedCartItem } from "../context/cartcontext";
 import {getFeaturedImage} from "@/lib/actions/image-actions";
 import Link from "next/link";
 import { useState } from "react";
+import NavbarCart from "./navbar-cart";
 export default function CartPage() {
-    const { cart, clearCart, totalPrice, validateCart, updatedCart, validationErrors, isValidating   } = useCart();
-    const total = updatedCart?.reduce((acc, item) => acc + item?.product?.price * item?.quantity, 0);
-
-      const getCartItemsString = () => {
-        return cart.map(item => `${item.product.title} (x${item.quantity})`).join(', ');
-    };
+    const { cart, clearCart, totalPrice, validateCart, updatedCart, isValidating   } = useCart();
  
     // Для OrderForm нужен один id - можем создать комбинированный
  useEffect(() => {
     validateCart();
   }, [cart]);
 
-    const cartOrderId = cart.map(item => item.product.id).join(',');
-    console.log(updatedCart);
     return (  <div className="min-h-screen xl:max-w-[1400px] mx-auto lg:max-w-[1000px] pb-30">
   <div className="flex flex-col py-5 px-[12px]">
     {cart.length === 0 ? (
@@ -117,5 +111,6 @@ export default function CartPage() {
       </>
     )}
   </div>
+  {cart.length > 0 && <NavbarCart />}
 </div>)
 }

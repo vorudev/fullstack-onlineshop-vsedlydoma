@@ -2,11 +2,12 @@ import Image from "next/image";
 import { PlusIcon, UserPlusIcon } from "lucide-react";
 import SearchBar from "@/components/searchbar";
 import Pagination from "@/components/frontend/pagination-admin";
+
 import { Button } from "@/components/ui/button";
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { CategoryForm } from "@/components/forms/category-form";
-import CategoriesTable from "@/components/categories-table";
+import { CategoriesTable } from "@/components/categories-table-admin";
 import { getAllCategories } from "@/lib/actions/product-categories";
 
 interface PageProps {
@@ -32,7 +33,7 @@ const { categories, pagination } = await getAllCategories(
   return (
      <div className=" w-full p-4 ">
 
-      <h1 className="text-2xl font-bold mb-4">Категории Товаров</h1> 
+    
       <div className="flex justify-end">
       <Dialog>
   <DialogTrigger asChild><Button>Добавить Категорию<PlusIcon /></Button></DialogTrigger>
@@ -45,8 +46,7 @@ const { categories, pagination } = await getAllCategories(
 </Dialog>
 
     </div>
-    <h1>Поиск по главным категориям</h1>
-    <SearchBar />
+    
   {searchQuery && (
         <p className="mb-4 text-gray-600">
           Результаты поиска: "{searchQuery}" ({pagination.total} найдено)

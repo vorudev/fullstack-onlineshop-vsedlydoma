@@ -10,11 +10,7 @@ import ProductList from "./sort";
 import type ProductUnited from "./page";
 import Pagination from "@/components/frontend/pagination-client";
 
-interface Filter {
-  id: string;
-  name: string;
-  slug: string;
-}
+
 type SortOption = 'default' | 'price-asc' | 'price-desc' | 'rating-desc' | 'rating-asc';
 interface Filter {
   id: string;

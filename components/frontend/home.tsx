@@ -81,7 +81,7 @@ const manufacturersWithImages = manufacturers?.map(manufacturer => {
       <h3 className="text-base font-semibold xl:text-xl">Производители</h3>
       <p className="text-gray-600 text-sm xl:text-base">Популярные бренды</p>
     </div>
-    <Link href="/manufacturers" className="bg-white rounded-lg text-sm border border-gray-300 py-2 px-3 w-fit xl:text-base">
+    <Link href="/manufacturers" className="bg-white hover:bg-gray-100 transition-colors rounded-lg text-sm border border-gray-300 py-2 px-3 w-fit xl:text-base">
       Смотреть все
     </Link>
     <div className="absolute -bottom-4 -right-4 text-purple-500/50">

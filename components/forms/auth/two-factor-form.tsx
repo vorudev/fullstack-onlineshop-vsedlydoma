@@ -62,6 +62,7 @@ export function TwoFactorAuthForm({isEnabled}: {isEnabled: boolean}) {
           form.reset()
           setError(null)
           router.refresh()
+         toast.success("Двухфакторная аутентификация успешно выключена")
         },
     })
 }
@@ -78,6 +79,7 @@ async function handleEnableTwoFactorAuth(data: TwoFactorAuthSchema) {
     {
         setTwoFactorData(result.data)
        form.reset()
+
        setError(null)
     }
 }
@@ -197,9 +199,9 @@ return (
                 name="token"
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Код</FormLabel>
                         <FormControl>
-                            <Input placeholder="Код" type="text" {...field} />
+ <input placeholder="код"   className="bg-gray-100 border border-gray-200 py-3 focus:outline-none focus:ring-blue-500 transition duration-200 focus:ring-2 px-3 rounded-md text-gray-600" {...field} 
+            />
                         </FormControl>
                         <FormDescription>
                             Введите код из QR-кода

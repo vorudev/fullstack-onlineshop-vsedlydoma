@@ -9,6 +9,7 @@
  import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -48,40 +49,76 @@ pagination: {
     total: number;
     totalPages: number;
 }
+session: {
+    session: {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        userId: string;
+        expiresAt: Date;
+        token: string;
+        ipAddress?: string | null | undefined;
+        userAgent?: string | null | undefined;
+        impersonatedBy?: string | null | undefined;
+        activeOrganizationId?: string | null | undefined;
+        activeTeamId?: string | null | undefined;
+    };
+    user: {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        email: string;
+        emailVerified: boolean;
+        name: string;
+        image?: string | null | undefined;
+        banned: boolean | null | undefined;
+        role?: string | null | undefined;
+        banReason?: string | null | undefined;
+        banExpires?: Date | null | undefined;
+        phoneNumber?: string | null | undefined;
+        phoneNumberVerified?: boolean | null |  undefined;
+        twoFactorEnabled: boolean | null | undefined;
+       
+    }
 }
-export function Profile() {
-const session = useSession()
+ }
+export function Profile({ session }: Props) {
+  const { user } = session;
+  // используйте session и user
+
+
     return (
         
         <div className="flex flex-col relative gap-4 bg-white rounded-xl p-5 ">
            
 <div className="flex flex-col items-start">
     <h3 className="text-[16px] text-gray-400">Имя:</h3>
-   <div className="flex items-center gap-2"> <p className="text-[16px] text-black font-semibold">{session?.data?.user?.name}</p>
+   <div className="flex items-center gap-2"> <p className="text-[16px] text-black font-semibold">{session.user?.name}</p>
    <Dialog>
                 <DialogTrigger><Pencil className="w-4 h-5" /></DialogTrigger>
                 <DialogContent className="w-[400px] bg-white text-black">
                     <DialogHeader>
                         <DialogTitle>Изменить имя</DialogTitle>
                     </DialogHeader>
-                    <ChangeUserNameForm name={session?.data?.user?.name || ""} />
+                    <ChangeUserNameForm name={session?.user?.name || ""} />
                 </DialogContent>
             </Dialog>
             </div>
     </div>
 <div className="flex flex-col items-start">
     <h3 className="text-[16px] text-gray-400">Email</h3>
-    <p className="text-[16px] text-black font-semibold">{session?.data?.user?.email}</p>
+    <p className="text-[16px] text-black font-semibold">{session?.user?.email}</p>
     </div>
 <div className="flex flex-col items-start">
     <h3 className="text-[16px] text-gray-400">Телефон:</h3>
-      <div className="flex items-center gap-2"> <p className="text-[16px] text-black font-semibold">{session?.data?.user?.phoneNumber || "Не указан"
+      <div className="flex items-center gap-2"> <p className="text-[16px] text-black font-semibold">{session?.user?.phoneNumber || "Не указан"
         }</p>
    <Dialog>
                 <DialogTrigger><Pencil className="w-4 h-5" /></DialogTrigger>
                 <DialogContent className="w-[400px] bg-white text-black">
                     <DialogHeader>
-                        <DialogTitle>{session?.data?.user?.phoneNumber ? "Изменить номер" : "Добавить номер"}</DialogTitle>
+                        <DialogTitle>{session?.user?.phoneNumber ? "Изменить номер" : "Добавить номер"}</DialogTitle>
+                    
                     </DialogHeader>
                      <AddPhoneToUser />
                 </DialogContent>

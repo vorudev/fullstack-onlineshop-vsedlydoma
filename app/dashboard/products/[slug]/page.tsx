@@ -26,21 +26,20 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const { slug } = await params;
 const data = await getProductWithCategoryChain(slug);
   if (!data) {
-    return <div>Product not found</div>;
+    return <div>Товар не найден</div>;
   }
 const { product, categoryChain } = data;
-const [attributeCategories, attributes, images, {pagination, manufacturers}, categories, reviews ] = await Promise.all([
+const [attributeCategories, attributes, images, {pagination, manufacturers}, categories ] = await Promise.all([
   getAttributeCategories(),
   getProductAttributesWithCategories(product?.id || ""),
   getProductImages(product?.id || ""),
   getAllManufacturers(),
   getCategories(),
-  getApprovedReviewsByProductId(product?.id || ""),
 ])
 
 
   if (!product) {
-    return <div>Product not found</div>;
+    return <div>Товар не найден</div>
   }
 
 
@@ -193,7 +192,7 @@ const [attributeCategories, attributes, images, {pagination, manufacturers}, cat
               <div className="divide-y divide-gray-600">
               </div>
               
-            <ReviewsTableAdmin reviews={reviews} />
+            <ReviewsTableAdmin productId={product.id} />
 
             </div>
             {/* Action Buttons */}

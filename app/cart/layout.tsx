@@ -11,7 +11,7 @@ export default function CartLayout({ children }: { children: React.ReactNode }) 
             <main className="bg-gray-100 ">
             {children}
             <NavMenuMobile />
-            <NavbarCart />
+           
              <Footer />
             </main>
         </>

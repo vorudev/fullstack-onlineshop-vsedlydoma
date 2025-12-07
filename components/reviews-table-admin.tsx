@@ -4,16 +4,22 @@ import { ReviewForm } from "./forms/review-form";
 import { StarDisplay } from "./star-rating-in-tables";
 import { DeleteReviewButton } from "./delete-review-button";
 import { reviews, Review } from "@/db/schema";
+import Pagination from "./frontend/pagination-admin";
 
 import { ApproveReviewButton } from "./approve-review-button";
-
-export function ReviewsTableAdmin({reviews}: { reviews: Review[] }) {
+import { getAllApprovedReviewsByProductId } from "@/lib/actions/reviews";
+export async function ReviewsTableAdmin({productId}: {productId: string}) {
+    const {allReviews, pagination} = await getAllApprovedReviewsByProductId({
+        productId,
+        page: 1,
+        pageSize: 20
+    });
     return (
         <div>
             
                 <div className="overflow-x-auto">
                     <div>
-                        {reviews.map((review) => (
+                        {allReviews.map((review) => (
                             <div 
                                 key={review.id} 
                                 className=" overflow-hidden hover:shadow-md transition-shadow"
@@ -29,6 +35,7 @@ export function ReviewsTableAdmin({reviews}: { reviews: Review[] }) {
                                     <StarDisplay rating={review.rating} />
                                     <span>  <DeleteReviewButton reviewId={review.id} /></span>
                                 </div>
+                                <ApproveReviewButton reviewId={review.id} />
 
 
                             </div>

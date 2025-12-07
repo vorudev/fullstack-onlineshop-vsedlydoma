@@ -11,7 +11,7 @@ import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import slugify from "slugify";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { AttributeCategory } from "@/db/schema";
 import {
   Form,
@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { or } from "drizzle-orm";
+import { toast } from "sonner";
 
 interface AttributeFormProps {
     attribute?: ProductAttribute;
@@ -42,6 +43,7 @@ const formSchema = z.object({
 export default function AttributeForm({ attribute, product, categories, category }: AttributeFormProps) {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
+    
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -49,35 +51,48 @@ export default function AttributeForm({ attribute, product, categories, category
             value: attribute?.value || "",
             order: attribute?.order || 0,
             productId: product.id || "",
-            categoryId: category?.id || "",
+            categoryId: attribute?.categoryId || category?.id || "",
         },
     })
+
+    // Обновляем categoryId когда меняется category
+    useEffect(() => {
+        if (category?.id && !attribute) {
+            form.setValue('categoryId', category.id);
+        }
+    }, [category, form, attribute]);
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setIsLoading(true);
         try {
-            const attributeData = { ...values, 
+            const attributeData = { 
+                ...values, 
                 productId: product.id, 
                 slug: slugify(values.name, {
-                  lower: true,
-                  strict: true,
-                  locale: 'ru',
+                    lower: true,
+                    strict: true,
+                    locale: 'ru',
                 }),
-
             };
+            
             if (attribute) {
                 await updateProductAttribute({ ...attributeData, id: attribute.id });
+                toast.success("Атрибут успешно обновлён");
             } else {
                 await createProductAttribute(attributeData);
+                toast.success("Атрибут успешно создан");
             }
+            
             form.reset();
-            setIsLoading(false);
             router.refresh();
         } catch (error) {
             console.error("Error submitting form:", error);
-            throw new Error("Failed to submit form");
+            toast.error("Ошибка при сохранении атрибута");
+        } finally {
+            setIsLoading(false);
         }
     }
+
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -139,7 +154,9 @@ export default function AttributeForm({ attribute, product, categories, category
     render={({ field }) => (
         <FormItem>
             <FormLabel>Категория</FormLabel>
-            <Select onValueChange={field.onChange}>
+            <Select onValueChange={field.onChange} 
+                defaultValue={field.value}
+                value={field.value} >
                 <FormControl>
                     <SelectTrigger>
                         <SelectValue placeholder="Выберите категорию" />

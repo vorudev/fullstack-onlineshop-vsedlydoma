@@ -11,11 +11,12 @@ import { useForm } from "react-hook-form";
 import { createReview } from "@/lib/actions/reviews";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { translateError } from "../toast-helper";
 import { Star } from 'lucide-react';
 import {
     Form,
     FormControl,
-    FormDescription,
+    FormDescription, 
     FormField,
     FormItem,
     FormLabel,
@@ -120,7 +121,7 @@ const [success, setSuccess] = useState(false);
                 product_id,
             };
             await createReview(reviewData);
-            setSuccess(true);
+            toast.success("Отзыв успешно создан, его опубликуют после модерации");
             form.reset( {
                rating: 5,
                 comment: "",
@@ -128,8 +129,8 @@ const [success, setSuccess] = useState(false);
             });
             router.refresh();
         } catch (error) {
+            toast.error(translateError(error as string));            
             console.error("Error creating review:", error);
-            setError(true);
         } finally {
             setIsLoading(false);
         }

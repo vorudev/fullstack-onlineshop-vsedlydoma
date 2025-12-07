@@ -23,7 +23,7 @@ import { DropdownMenu,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
-import { ChevronUp, ChevronDown, User2, UserPlusIcon, Newspaper} from "lucide-react"
+import { ChevronUp, ChevronDown, User2, UserPlusIcon, Newspaper, Bell } from "lucide-react"
 import { da } from "zod/v4/locales";
 
 
@@ -69,6 +69,11 @@ const items = [
     title: "Новости",
     url: "/dashboard/news",
     icon: Newspaper,
+  },
+  {
+    title: "Уведомления",
+    url: "/dashboard/notifications",
+    icon: Bell,
   },
   
 ]

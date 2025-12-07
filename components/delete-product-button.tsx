@@ -45,9 +45,9 @@ try {
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Are you sure?</DialogTitle>
+          <DialogTitle>Удалить товар?</DialogTitle>
           <DialogDescription>
-            This action cannot be undone. This will permanently delete the product from the database.
+            Это действие не может быть отменено. Это будет навсегда удалить товар из базы данных.
           </DialogDescription>
 
           <Button
@@ -55,7 +55,7 @@ try {
             variant="destructive"
             onClick={handleDelete}
           >
-            {isLoading ? <Loader2 className="size-4 animate-spin" /> : "Delete"}
+            {isLoading ? <Loader2 className="size-4 animate-spin" /> : "Удалить"}
           </Button>
         </DialogHeader>
       </DialogContent>

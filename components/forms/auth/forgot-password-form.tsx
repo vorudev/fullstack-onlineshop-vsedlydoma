@@ -47,7 +47,7 @@ const formSchema = z.object({
 export function ForgotPasswordForm({
   className,
   ...props
-}: React.ComponentProps<"div">) {
+}: React.ComponentPropsWithoutRef<"div">) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
    const form = useForm<z.infer<typeof formSchema>>({
@@ -63,7 +63,7 @@ export function ForgotPasswordForm({
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-const { error } = await authClient.forgetPassword({
+const { error } = await authClient.requestPasswordReset({
   email: values.email,
   redirectTo: "/",
 });
@@ -80,7 +80,7 @@ const { error } = await authClient.forgetPassword({
     setIsLoading(false);
   }
   return (
-    <div className={cn("flex flex-col gap-6 ", className)} {...props}>
+    <div className={cn("flex flex-col gap-6 ", className)} >
       <Card className="bg-white border-none shadow-none">
         <CardHeader className="text-center">
           <CardTitle className="text-xl text-black">Восстановление пароля</CardTitle>

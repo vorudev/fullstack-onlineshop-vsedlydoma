@@ -77,13 +77,14 @@ export function SignupForm({
     if (success) {
       toast.success("Вы успешно зарегистрировались");
       router.push("/");
+      router.refresh
     } else {
         toast.error(translateError(message))
     }
     setIsLoading(false);
   }
   return (
-    <div className={cn("flex flex-col w-full text-black gap-6", className)} {...props}>
+    <div className={cn("flex flex-col w-full text-black gap-6", className)} >
       <Card className="bg-white border-none shadow-none">
         <CardContent>
           <Form {...form}>

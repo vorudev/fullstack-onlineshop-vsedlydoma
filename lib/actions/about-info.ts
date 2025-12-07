@@ -21,18 +21,33 @@ export const getAboutInfo = async () => {
 };
 
 export const updateAboutInfo = async (aboutInfo: Omit<About, "createdAt" | "updatedAt">) => {
-   try{
-    const session = await auth.api.getSession({
-          headers: await headers()
-        })
-        if (!session || session.user.role !== 'admin') {
-          return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-    const updatedAboutInfo = await db.update(about).set(aboutInfo).where(eq(about.id, aboutInfo.id));
-    return updatedAboutInfo;
+   try {
+       const session = await auth.api.getSession({
+           headers: await headers()
+       })
+       
+       if (!session || session.user.role !== 'admin') {
+           return { error: 'Unauthorized', status: 401 };
+       }
+       
+       const updatedAboutInfo = await db
+           .update(about)
+           .set(aboutInfo)
+           .where(eq(about.id, aboutInfo.id))
+           .returning(); // Добавьте .returning() если используете PostgreSQL
+       
+       // Верните простой объект вместо результата запроса
+       return { 
+           success: true, 
+           data: updatedAboutInfo[0] // или updatedAboutInfo если это массив
+       };
+       
    } catch (error) {
-    console.log(error);
-    return null;
+       console.log(error);
+       return { 
+           success: false, 
+           error: 'Failed to update about info' 
+       };
    }
 };
 export const deleteAboutInfo = async (id: string) => {

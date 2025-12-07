@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { deleteFilter } from "@/lib/actions/filters";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface DeleteFilterButtonProps {
     filterId: string;
@@ -10,11 +11,13 @@ interface DeleteFilterButtonProps {
 
 export function DeleteFilterButton({ filterId }: DeleteFilterButtonProps) {
     const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter()
     async function handleDelete() {
         setIsLoading(true);
         try {
             await deleteFilter(filterId);
             setIsLoading(false);
+            router.refresh()
         } catch (error) {
             console.error("Error deleting filter:", error);
             setIsLoading(false);

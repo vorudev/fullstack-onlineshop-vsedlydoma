@@ -167,7 +167,7 @@ export default function OrderForm( {items}: OrderFormProps) {
            
         } catch (error) {
             setError(true);
-            toast.error(translateError(error as string));
+            toast.error(error as string);
             // Показать error message
         } finally {
             setIsLoading(false);

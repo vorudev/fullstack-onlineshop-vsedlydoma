@@ -93,8 +93,8 @@ export const categoryImages = pgTable("categoryImages", {
 }));
 export const filterCategories = pgTable("filtersCategories", {
   id: uuid("id").primaryKey().defaultRandom(),
-  name: varchar("name", { length: 255 }).notNull().unique(),
-  slug: varchar("slug", { length: 255 }).notNull().unique(),
+  name: varchar("name", { length: 255 }).notNull(),
+  slug: varchar("slug", { length: 255 }).notNull(),
   displayOrder: integer("display_order").default(0),
   productCategory: uuid("product_category").references(() => categories.id),
 });
@@ -238,14 +238,22 @@ export const orders = pgTable("orders", {
   updatedAt: timestamp("updated_at").defaultNow(),
   sku: varchar("sku", { length: 16 })
     .unique()
-    .default(sql`'#' || upper(to_hex(floor(random() * 4294967295)::int))`),
+    .default(sql`'#' || upper(to_hex(floor(random() * 4294967295)::bigint))`),
 
 }, (table) => ({
-  // Индекс на status
+   // ✅ Основные индексы (работают без расширений)
   statusIdx: index("orders_status_idx").on(table.status),
+  userIdIdx: index("orders_user_id_idx").on(table.userId),
+  createdAtIdx: index("orders_created_at_idx").on(table.createdAt.desc()),
   
-  // Опционально: составной индекс для сортировки по дате
-  statusCreatedIdx: index("orders_status_created_idx").on(table.status, table.createdAt),
+  // ✅ Композитные для популярных запросов
+  statusCreatedIdx: index("orders_status_created_idx").on(table.status, table.createdAt.desc()),
+  createdStatusIdx: index("orders_created_status_idx").on(table.createdAt.desc(), table.status),
+  
+  // ✅ Для точного поиска (без ILIKE)
+  customerEmailIdx: index("orders_customer_email_idx").on(table.customerEmail),
+  customerPhoneIdx: index("orders_customer_phone_idx").on(table.customerPhone),
+  
 }));
 export const orderItems = pgTable("order_items", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -334,18 +342,23 @@ export const contactUsTelephones = pgTable("contact_us_telephones", {
 }, (table) => ({
     contactUsIdIdx: index("contact_us_telephones_contact_us_id_idx").on(table.contactUsId),
 }));
-export const telegramSubscribers = pgTable("telegram_subscribers", {
+export const telegramChatIds = pgTable("telegram_chat_ids", {
     id: uuid("id").primaryKey().defaultRandom(),
     chatId: varchar("chat_id", { length: 255 }).notNull().unique(),
-    username: varchar("username", { length: 255 }),
-    firstName: varchar("first_name", { length: 255 }),
-    isActive: boolean("is_active").default(true),
-    lastActive: timestamp("last_active").defaultNow(),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
 }, (table) => ({
-    chatIdIdx: index("telegram_subscribers_chat_id_idx").on(table.chatId),
+    chatIdIdx: index("telegram_chat_ids_chat_id_idx").on(table.chatId),
 }));
+export const adminEmails = pgTable("admin_emails", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    email: varchar("email", { length: 255 }).notNull().unique(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => ({
+    emailIdx: index("admin_emails_email_idx").on(table.email),
+}));
+
 export const schema = {
                 
                     products, 
@@ -373,7 +386,8 @@ export const schema = {
                     twoFactor,
                     news,
                     newsImages,
-                    telegramSubscribers               
+                    telegramChatIds,
+                    adminEmails,
                 }
 
 export type Product = typeof products.$inferSelect 
@@ -388,7 +402,6 @@ export type Filter = typeof filters.$inferSelect
 export type FilterCategory = typeof filterCategories.$inferSelect
 export type About = typeof about.$inferSelect
 export type News = typeof news.$inferSelect
-export type TelegramSubscriber = typeof telegramSubscribers.$inferSelect
 export type NewsImage = typeof newsImages.$inferSelect
 export type Review = typeof reviews.$inferSelect 
 export type ContactUs = typeof contactUs.$inferSelect
@@ -399,6 +412,8 @@ export type ClientInfo = typeof clientInfo.$inferSelect
 export type ProductImage = typeof productImages.$inferSelect
 export type CategoryImage = typeof categoryImages.$inferSelect
 export type ManufacturerImage = typeof manufacturerImages.$inferSelect
+export type TelegramChatId = typeof telegramChatIds.$inferSelect
+export type AdminEmail = typeof adminEmails.$inferSelect
 
 export const ordersRelations = relations(orders, ({ one, many }) => ({
   user: one(user, {

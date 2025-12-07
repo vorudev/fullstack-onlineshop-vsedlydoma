@@ -4,13 +4,14 @@ import LogoutButton from "@/components/forms/auth/logout-button"
 import {Profile, Security, Orders} from "./tabs/cases"
 import { useSession } from "@/lib/auth-client"
 import {useState} from "react"
-interface Props {
+ interface Props {
     orders: {
     orderItems: {
         id: string;
         orderId: string | null;
         productId: string | null;
         productSku: string | null;
+
         price: number;
         title: string;
         quantity: number;
@@ -22,10 +23,10 @@ interface Props {
     status: string;
     notes: string | null;
     total: number;
+    sku: string | null;
     customerName: string | null;
     customerEmail: string | null;
     customerPhone: string | null;
-    sku: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;
 }[]
@@ -35,18 +36,49 @@ pagination: {
     total: number;
     totalPages: number;
 }
+session: {
+    session: {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        userId: string;
+        expiresAt: Date;
+        token: string;
+        ipAddress?: string | null | undefined;
+        userAgent?: string | null | undefined;
+        impersonatedBy?: string | null | undefined;
+        activeOrganizationId?: string | null | undefined;
+        activeTeamId?: string | null | undefined;
+    };
+    user: {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        email: string;
+        emailVerified: boolean;
+        name: string;
+        image?: string | null | undefined;
+        banned: boolean | null | undefined;
+        role?: string | null | undefined;
+        banReason?: string | null | undefined;
+        banExpires?: Date | null | undefined;
+        phoneNumber?: string | null | undefined;
+        phoneNumberVerified?: boolean | null |  undefined;
+        twoFactorEnabled: boolean | null | undefined;
+       
+    }
 }
-export default function ProfilePage({ orders, pagination }: Props) { 
-    const [activeTab, setActiveTab] = useState("profile");
-    const { data: session } = useSession();
+ }
+export default function ProfilePage({ orders, pagination, session }: Props) { 
+    const [activeTab, setActiveTab] = useState("profile")
     const ActiveStatusDisplay = () => {
         switch (activeTab) {
             case "profile":
-                return <Profile />;
+                return <Profile  orders={orders} pagination={pagination} session={session} />;
             case "security":
                 return <Security />;
             case "orders":
-                return <Orders orders={orders} pagination={pagination} />;
+                return <Orders orders={orders} pagination={pagination} session={session}/>;
             
           
         }

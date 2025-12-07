@@ -3,7 +3,7 @@ import { Resend } from "resend";
 import { OrderConfirmationEmail } from '@/components/email/order-conformation';
 import OrderNotificationAdmin from '@/components/email/order-notification-admin';
 import type { OrderItem, Order} from '@/db/schema';
-
+import { getAdminEmails } from "./admin";
 const resend = new Resend(process.env.RESEND_API_KEY as string);
 interface SendOrderEmailsParams {
   order: Order;
@@ -13,6 +13,8 @@ interface SendOrderEmailsParams {
 
 export async function sendOrderEmails(params: SendOrderEmailsParams) {
   const fromEmail = 'onboarding@resend.dev'
+const adminEmailsRaw = await getAdminEmails();
+const adminEmails = adminEmailsRaw.map((email) => email.email);
 
   const results = {
     customerEmail: { success: false, id: null as string | null, error: null as string | null },
@@ -41,9 +43,15 @@ if (!params.order.customerEmail || !params.order.customerName || !params.order.c
       results.customerEmail.success = true;
       results.customerEmail.id = customerEmailResult.data.id;
     }
+    
+  } catch (error) {
+    console.error('Failed to send admin email:', error);
+    results.adminEmail.error = error instanceof Error ? error.message : 'Unknown error';
+  }
+  try {
     const adminEmailResult = await resend.emails.send({
       from: fromEmail,
-      to: 'fleptagyt@gmail.com',
+      to: adminEmails,
       subject: `Новый заказ ${params.order?.sku}`,
       react: OrderNotificationAdmin({
         sku: params.order?.sku,

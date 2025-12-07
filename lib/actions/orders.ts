@@ -10,7 +10,7 @@ import { products, Product } from "@/db/schema";
 import { orderItems, OrderItem } from "@/db/schema";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
-import { and, gte, ilike, inArray, lte, or, relations, sql } from 'drizzle-orm';
+import { and, asc, gte, ilike, inArray, isNotNull, isNull, lte, or, relations, sql } from 'drizzle-orm';
 import { desc } from "drizzle-orm";
 import { rateLimitbyIp } from "./limiter";
 import { eq, ne } from "drizzle-orm";
@@ -28,6 +28,7 @@ export async function getOrderById(id: string) {
           id: true,
           name: true,
           email: true,
+          phoneNumber: true
         }
       },
       orderItems: {
@@ -119,11 +120,7 @@ export async function getOrders() {
         throw new Error("Failed to get orders");
     }
 }
-interface GetComplitedOrdersParams {
-  page?: number;
-  pageSize?: number;
-  search?: string;
-}
+
 export const getAllComplitedOrders = async ({
     page = 1,
     pageSize = 20,
@@ -193,7 +190,9 @@ export const getAllComplitedOrders = async ({
 export const getComplitedOrders = async ({
     page = 1,
     pageSize = 20,
-    search = ''
+    search = '', 
+    sortBy = 'createdAt',
+  sortOrder = 'desc',
   }: GetComplitedOrdersParams = {}) => {
  
      try {
@@ -294,19 +293,67 @@ export const getComplitedOrders = async ({
         throw new Error("Failed to get orders");
     }
 }
-export const getAllCancelledOrders = async ({
+interface GetComplitedOrdersParams {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  status?: string;
+   sortBy?: 'createdAt' | 'total' | 'guestOrders' | 'registeredOrders'; // 👈 Поле для сортировки
+  sortOrder?: 'asc' | 'desc'; // 👈 Направление сортировки
+ userType?: 'all' | 'guests' | 'registered'; // 👈 Изменено на userType
+ timeRange?: 'all' | 'today' | 'week' | 'month' | 'year';
+
+  
+}
+export const getAllOrders = async ({
     page = 1,
     pageSize = 20,
-    search = ''
+    search = '',
+    status = '',
+    sortBy = 'createdAt',
+    sortOrder = 'desc',
+    userType = 'all', // 👈 По умолчанию показываем всех
+    timeRange = 'all'
+
+
+    
+    
   }: GetComplitedOrdersParams = {}) => {
  
      try {
       const offset = (page - 1) * pageSize;
       const conditions = [];
+
+      conditions.push(eq(orders.status, status));
+
+        if (userType === 'guests') {
+      conditions.push(isNull(orders.userId)); // 👈 Только гостевые
+    } else if (userType === 'registered') {
+      conditions.push(isNotNull(orders.userId)); // 👈 Только зарегистрированные
+    }
+     if (timeRange !== 'all') {
+      const now = new Date();
+      let startDate: Date;
       
-      // Базовое условие - статус completed
-      conditions.push(eq(orders.status, 'cancelled'));
+      switch (timeRange) {
+        case 'today':
+          startDate = new Date(now.setHours(0, 0, 0, 0)); // Начало сегодняшнего дня
+          break;
+        case 'week':
+          startDate = new Date(now.setDate(now.getDate() - 7)); // 7 дней назад
+          break;
+        case 'month':
+          startDate = new Date(now.setMonth(now.getMonth() - 1)); // 1 месяц назад
+          break;
+        case 'year':
+          startDate = new Date(now.setFullYear(now.getFullYear() - 1)); // 1 год назад
+          break;
+        default:
+          startDate = new Date(0); // Все время
+      }
       
+      conditions.push(gte(orders.createdAt, startDate)); // createdAt >= startDate
+    }
       // Добавляем условия поиска если есть
       if (search) {
   const searchConditions = [
@@ -327,32 +374,103 @@ export const getAllCancelledOrders = async ({
   conditions.push(or(...searchConditions));
 }
       
-      // Получаем общее количество для пагинации
-      const [totalResult] = await db
-        .select({ count: sql<number>`count(*)` })
-        .from(orders)
-        .where(and(...conditions));
-      
-      const total = Number(totalResult.count);
-      
+  // Простой switch для выбора поля
+  let orderByColumn;
+  
+  switch (sortBy) {
+    case 'total':
+      orderByColumn = orders.total;
+      break;
+       case 'guestOrders':
+    // Сортировка: сначала гостевые (userId = null), потом зарегистрированные
+    orderByColumn = sql`${orders.userId} IS NULL`;
+    break;
+  case 'registeredOrders':
+    // Сортировка: сначала зарегистрированные (userId != null), потом гостевые
+    orderByColumn = sql`${orders.userId} IS NOT NULL`;
+    break;
+    case 'createdAt':
+    default:
+      orderByColumn = orders.createdAt;
+      break;
+  }
+  const orderByClause = sortOrder === 'asc' 
+    ? asc(orderByColumn) 
+    : desc(orderByColumn);
       // Получаем заказы с пагинацией
       const allOrders = await db
         .select()
         .from(orders)
         .where(and(...conditions))
+        .orderBy(orderByClause)
         .limit(pageSize)
         .offset(offset)
-        .orderBy(desc(orders.createdAt)); // Сортировка по дате создания
-       
+       const ordersWithDetails = await Promise.all(
+            allOrders.map(async (order) => {
+                const items = await db
+                    .select()
+                    .from(orderItems)
+                    .where(eq(orderItems.orderId, order.id));
+
+                const orderUser = order.userId 
+                    ? await db
+                        .select()
+                        .from(user)
+                        .where(eq(user.id, order.userId))
+                        .limit(1)
+                    : null;
+
+                const itemsWithProducts = await Promise.all(
+                    items.map(async (item) => {
+                        const product = item.productId
+                            ? await db
+                                .select()
+                                .from(products)
+                                .where(eq(products.id, item.productId))
+                                .limit(1)
+                            : null;
+
+                        return {
+                            ...item,
+                            product: product?.[0] || null
+                        };
+                    })
+                );
+
+                return {
+                    ...order,
+                    user: orderUser?.[0] || null,
+                    orderItems: itemsWithProducts
+                };
+            })
+        );
+   
+const [statsResult] = await db
+  .select({ 
+    count: sql<number>`count(*)`,
+    totalRevenue: sql<number>`coalesce(sum(${orders.total}), 0)`,
+    totalUsers: sql<number>`count(distinct ${orders.userId})`,
+    guestOrders: sql<number>`count(*) filter (where ${orders.userId} is null)`, // 👈 Гостевые заказы
+  })
+  .from(orders)
+  .where(and(...conditions));
+
+const totalOrders = Number(statsResult?.count);
+const totalRevenue = Number(statsResult?.totalRevenue);
+const totalUsers = Number(statsResult?.totalUsers);
+const guestOrders = Number(statsResult?.guestOrders);
    
       
       return {
-        orders: allOrders,
+        ordersWithDetails,
         pagination: {
           page,
           pageSize,
-          total,
-          totalPages: Math.ceil(total / pageSize)
+          totalOrders,
+          totalUsers,
+          totalRevenue,
+          guestOrders,
+          totalPages: Math.ceil(totalOrders / pageSize)
         }
       };
     } catch (error) {
@@ -398,15 +516,20 @@ export async function createOrder(orderInput: CreateOrderData, orderItemsInput: 
         }));
         
         const orderItem = await db.insert(orderItems).values(orderItemsWithOrderId).returning();
-         await sendOrderEmails({ order: order[0], items: orderItem });
-      await sendTelegramNotification(`
-🎉 <b>НОВЫЙ ЗАКАЗ!</b>
+        try{ await sendOrderEmails({ order: order[0], items: orderItem }); 
+      } catch(mailError) { 
+ console.error("failed to send notitfications", mailError);
+      }
+
+          try {
+    await sendTelegramNotification(`
+ 🎉 <b>НОВЫЙ ЗАКАЗ!</b>
 
 📋 <b>Информация о заказе:</b>
-🆔 ID: <code>${order[0].sku}</code>
+🆔 Номер заказа: <code>${order[0].sku}</code>
 💰 Сумма: <b>${order[0].total} ₽</b>
 
-👤 <b>Клиент:</b>
+ 👤 <b>Клиент:</b>
 ━━━━━━━━━━━━━━━━━━
 - Имя: ${order[0].customerName}
 - Email: ${order[0].customerEmail}
@@ -419,14 +542,21 @@ ${orderItem.map(item => `• ${item.title} x ${item.quantity} — ${item.price} 
 ${order[0].notes || 'Нет комментария'}
 
 🕐 <b>Дата:</b> ${order[0].createdAt?.toLocaleDateString('ru-RU', {
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric',
-  hour: '2-digit',
-  minute: '2-digit'
-})}
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+
+ })}
 ━━━━━━━━━━━━━━━━━━
 `.trim());
+  } catch (telegramError) {
+    console.error("Failed to send Telegram notification:", telegramError);
+    // Продолжаем работу, заказ уже создан
+  }
+
+   
         return { order, orderItem, orderId: order[0].id || '' };
     } catch (error) {
         console.error("Error creating order:", error);
@@ -556,7 +686,8 @@ export async function getOrderByUserId(userId: string) {
         const userOrders = await db
             .select()
             .from(orders)
-            .where(eq(orders.userId, userId));
+            .where(eq(orders.userId, userId))
+            .orderBy(desc(orders.createdAt));
 
             const ordersWithItems = await Promise.all(
                 userOrders.map(async (order) => {
@@ -564,10 +695,15 @@ export async function getOrderByUserId(userId: string) {
                         .select()
                         .from(orderItems)
                         .where(eq(orderItems.orderId, order.id));
+                    const userInfo = await db 
+                        .select()
+                        .from(user)
+                        .where(eq(user.id, userId));
                     
                     return {
                         ...order,
-                        orderItems: items
+                        orderItems: items,
+                        userInfo: userInfo[0]
                     };
                 })
             )
