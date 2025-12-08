@@ -3,6 +3,7 @@ import { AppSidebar } from "@/components/app-sidebar"
 import {headers} from 'next/headers'
 import {auth } from '@/lib/auth'
 import { NextResponse } from "next/server"
+import { redirect } from "next/navigation"
 
 export default async function Layout({ children }: { children: React.ReactNode }) {
 const session = await auth.api.getSession({
@@ -10,7 +11,8 @@ const session = await auth.api.getSession({
     })
     if (!session || session.user.role !== 'admin') {
       
-      return NextResponse.redirect(new URL('/'));
+      redirect('/')
+     
     }
 
   return (
