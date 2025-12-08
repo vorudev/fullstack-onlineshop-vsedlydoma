@@ -68,7 +68,6 @@ interface ProductUnited {
     reviewCount: number;
  attributes: {
             id: string | null;
-            categoryId: string | null;
             name: string | null;
             value: string | null;
             order: number | null;

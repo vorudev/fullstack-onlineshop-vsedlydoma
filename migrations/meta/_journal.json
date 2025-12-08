@@ -309,6 +309,27 @@
       "when": 1765076853654,
       "tag": "0043_previous_magik",
       "breakpoints": true
+    },
+    {
+      "idx": 44,
+      "version": "7",
+      "when": 1765106486058,
+      "tag": "0044_absurd_gauntlet",
+      "breakpoints": true
+    },
+    {
+      "idx": 45,
+      "version": "7",
+      "when": 1765106982884,
+      "tag": "0045_wakeful_boomer",
+      "breakpoints": true
+    },
+    {
+      "idx": 46,
+      "version": "7",
+      "when": 1765205370825,
+      "tag": "0046_real_otto_octavius",
+      "breakpoints": true
     }
   ]
 }

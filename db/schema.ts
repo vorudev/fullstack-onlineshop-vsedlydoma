@@ -203,9 +203,6 @@ export const productAttributes = pgTable("product_attributes", {
   productId: uuid("product_id")
     .references(() => products.id, { onDelete: "cascade" })
     .notNull(),
-  categoryId: uuid("category_id")
-    .references(() => attributeCategories.id, { onDelete: "cascade" })
-    .notNull(),
   name: varchar("name", { length: 255 }).notNull(), // например, "Процессор", "RAM"
   value: text("value").notNull(), // например, "Intel i7", "16 GB"
   order: integer("order").default(0), // для сортировки
@@ -215,15 +212,7 @@ export const productAttributes = pgTable("product_attributes", {
   slugIdx: index("product_attributes_slug_idx").on(table.slug),
   nameIdx: index("product_attributes_name_idx").on(table.name),
 }));
-export const attributeCategories = pgTable("attribute_categories", {
-    id: uuid("id").primaryKey().defaultRandom(),
-    name: varchar("name", { length: 100 }).notNull(),
-    slug: varchar("slug", { length: 100 }).notNull().unique(), 
-    displayOrder: integer("display_order").default(0)
-}, (table) => ({
-  slugIdx: index("attribute_categories_slug_idx").on(table.slug),
-  nameIdx: index("attribute_categories_name_idx").on(table.name),
-}));
+
 
 export const orders = pgTable("orders", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -370,7 +359,6 @@ export const schema = {
                     orders,
                     orderItems,
                     productAttributes,
-                    attributeCategories,
                     manufacturers,
                     filters,
                     filterCategories, 
@@ -396,7 +384,6 @@ export type User = typeof user.$inferSelect
 export type Order = typeof orders.$inferSelect
 export type OrderItem = typeof orderItems.$inferSelect
 export type ProductAttribute = typeof productAttributes.$inferSelect
-export type AttributeCategory = typeof attributeCategories.$inferSelect
 export type Manufacturer = typeof manufacturers.$inferSelect
 export type Filter = typeof filters.$inferSelect
 export type FilterCategory = typeof filterCategories.$inferSelect
@@ -438,7 +425,6 @@ export const productRelations = relations(products, ({ one, many }) => ({
   reviews: many(reviews),
   images: many(productImages),
   attributes: many(productAttributes),
-  attributeCategories: many(attributeCategories),
 }));
 
 export const productAttributesRelations = relations(productAttributes, ({ one }) => ({
@@ -446,12 +432,5 @@ export const productAttributesRelations = relations(productAttributes, ({ one })
     fields: [productAttributes.productId],
     references: [products.id],
   }),
-  attributeCategory: one(attributeCategories, {
-    fields: [productAttributes.categoryId],
-    references: [attributeCategories.id],
-  }),
 }));
 
-export const attributeCategoriesRelations = relations(attributeCategories, ({ many }) => ({
-  productAttributes: many(productAttributes),
-}));

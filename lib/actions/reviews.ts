@@ -111,9 +111,9 @@ export async function createReview(review: Omit<typeof reviews.$inferInsert, 'id
       comment: sanitizeString(review.comment),
       author_name: sanitizeString(review.author_name),
     };
-    await validateReviewEntities(sanitizedReview.user_id, sanitizedReview.product_id);
-   await checkDuplicateReview(sanitizedReview.user_id, sanitizedReview.product_id);
-    await rateLimitbyKey(user.user.id, 5, 15 * 60 * 1000);
+ //  await validateReviewEntities(sanitizedReview.user_id, sanitizedReview.product_id);
+  //  await checkDuplicateReview(sanitizedReview.user_id, sanitizedReview.product_id);
+  //   await rateLimitbyKey(user.user.id, 5, 15 * 60 * 1000);
   
     const newReview = await db.insert(reviews).values(sanitizedReview).returning();
     return newReview[0]; // Возвращаем созданный отзыв

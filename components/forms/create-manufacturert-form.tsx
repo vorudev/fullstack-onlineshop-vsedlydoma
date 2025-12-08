@@ -4,6 +4,7 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import slugify from "slugify";
 import {
     Form,
     FormControl,
@@ -46,9 +47,9 @@ export function ManufacturerForm({ manufacturer }: ManufacturerFormProps) {
         setLoading(true);
         try {
             if (manufacturer) {
-                await updateManufacturer({ ...values, id: manufacturer.id });
+                await updateManufacturer({ ...values, id: manufacturer.id, slug: slugify(values.name, { lower: true, strict: true, locale: 'ru' }) });
             } else {
-                await createManufacturer(values);
+                await createManufacturer({ ...values, slug: slugify(values.name, { lower: true, strict: true, locale: 'ru' }) });
             }
             form.reset();
             setLoading(false);
@@ -56,6 +57,7 @@ export function ManufacturerForm({ manufacturer }: ManufacturerFormProps) {
         } catch (error) {
             console.error("Error submitting form:", error);
             setLoading(false);
+            router.refresh();
         }
     }
 
@@ -88,19 +90,7 @@ export function ManufacturerForm({ manufacturer }: ManufacturerFormProps) {
                         </FormItem>
                     )}
                 />
-                <FormField
-                    control={form.control}
-                    name="slug"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>slug</FormLabel>
-                            <FormControl>
-                                <Input placeholder="slug" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+             
                 <Button type="submit" disabled={loading}>
                     {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     {manufacturer ? "Обновить производителя" : "Создать производителя"}

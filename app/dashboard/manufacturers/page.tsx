@@ -9,7 +9,6 @@ import ManufacturersTable from "@/components/manufacturers-table";
 import Pagination  from "@/components/pagination";
 
 import { getAllManufacturers } from "@/lib/actions/manufacturer";
-import { getAttributeCategories } from "@/lib/actions/attributes-categories";
 import SearchBar from "@/components/searchbar";
 import { get } from "http";
 interface PageProps {

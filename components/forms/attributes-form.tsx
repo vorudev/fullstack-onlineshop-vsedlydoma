@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button"
 import slugify from "slugify";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import type { AttributeCategory } from "@/db/schema";
 import {
   Form,
   FormControl,
@@ -29,18 +28,15 @@ import { toast } from "sonner";
 interface AttributeFormProps {
     attribute?: ProductAttribute;
     product: Product;
-    categories: {id: string, name: string}[]
-    category?: AttributeCategory;
 }
 const formSchema = z.object({
     name: z.string().min(1, "Name is required"),
     value: z.string().min(1, "Value is required"),
     order: z.number().nullable(),
     productId: z.string().uuid("Product ID is required"),
-   categoryId: z.string().uuid("Attribute Category ID is required"),
 })
 
-export default function AttributeForm({ attribute, product, categories, category }: AttributeFormProps) {
+export default function AttributeForm({ attribute, product }: AttributeFormProps) {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     
@@ -51,16 +47,9 @@ export default function AttributeForm({ attribute, product, categories, category
             value: attribute?.value || "",
             order: attribute?.order || 0,
             productId: product.id || "",
-            categoryId: attribute?.categoryId || category?.id || "",
         },
     })
 
-    // Обновляем categoryId когда меняется category
-    useEffect(() => {
-        if (category?.id && !attribute) {
-            form.setValue('categoryId', category.id);
-        }
-    }, [category, form, attribute]);
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setIsLoading(true);
@@ -95,14 +84,14 @@ export default function AttributeForm({ attribute, product, categories, category
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                <FormField
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 ">
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> <FormField
                     control={form.control}
                     name="name"
                     render={({ field }) => (
                         <FormItem>
                           <FormLabel>Название характеристики    </FormLabel>
-                            <FormDescription>Это название характеристики, например "цвет".</FormDescription>
+                            
                             <FormControl>
                                 <Input placeholder="Например, цвет" {...field} />
                             </FormControl>
@@ -116,7 +105,7 @@ export default function AttributeForm({ attribute, product, categories, category
                     render={({ field }) => (
                         <FormItem>
                           <FormLabel>Значение</FormLabel>
-                            <FormDescription>Это значения для характеристики, например "красный".</FormDescription>
+                           
                             <FormControl>
                                 <Input placeholder="Например, красный" {...field} />
                             </FormControl>
@@ -124,56 +113,8 @@ export default function AttributeForm({ attribute, product, categories, category
                         </FormItem>
                     )}
                 />
-                
-                <FormField
-    control={form.control}
-    name="order"
-    render={({ field }) => (
-        <FormItem>
-            <FormLabel>Порядок отображения</FormLabel>
-            <FormControl>
-                <Input 
-                    placeholder="Order" 
-                    type="number" 
-                    {...field}
-                    value={field.value ?? ''}
-                    onChange={(e) => {
-                        const value = e.target.value;
-                        field.onChange(value === '' ? null : Number(value));
-                    }}
-                />
-                
-            </FormControl>
-            <FormMessage />
-        </FormItem>
-    )}
-/>
-<FormField
-    control={form.control}
-    name="categoryId"
-    render={({ field }) => (
-        <FormItem>
-            <FormLabel>Категория</FormLabel>
-            <Select onValueChange={field.onChange} 
-                defaultValue={field.value}
-                value={field.value} >
-                <FormControl>
-                    <SelectTrigger>
-                        <SelectValue placeholder="Выберите категорию" />
-                    </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                    {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.id}>
-                            {category.name}
-                        </SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
-            <FormMessage />
-        </FormItem>
-    )}
-/>
+                </div>
+
 
                 <Button disabled={isLoading} type="submit">
                     {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}

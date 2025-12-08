@@ -681,7 +681,7 @@ export function CategoriesTable({
                                 </DialogContent>
                              </Dialog>
                          <DeleteCategoryButton categoryId={category.id}></DeleteCategoryButton>
-                         <Link href={`/dashboard/categories/${category.slug}`}>Открыть </Link>
+                         <Link href={`/dashboard/categories/${category.id}`}>Открыть </Link>
                       </div>
                     </TableCell>
                   </TableRow>

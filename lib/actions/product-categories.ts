@@ -332,7 +332,14 @@ export async function getCategoryBySlug(slug: string) {
     .limit(1);
   return category;
 }
-
+export async function getCategoryById(id: string) { 
+  const [category] = await db
+  .select()
+  .from(categories)
+  .where(eq(categories.id, id))
+  .limit(1);
+return category;
+}
 export async function getCategoryChain(
   categoryId: string
 ): Promise<CategoryBreadcrumb[]> {

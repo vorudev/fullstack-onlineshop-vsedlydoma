@@ -13,7 +13,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useRouter } from "next/navigation";
 import { Checkbox } from "../ui/checkbox";
 import { useState } from "react";
-import type { AttributeCategory } from "@/db/schema";
 import {
   Form,
   FormControl,
@@ -153,17 +152,17 @@ export function CreateImagesToProductForm({ product, images }: CreateImagesToPro
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="upload" className="flex items-center gap-2">
                     <Upload className="h-4 w-4" />
-                    Upload File
+                    Загрузить 
                   </TabsTrigger>
                   <TabsTrigger value="url" className="flex items-center gap-2">
                     <Link className="h-4 w-4" />
-                    Image URL
+                    Ссылкой
                   </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="upload" className="space-y-4">
                   <FormItem>
-                    <FormLabel>Upload Image</FormLabel>
+                    <FormLabel>Загрузить фото</FormLabel>
                     <FormControl>
                       <Input
                         type="file"
@@ -173,14 +172,14 @@ export function CreateImagesToProductForm({ product, images }: CreateImagesToPro
                       />
                     </FormControl>
                     <FormDescription>
-                      Upload an image from your device (max 5MB)
+                      Загрузите фото с вашего устройства (максимум 5MB)
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
 
                   {previewUrl && (
                     <div className="mt-4">
-                      <p className="text-sm font-medium mb-2">Preview:</p>
+                        <p className="text-sm font-medium mb-2">Предпросмотр:</p>
                       <img
                         src={previewUrl}
                         alt="Preview"
@@ -196,7 +195,7 @@ export function CreateImagesToProductForm({ product, images }: CreateImagesToPro
                     name="imageUrl"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Image URL</FormLabel>
+                        <FormLabel>Ссылка на фото</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="https://example.com/image.jpg"
@@ -205,7 +204,7 @@ export function CreateImagesToProductForm({ product, images }: CreateImagesToPro
                           />
                         </FormControl>
                         <FormDescription>
-                          Enter a direct link to an image
+                          Введите прямую ссылку на фото
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -214,7 +213,7 @@ export function CreateImagesToProductForm({ product, images }: CreateImagesToPro
 
                   {form.watch("imageUrl") && (
                     <div className="mt-4">
-                      <p className="text-sm font-medium mb-2">Preview:</p>
+                      <p className="text-sm font-medium mb-2">Предпросмотр:</p>
                       <img
                         src={form.watch("imageUrl")}
                         alt="Preview"
@@ -236,7 +235,7 @@ export function CreateImagesToProductForm({ product, images }: CreateImagesToPro
           name="order"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Order</FormLabel>
+              <FormLabel>Порядок</FormLabel>
               <FormControl>
                 <Input
                   type="number"
@@ -248,7 +247,7 @@ export function CreateImagesToProductForm({ product, images }: CreateImagesToPro
                 />
               </FormControl>
               <FormDescription>
-                Display order (lower numbers appear first)
+                Порядок отображения (меньшие числа отображаются первыми)
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -268,9 +267,9 @@ export function CreateImagesToProductForm({ product, images }: CreateImagesToPro
                 />
               </FormControl>
               <div className="space-y-1 leading-none">
-                <FormLabel>Featured Image</FormLabel>
+                <FormLabel>Главное фото</FormLabel>
                 <FormDescription>
-                  Set this as the main product image
+                  Установить это как главное фото продукта
                 </FormDescription>
               </div>
             </FormItem>
@@ -278,7 +277,7 @@ export function CreateImagesToProductForm({ product, images }: CreateImagesToPro
         />
 
         <Button type="submit" disabled={isLoading || (mode === "upload" && !selectedFile)}>
-          {isLoading ? "Adding..." : "Add Image"}
+          {isLoading ? "Добавление..." : "Добавить фото"}
         </Button>
       </form>
     </Form>

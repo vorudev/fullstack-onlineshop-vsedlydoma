@@ -203,12 +203,12 @@ export function ProductForm({product, categories: initialCategories, manufacture
           />
 
           {/* Price */}
-          <FormField
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-6"> <FormField
   control={form.control}
   name="price"
   render={({ field }) => (
     <FormItem>
-      <FormLabel>Цена</FormLabel>
+      <FormLabel>Цена (руб)</FormLabel>
       <FormControl>
         <Input
           type="number"
@@ -232,7 +232,7 @@ export function ProductForm({product, categories: initialCategories, manufacture
             name="inStock"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel>В наличии</FormLabel>
+                <FormLabel>Статус наличия</FormLabel>
                 <Popover open={inStockOpen} onOpenChange={setInStockOpen}> 
                   <PopoverTrigger asChild>
                     <FormControl> 
@@ -286,6 +286,7 @@ export function ProductForm({product, categories: initialCategories, manufacture
               </FormItem>
             )}
           />
+      
           <FormField
             control={form.control}
             name="categoryId"
@@ -412,6 +413,7 @@ export function ProductForm({product, categories: initialCategories, manufacture
               </FormItem>
             )}
           />
+              </div>
 
           <Button type="submit" disabled={isLoading} className="w-full">
             {isLoading ? "Сохранение..." : product ? "Обновить" : "Создать"}

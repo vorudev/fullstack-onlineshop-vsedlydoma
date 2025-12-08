@@ -2,7 +2,7 @@
 import { z } from 'zod';
 
 import { db } from "@/db/drizzle";
-import { Product, products, productAttributes, AttributeCategory, attributeCategories, orderItems, orders, categories, productImages, reviews, Manufacturer, manufacturers, manufacturerImages } from "@/db/schema";
+import { Product, products, productAttributes, orderItems, orders, categories, productImages, reviews, Manufacturer, manufacturers, manufacturerImages } from "@/db/schema";
 import { desc, eq, gte, inArray, lte, notInArray, asc  } from "drizzle-orm";
 import { unstable_cache } from 'next/cache';
 import { NextResponse } from "next/server";
@@ -25,6 +25,91 @@ export async function getProducts() {
 
 interface ProductPageParams { 
   limit?: number;
+}
+export async function getProductsWithDetailsAdmin(id: string, limit: number) {
+  try {
+    // 1. Получаем основную информацию о продукте
+    const [product] = await db
+      .select()
+      .from(products)
+      .leftJoin(manufacturers, eq(products.manufacturerId, manufacturers.id))
+      .where(eq(products.id, id));
+
+    if (!product) {
+      return null;
+    }
+
+    // 2. Параллельно выполняем все остальные запросы
+    const [productImagesData, reviewsData, attributesData, manufacturerImagesData, breadcrumbsData] = 
+      await Promise.all([
+        // Изображения продукта
+        db
+          .select()
+          .from(productImages)
+          .where(eq(productImages.productId, product.products.id)),
+        
+        // Отзывы
+        db
+          .select()
+          .from(reviews)
+          .where(and(eq(reviews.product_id, product.products.id), eq(reviews.status, 'approved')))
+          .limit(limit),
+
+        
+        // Атрибуты
+        db
+          .select()
+          .from(productAttributes)
+          .where(eq(productAttributes.productId, product.products.id))
+          .orderBy(asc(productAttributes.order)),
+
+         
+        
+        // Изображения производителя
+        product.manufacturers?.id
+          ? db
+              .select()
+              .from(manufacturerImages)
+              .where(eq(manufacturerImages.manufacturerId, product.manufacturers.id))
+          : Promise.resolve([]),
+          // breadcrumbs
+        product.products.categoryId ? db.select().from(categories).where(eq(categories.id, product.products.categoryId)) : Promise.resolve([]),
+    
+      ]);
+
+    // Вычисляем средний рейтинг
+    const averageRating = reviewsData.length > 0
+      ? reviewsData.reduce((acc, r) => acc + r.rating!, 0) / reviewsData.length
+      : 0;
+
+    // Формируем результат
+    return {
+      id: product.products.id,
+      title: product.products.title,
+      description: product.products.description,
+      price: product.products.price,
+      sku: product.products.sku,
+      slug: product.products.slug,
+      inStock: product.products.inStock,
+      categoryId: product.products.categoryId,
+      manufacturerId: product.products.manufacturerId,
+      createdAt: product.products.createdAt,
+      updatedAt: product.products.updatedAt,
+      images: productImagesData,
+      reviews: reviewsData,
+      attributes: attributesData,
+      manufacturer: product.manufacturers ? {
+        ...product.manufacturers,
+        images: manufacturerImagesData,
+      } : null,
+      averageRating,
+      reviewCount: reviewsData.length,
+      breadcrumbs: breadcrumbsData[0] ? breadcrumbsData[0] : null,
+    };
+  } catch (error) {
+    console.error("Error fetching product details:", error);
+    throw new Error("Failed to fetch product details");
+  }
 }
 export async function getProductsWithDetailsLeftJoin(slug: string, limit: number) {
   try {
@@ -434,11 +519,7 @@ export const getAllProducts = async ({
     throw new Error("Failed to fetch products");
   }
 };
-// Функция для инвалидации кеша при изменении продуктов
-export async function revalidateProducts() {
-  const { revalidateTag } = await import('next/cache');
-  revalidateTag('products');
-}
+
 export async function createProduct(product: Omit<Product, "id" | "createdAt" | "updatedAt" | "sku">) {
   try {
     const session = await auth.api.getSession({

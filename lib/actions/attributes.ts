@@ -3,7 +3,6 @@
 import { db } from "@/db/drizzle";
 import { productAttributes, ProductAttribute } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { attributeCategories } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
@@ -31,28 +30,13 @@ export async function getProductAttributesWithCategories(productId: string) {
             .select({
                 id: productAttributes.id,
                 productId: productAttributes.productId,
-                categoryId: productAttributes.categoryId,
                 name: productAttributes.name,
                 value: productAttributes.value,
                 order: productAttributes.order,
-                // Вложенный объект с данными категории
-                category: {
-                    id: attributeCategories.id,
-                    name: attributeCategories.name,
-                    slug: attributeCategories.slug,
-                    displayOrder: attributeCategories.displayOrder,
-                }
             })
             .from(productAttributes)
-            .leftJoin(
-                attributeCategories,
-                eq(productAttributes.categoryId, attributeCategories.id)
-            )
             .where(eq(productAttributes.productId, productId))
-            .orderBy(
-                attributeCategories.displayOrder,
-                productAttributes.order
-            );
+            .orderBy(productAttributes.order);
         
         return attributes;
     } catch (error) {

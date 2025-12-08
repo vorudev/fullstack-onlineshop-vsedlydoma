@@ -46,17 +46,17 @@ export default function DeleteAttributeButton({ attributeId }: DeleteAttributeBu
 
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Are you sure?</DialogTitle>
+                    <DialogTitle>Удалить характеристику?</DialogTitle>
                     <DialogDescription>
-                        This action cannot be undone. This will permanently delete the attribute from the database.
+                        Это действие не может быть отменено. Это будет навсегда удалить характеристику из базы данных.
                     </DialogDescription>
                 </DialogHeader>
                 <div className="flex justify-end">
                     <Button variant="ghost" onClick={() => setIsOpen(false)} disabled={isLoading}>
-                        Cancel
+                        Отмена
                     </Button>
-                    <Button onClick={handleDelete} disabled={isLoading}>
-                        {isLoading ? <Loader2 className="animate-spin" /> : "Confirm"}
+                    <Button onClick={handleDelete} variant="destructive" disabled={isLoading}>
+                        {isLoading ? <Loader2 className="animate-spin" /> : "Удалить"}
                     </Button>
                 </div>
             </DialogContent>

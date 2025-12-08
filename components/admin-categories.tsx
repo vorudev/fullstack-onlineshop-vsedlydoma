@@ -670,7 +670,8 @@ const AdminCategoryPage = ({filtersWithCategory, category, categories, images} :
                 Важно!
               </AlertTitle>
               <AlertDescription className="text-white ">
- <span className=""> Название категории фильтра (например, <span className="font-bold">"Цвет"</span>) и название характеристики у товара <strong>должны совпадать дословно</strong>. Система связывает их по точному текстовому совпадению.</span>
+ <span className=""> Название категории фильтра (например, <span className="font-bold">"Цвет"</span>) и название характеристики у товара <strong>должны совпадать дословно</strong>. Система связывает их по точному текстовому совпадению. Если в фильтрах категории есть "Цвет" и значение "Черный", а у товара характеристика
+ "цвет" и "черный" (с маленькой буквы), фильтрация НЕ будет работать! Обязательно проверяйте заглавные буквы!</span>
 </AlertDescription>
 
             </Alert>

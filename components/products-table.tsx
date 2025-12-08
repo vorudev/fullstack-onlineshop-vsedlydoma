@@ -37,7 +37,6 @@ import {
   DialogTrigger,
 } from './ui/dialog';
 import AttributeForm from './forms/attributes-form';
-import { AttributeCategoryForm } from './forms/attributes-categories-form';
 import AttributesTable from './attributes-table';
 import { Pencil } from 'lucide-react';
 import DeleteUserButton from './delete-product-button';
@@ -84,7 +83,7 @@ export default function ProductsTable({ products, categories, manufacturers }: {
               <TableHead>Название</TableHead>
               <TableHead className="w-[120px]">Цена</TableHead>
               <TableHead className="w-[120px]">Статус</TableHead>
-              <TableHead className="w-[80px] text-right">Действия</TableHead>
+              <TableHead className="w-[120px] text-right">Действия</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -115,12 +114,9 @@ export default function ProductsTable({ products, categories, manufacturers }: {
 
                   {/* Title */}
                   <TableCell className="font-medium max-w-[300px]">
-                    <a
-                      href={`/dashboard/products/${product.slug}`}
-                      className="hover:underline line-clamp-2"
-                    >
+                  
                       {product.title}
-                    </a>
+          
                   </TableCell>
 
                   {/* Price */}
@@ -135,8 +131,14 @@ export default function ProductsTable({ products, categories, manufacturers }: {
                   </TableCell>
 
                   {/* Actions */}
-                 <TableCell className="text-right">
+                  
+                 <TableCell >
+                  <div className="flex flex-row gap-2 items-center">
  <DeleteProductButton productId={product.id} />
+ <Link href={`/dashboard/products/${product.id}`} >
+ Открыть
+ </Link>
+ </div>
 </TableCell>
                 </TableRow>
               ))

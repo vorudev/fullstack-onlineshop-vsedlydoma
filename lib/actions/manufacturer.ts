@@ -267,3 +267,12 @@ export async function getManufacturerBySlug(slug: string) {
         throw new Error("Failed to fetch manufacturer by slug");
     }
 }
+export async function getManufacturerById(id: string) {
+    try {
+        const [manufacturer] = await db.select().from(manufacturers).where(eq(manufacturers.id, id));
+        return manufacturer;
+    } catch (error) {
+        console.error("Error fetching manufacturer by id:", error);
+        throw new Error("Failed to fetch manufacturer by id");
+    }
+}

@@ -73,7 +73,7 @@ const router = useRouter();
             <TableCell>
             <div
               className="cursor-pointer p-2  rounded-md hover:bg-gray-900"
-              onClick={() => router.push(`/dashboard/manufacturers/${manufacturer.slug}`)}>
+              onClick={() => router.push(`/dashboard/manufacturers/${manufacturer.id}`)}>
                   открыть
                 </div>           
             </TableCell>           

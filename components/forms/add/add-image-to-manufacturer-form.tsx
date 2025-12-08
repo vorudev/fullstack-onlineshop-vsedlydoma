@@ -14,7 +14,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useRouter } from "next/navigation";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
-import type { AttributeCategory } from "@/db/schema";
 import {
   Form,
   FormControl,
@@ -154,17 +153,17 @@ export function CreateImagesToManufacturerForm({ manufacturer, images }: CreateI
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="upload" className="flex items-center gap-2">
                     <Upload className="h-4 w-4" />
-                    Upload File
+                    Загрузить 
                   </TabsTrigger>
                   <TabsTrigger value="url" className="flex items-center gap-2">
                     <Link className="h-4 w-4" />
-                    Image URL
+                    Ссылкой
                   </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="upload" className="space-y-4">
                   <FormItem>
-                    <FormLabel>Upload Image</FormLabel>
+                    <FormLabel>Загрузить изображение</FormLabel>
                     <FormControl>
                       <Input
                         type="file"
@@ -174,14 +173,14 @@ export function CreateImagesToManufacturerForm({ manufacturer, images }: CreateI
                       />
                     </FormControl>
                     <FormDescription>
-                      Upload an image from your device (max 5MB)
+                      Загрузите изображение с вашего устройства (максимум 5MB)
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
 
                   {previewUrl && (
                     <div className="mt-4">
-                      <p className="text-sm font-medium mb-2">Preview:</p>
+                      <p className="text-sm font-medium mb-2">Предпросмотр:</p>
                       <img
                         src={previewUrl}
                         alt="Preview"
@@ -197,7 +196,7 @@ export function CreateImagesToManufacturerForm({ manufacturer, images }: CreateI
                     name="imageUrl"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Image URL</FormLabel>
+                        <FormLabel>Ссылка на изображение</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="https://example.com/image.jpg"
@@ -206,7 +205,7 @@ export function CreateImagesToManufacturerForm({ manufacturer, images }: CreateI
                           />
                         </FormControl>
                         <FormDescription>
-                          Enter a direct link to an image
+                          Введите прямую ссылку на изображение
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -215,7 +214,7 @@ export function CreateImagesToManufacturerForm({ manufacturer, images }: CreateI
 
                   {form.watch("imageUrl") && (
                     <div className="mt-4">
-                      <p className="text-sm font-medium mb-2">Preview:</p>
+                      <p className="text-sm font-medium mb-2">Предпросмотр:</p>
                       <img
                         src={form.watch("imageUrl")}
                         alt="Preview"
@@ -232,54 +231,11 @@ export function CreateImagesToManufacturerForm({ manufacturer, images }: CreateI
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="order"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Order</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  {...field}
-                  value={field.value === null ? "" : field.value}
-                  onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : null)}
-                  disabled={isLoading}
-                  placeholder="0"
-                />
-              </FormControl>
-              <FormDescription>
-                Display order (lower numbers appear first)
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
 
-        <FormField
-          control={form.control}
-          name="isFeatured"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-              <FormControl>
-                <Checkbox
-                  checked={field.value ?? false}
-                  onCheckedChange={field.onChange}
-                  disabled={isLoading}
-                />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel>Featured Image</FormLabel>
-                <FormDescription>
-                  Set this as the main product image
-                </FormDescription>
-              </div>
-            </FormItem>
-          )}
-        />
+      
 
         <Button type="submit" disabled={isLoading || (mode === "upload" && !selectedFile)}>
-          {isLoading ? "Adding..." : "Add Image"}
+          {isLoading ? "Добавление..." : "Добавить изображение"}
         </Button>
       </form>
     </Form>

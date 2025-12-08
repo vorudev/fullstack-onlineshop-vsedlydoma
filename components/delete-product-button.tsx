@@ -63,3 +63,49 @@ try {
   );
 
    }
+
+   export function DeleteProductButtonPage({ productId }: DeleteProductButtonProps) { 
+    const [isLoading, setIsLoading] = useState(false);
+const [isOpen, setIsOpen] = useState(false);
+const router = useRouter();
+const handleDelete = async () => {
+try { 
+  setIsLoading(true);
+  await deleteProduct(productId);
+  setIsOpen(false);
+  router.refresh();
+} catch (error) { 
+  console.error("Error deleting product:", error);
+} finally {
+  setIsLoading(false);
+ } 
+} 
+
+  return (
+  <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <DialogTrigger asChild>
+      <Button variant="destructive" className="w-full ">
+        <Trash2 className="size-4" /> Удалить товар
+      </Button> 
+    </DialogTrigger>
+
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Удалить товар?</DialogTitle>
+        <DialogDescription>
+          Это действие не может быть отменено. Это будет навсегда удалит товар из базы данных.
+        </DialogDescription>
+
+        <Button
+          disabled={isLoading}
+          variant="destructive"
+          onClick={handleDelete}
+        >
+          {isLoading ? <Loader2 className="size-4 animate-spin" /> : "Удалить"}
+        </Button>
+      </DialogHeader>
+    </DialogContent>
+  </Dialog>
+);
+
+ }

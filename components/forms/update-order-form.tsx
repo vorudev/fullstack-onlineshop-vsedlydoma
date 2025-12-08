@@ -4,7 +4,6 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
-import { Loader2Icon } from "lucide-react";
 import { useState } from "react";
 import { Order, OrderItem } from "@/db/schema";
 import {
@@ -143,7 +142,7 @@ export function UpdateOrderForm({ order }: UpdateOrderFormProps) {
                 />
                 <Button type="submit" disabled={isLoading}>
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Обновить за
+                    Обновить заказ
                 </Button>
             </form>
         </Form>
