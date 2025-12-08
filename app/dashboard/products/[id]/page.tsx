@@ -28,7 +28,7 @@ export default async function ProductPage({ params, searchParams }:{
   // Ожидаем params перед использованием
   const { id } = await params;
   const { reviewsLimit: reviewsLimitParam } = await searchParams;
-  const reviewsLimit = parseInt(reviewsLimitParam || '1');
+  const reviewsLimit = parseInt(reviewsLimitParam || '5');
 const productDetails = await getProductsWithDetailsAdmin(id, reviewsLimit);
   if (!productDetails) {
     return <div>Товар не найден</div>

@@ -29,7 +29,7 @@ export default async function UsersPage({ searchParams }: PageProps) {
 
     return (
         <div className="container mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-4">Users</h1>
+            <h1 className="text-2xl font-bold mb-4">Пользователи</h1>
                 <SearchBar />
            <GetAllUsers  users={users}/>
  <Pagination 

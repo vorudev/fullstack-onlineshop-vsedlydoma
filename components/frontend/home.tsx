@@ -91,7 +91,9 @@ const manufacturersWithImages = manufacturers?.map(manufacturer => {
 </div>
 <div className="flex gap-4 xl:hidden px-4 md:px-0 ">
   {/* Карточка Каталог */}
-  <div className="w-[35%] bg-green-100/50 rounded-xl  py-4 px-3 flex flex-col gap-6 relative overflow-hidden">
+  <Link 
+  href="/categories"
+  className="w-[35%] bg-green-100/50 rounded-xl  py-4 px-3 flex flex-col gap-6 relative overflow-hidden">
     <div className="flex flex-col">
       <h3 className="md:text-lg text-base font-semibold">Каталог</h3>
       <p className="text-gray-600 text-sm">Все товары</p>
@@ -99,7 +101,7 @@ const manufacturersWithImages = manufacturers?.map(manufacturer => {
     <div className="absolute -bottom-3 -right-3 text-green-500/50">
       <TextSelect className="w-20 h-20" />
     </div>
-  </div>
+  </Link>
   
   {/* Карточка Производители */}
   <div className="flex-1 bg-purple-100 rounded-xl  py-4 pl-4 pr-2 flex flex-col gap-6 relative overflow-hidden">
