@@ -11,7 +11,6 @@ import { CategoryFilter } from "@/components/category-filter";
 import { getAllManufacturers } from "@/lib/actions/manufacturer";
 import { getAllProducts } from "@/lib/actions/product";
 import { ManufacturerFilter } from "@/components/manufacturer-filter";
-import { getAttributeCategories } from "@/lib/actions/attributes-categories";
 import SearchBar from "../../../components/searchbar";
 interface PageProps {
   searchParams: Promise<{ // Добавляем Promise
