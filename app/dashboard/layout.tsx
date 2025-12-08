@@ -11,7 +11,6 @@ const session = await auth.api.getSession({
     if (!session || session.user.role !== 'admin') {
       
       return NextResponse.redirect(new URL('/'));
-
     }
 
   return (
