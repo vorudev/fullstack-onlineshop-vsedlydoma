@@ -162,7 +162,7 @@ const signInWithGithub = async () => {
                 </Button>
               </div>
               <div className="text-center text-black text-sm">
-                Уже есть аккаунт?{" "}
+                Нет аккаунта?{" "}
                 <Link href="/signup" className="underline  text-blue-500 underline-offset-4">
                   Зарегистрироваться
                 </Link>
