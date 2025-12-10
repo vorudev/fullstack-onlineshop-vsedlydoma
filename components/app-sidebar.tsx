@@ -1,5 +1,5 @@
 "use server";
-import { Calendar, Home, User, Phone,  ClipboardList, Package, ChartBarStacked, Info} from "lucide-react"
+import { Calendar, Home, User, Phone,  ClipboardList, Package, ChartBarStacked, Info, ChevronLeft} from "lucide-react"
 import Link from "next/link"
 import AdminPageUser from "./frontend/admin-page-user";
 import { getPendingReviewsCount } from "@/lib/actions/reviews";
@@ -55,15 +55,10 @@ const items = [
     url: "/dashboard/categories",
     icon: ChartBarStacked,
   },
-   {
-    title: "О нас",
-    url: "/dashboard/about",
-    icon: Info ,
-  },
   {
-    title: "Контакты",
+    title: "Контактная информация",
     url: "/dashboard/contact-us",
-    icon: Phone ,
+    icon: Info ,
   },
   {
     title: "Новости",
@@ -185,8 +180,8 @@ export async function AppSidebar() {
             <SidebarMenuItem>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild >
-                  <Link href="/dashboard/profile" className="h-15 flex items-center gap-2 px-2">
-                    <User2 className="size-5" /> <AdminPageUser />
+                  <Link href="/" className="h-15 flex items-center gap-2 px-2 cursor-pointer">
+                    <ChevronLeft className="size-4 text-gray-400" /> <span className="text-[15px] text-gray-400">На сайт</span>
                   </Link>
                 </DropdownMenuTrigger>
               </DropdownMenu>
