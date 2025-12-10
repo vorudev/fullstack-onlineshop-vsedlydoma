@@ -1,5 +1,5 @@
 'use server'
-import { about, About, clientInfo, ClientInfo } from "@/db/schema";
+import { about, About} from "@/db/schema";
 import { db } from "@/db/drizzle";
 import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
@@ -8,12 +8,7 @@ import { NextResponse } from "next/server";
 export const getAboutInfo = async () => {
    try{
     const aboutInfo = await db.select().from(about);
-   const clientInfoData = await db.select().from(clientInfo).where(eq(clientInfo.aboutId, aboutInfo[0].id));
-    const aboutInfoData = {
-      ...aboutInfo[0],
-      clientInfo: clientInfoData,
-    };
-    return aboutInfoData;
+    return aboutInfo[0];
    } catch (error) {
     console.log(error);
     return null;

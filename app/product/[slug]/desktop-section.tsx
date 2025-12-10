@@ -71,8 +71,8 @@ interface ProductUnited {
 
 }
 export default function DesktopSection({productDetails}: ProductUnited) {
-    const {addToCart, cart} = useCart();
-    const {addToFavorite, favorite, } = useFavorite();
+    const {addToCart, cart, removeFromCart} = useCart();
+    const {addToFavorite, favorite, removeFromFavorite} = useFavorite();
     const [maxVisible] = useState(8);
    const isInCart = cart.some((item) => item.product.id === productDetails.id);
       const isInFavorite = favorite.some((item) => item.product.id === productDetails.id);
@@ -83,6 +83,22 @@ export default function DesktopSection({productDetails}: ProductUnited) {
     const element = document.getElementById('target-component');
     element?.scrollIntoView({ behavior: 'smooth' });
   };
+  const toggleFavorite = (productDetails: ProductUnited['productDetails']) => {
+    if (isInFavorite) {
+      removeFromFavorite(productDetails.id); // или product, зависит от вашей реализации
+    } else {
+      addToFavorite(productDetails);
+    }
+  };
+
+    const toggleCart = (productDetails: ProductUnited['productDetails']) => {
+
+        if (isInCart) {
+          removeFromCart(productDetails.id);
+        } else {
+          addToCart(productDetails);
+        }
+      };
 
     return (
         <div className="lg:flex lg:flex-col items-start hidden justify-start gap-[12px] w-full  ">
@@ -124,28 +140,12 @@ export default function DesktopSection({productDetails}: ProductUnited) {
        <div className="flex flex-col gap-2 items-center w-full">
           
           <button className={isInCart ? 'border border-blue-600  w-full text-blue-600 cursor-pointer px-6 py-3 rounded-[8px] font-semibold flex-1 justify-center' : 'bg-blue-600 border w-full text-white cursor-pointer px-6 py-3 rounded-[8px] font-semibold flex-1 justify-center'}
-          onClick={() => addToCart({
-      
-          averageRating: productDetails?.averageRating,
-          reviewCount: productDetails?.reviewCount,
-          id: productDetails?.id,
-          categoryId: productDetails?.categoryId,
-          inStock: productDetails?.inStock,
-          price: productDetails?.price,
-          slug: productDetails?.slug,
-          title: productDetails?.title,
-          description: productDetails?.description,
-          manufacturerId: productDetails?.manufacturerId,
-          createdAt: productDetails?.createdAt,
-          updatedAt: productDetails?.updatedAt,
-          sku: productDetails?.sku,
-          images: productDetails?.images,
-          })}
+          onClick={() => toggleCart(productDetails)}
           >
            {isInCart ? 'В корзине' : 'В корзину'}
           </button>
           <button className="bg-white border-2 border-gray-200 cursor-pointer flex items-center gap-2 text-gray-700 p-3 rounded-[8px]"
-          onClick={() => addToFavorite(productDetails)}
+          onClick={() => toggleFavorite(productDetails)}
           >
             <Heart className={isInFavorite ? 'w-[20px] h-[20px] text-red-600 fill-red-600' : 'w-[20px] h-[20px]'} /> {isInFavorite ? 'В избранном' : 'В избранное'}
           </button>
@@ -207,29 +207,12 @@ export default function DesktopSection({productDetails}: ProductUnited) {
         <div className="flex flex-col gap-2 items-center w-full">
           
           <button 
-          disabled={isInCart}
-          onClick={() => addToCart({
-          averageRating: productDetails?.averageRating,
-          reviewCount: productDetails?.reviewCount,
-          id: productDetails?.id,
-          categoryId: productDetails?.categoryId,
-          inStock: productDetails?.inStock,
-          price: productDetails?.price,
-          slug: productDetails?.slug,
-          title: productDetails?.title,
-          description: productDetails?.description,
-          manufacturerId: productDetails?.manufacturerId,
-          createdAt: productDetails?.createdAt,
-          updatedAt: productDetails?.updatedAt,
-          sku: productDetails?.sku,
-          images: productDetails?.images,
-          })}
+          onClick={() => toggleCart(productDetails)}
           className={` w-full px-6 py-3 cursor-pointer rounded-[8px] font-semibold flex-1 justify-center ${isInCart ? 'bg-white text-blue-600 border border-blue-600' : 'bg-blue-600 text-white border border-blue-600'}`}>
            { isInCart ? 'В корзине' : 'В корзину' }
           </button>
           <button
-          onClick={() => addToFavorite(productDetails)}
-          disabled={isInFavorite}
+          onClick={() => toggleFavorite(productDetails)}
           className={`bg-white  border-2 w-full cursor-pointer hover:bg-gray-100 transition  border-gray-200 flex items-center justify-center gap-2 text-gray-700 p-3 rounded-[8px]`}>
             <Heart className={`w-[20px] h-[20px] ${isInFavorite ? 'fill-red-500 text-red-500' : '' }`} />  { isInFavorite ? 'В избранном' : 'В избранное' }
           </button>

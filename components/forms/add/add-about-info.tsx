@@ -12,11 +12,6 @@ import { About } from "@/db/schema";
 import { Loader2 } from "lucide-react";
 interface AboutFormProps {
     about?: {
-    clientInfo: {
-        id: string;
-        info: string;
-        aboutId: string | null;
-    }[];
     id: string;
     title: string;
     home: string;
@@ -31,6 +26,7 @@ const aboutSchema = z.object({
     description: z.string().min(1, "Description is required").max(255, "Description must be at most 255 characters long"),
    home: z.string().min(1, "Home is required").max(255, "Home must be at most 255 characters long"),
     createdAt: z.date().optional(),
+    
     updatedAt: z.date().optional(),
 });
 
@@ -83,10 +79,11 @@ export function AddAboutInfo({ about }: AboutFormProps) {
                     name="title"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Название</FormLabel>
+                            <FormLabel>Заголовок</FormLabel>
                             <FormControl>
-                                <Textarea placeholder="Введите название" {...field} />
+                                <Textarea placeholder="Введите заголовок" {...field} />
                             </FormControl>
+                            <FormDescription>Это заголовок, который будет отображаться на странице о нас</FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}
@@ -102,6 +99,7 @@ export function AddAboutInfo({ about }: AboutFormProps) {
                             <FormControl>
                                 <Textarea placeholder="Введите описание" {...field} />
                             </FormControl>
+                            <FormDescription>Это описание, которое будет отображаться на странице о нас</FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}
@@ -113,10 +111,11 @@ export function AddAboutInfo({ about }: AboutFormProps) {
                     name="home"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Дом</FormLabel>
+                            <FormLabel>Описание (Домашняя страница)</FormLabel>
                             <FormControl>
-                                <Textarea placeholder="Введите дом" {...field} />
+                                <Textarea placeholder="Введите описание" {...field} />
                             </FormControl>
+                            <FormDescription>Это описание, которое будет отображаться на домашней странице </FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}

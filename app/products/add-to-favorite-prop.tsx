@@ -30,13 +30,19 @@ interface ProductUnited {
 }
 }
 export const AddToFavorite: React.FC<ProductUnited> = ({ product }) => {
-    const { addToFavorite, favorite } = useFavorite();
+    const { addToFavorite, favorite, removeFromFavorite } = useFavorite();
+    const toggleFavorite = (product: ProductUnited['product']) => {
+        if (isInFavorite) {
+          removeFromFavorite(product.id);
+        } else {
+          addToFavorite(product);
+        }
+      };
     const isInFavorite = favorite.some((item) => item.product.id === product.id)
     return (
         <button
             className={` lg:w-full bg-gray-100 p-2 rounded-md lg:bg-white ${isInFavorite ? "" : "cursor-pointer"}`}
-            onClick={() => addToFavorite(product)}
-            disabled={isInFavorite}
+            onClick={() => toggleFavorite(product)}
         >
             {isInFavorite ?  <Heart className="lg:w-6 lg:h-6 w-5 h-5 text-red-500 fill-red-500" /> : <Heart className="lg:w-6 lg:h-6 w-5 h-5 text-gray-500" />}
         </button>

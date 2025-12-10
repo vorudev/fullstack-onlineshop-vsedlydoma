@@ -269,15 +269,7 @@ export const about = pgTable("about", {
 }, (table) => ({
     titleIdx: index("about_title_idx").on(table.title),
 }));
-export const clientInfo = pgTable("client_info", {
-    id: uuid("id").primaryKey().defaultRandom(),
-   info:text("info").notNull(),
-   aboutId: uuid("about_id").references(() => about.id),
-   createdAt: timestamp("created_at").defaultNow(),
-   updatedAt: timestamp("updated_at").defaultNow(),
-}, (table) => ({
-    aboutIdIdx: index("client_info_about_id_idx").on(table.aboutId),
-}));
+
 export const contactUs = pgTable("contact_us", {
     id: uuid("id").primaryKey().defaultRandom(),
     title: varchar("title", { length: 255 }).notNull(),
@@ -367,7 +359,7 @@ export const schema = {
                     categoryImages,
                     manufacturerImages,
                     about,
-                    clientInfo,
+                    
                     contactUs,
                     contactPhones,
                     contactUsTelephones,  
@@ -395,7 +387,7 @@ export type ContactUs = typeof contactUs.$inferSelect
 export type TwoFactor = typeof twoFactor.$inferSelect
 export type ContactPhone = typeof contactPhones.$inferSelect
 export type ContactTelephone = typeof contactUsTelephones.$inferSelect
-export type ClientInfo = typeof clientInfo.$inferSelect
+
 export type ProductImage = typeof productImages.$inferSelect
 export type CategoryImage = typeof categoryImages.$inferSelect
 export type ManufacturerImage = typeof manufacturerImages.$inferSelect

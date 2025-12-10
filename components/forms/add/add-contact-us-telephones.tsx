@@ -10,13 +10,50 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createContactTelephone, updateContactTelephone } from "@/lib/actions/contact-us-telephones";
 import { ContactTelephone } from "@/db/schema";
 import { Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
 interface AboutFormProps {
     contactTelephone?: ContactTelephone | null
     contactUsId: string | null 
 }
 
 const aboutSchema = z.object({
-    phone: z.string().min(1, "Phone is required").max(255, "Phone must be at most 255 characters long"),
+    phone: z.string()
+    .min(1, 'Номер телефона обязателен')
+    .trim()
+    // Удаляем пробелы, дефисы, скобки для проверки
+    .transform((val) => val.replace(/[\s\-()]/g, ''))
+    // Базовая санитизация на клиенте
+    .transform((val) => val.replace(/[<>{}[\]\\'"`;]/g, ''))
+    // Проверка минимальной длины
+    .refine(
+      (val) => val.length >= 9,
+      'Номер телефона слишком короткий'
+    )
+    // Проверка максимальной длины
+    .refine(
+      (val) => val.length <= 20,
+      'Номер телефона слишком длинный'
+    )
+    // Проверка что содержит только допустимые символы
+    .refine(
+      (val) => /^[+]?[0-9]+$/.test(val),
+      'Номер может содержать только цифры и знак +'
+    )
+    // Проверка белорусского формата
+    .refine(
+      (val) => {
+        // Нормализуем номер
+        let normalized = val;
+        if (normalized.startsWith('8')) {
+          normalized = '+375' + normalized.slice(1);
+        } else if (normalized.startsWith('375')) {
+          normalized = '+' + normalized;
+        }
+        // Проверяем формат +375XXXXXXXXX
+        return /^\+375(25|29|33|44)\d{7}$/.test(normalized);
+      },
+      'Неверный формат. Пример: +375 29 123-45-67'
+    ),
     createdAt: z.date().optional(),
     updatedAt: z.date().optional(),
 });
@@ -26,7 +63,31 @@ type AboutFormValues = z.infer<typeof aboutSchema>;
 export function AddContactUsTelephone({ contactTelephone, contactUsId }: AboutFormProps) {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
-
+    const formatPhoneInput = (value: string) => {
+        // Удаляем все кроме цифр и +
+        let cleaned = value.replace(/[^\d+]/g, '');
+        
+        // Ограничиваем длину
+        if (cleaned.length > 13) {
+          cleaned = cleaned.slice(0, 13);
+        }
+    
+        // Форматируем в процессе ввода
+        if (cleaned.startsWith('+375')) {
+          const digits = cleaned.slice(4);
+          if (digits.length <= 2) {
+            return `+375 ${digits}`;
+          } else if (digits.length <= 5) {
+            return `+375 ${digits.slice(0, 2)} ${digits.slice(2)}`;
+          } else if (digits.length <= 7) {
+            return `+375 ${digits.slice(0, 2)} ${digits.slice(2, 5)}-${digits.slice(5)}`;
+          } else {
+            return `+375 ${digits.slice(0, 2)} ${digits.slice(2, 5)}-${digits.slice(5, 7)}-${digits.slice(7)}`;
+          }
+        }
+    
+        return cleaned;
+      };
     const form = useForm<AboutFormValues>({
         resolver: zodResolver(aboutSchema),
         defaultValues: {
@@ -45,7 +106,6 @@ export function AddContactUsTelephone({ contactTelephone, contactUsId }: AboutFo
                      id: contactTelephone.id,
                 });
             } else {
-                
             createContactTelephone(
                 {
                     ...values,
@@ -66,7 +126,6 @@ export function AddContactUsTelephone({ contactTelephone, contactUsId }: AboutFo
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                
                 {/* Title */}
                 <FormField
                     control={form.control}
@@ -75,20 +134,19 @@ export function AddContactUsTelephone({ contactTelephone, contactUsId }: AboutFo
                         <FormItem>
                             <FormLabel>Телефон</FormLabel>
                             <FormControl>
-                                <Textarea placeholder="Введите телефон" {...field} />
+                                <Input onChange={(e) => field.onChange(formatPhoneInput(e.target.value))} value={formatPhoneInput(field.value)} onFocus={(e) => {
+            // Если поле пустое при фокусе, устанавливаем 375
+            if (!e.target.value || e.target.value === '') {
+              field.onChange('+ 375');
+            }
+          }} 
+                                placeholder="Введите телефон"  />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-
-               
-                 
-               
-
-               
-
-                <Button type="submit" disabled={isLoading}>
+               <Button type="submit" disabled={isLoading}>
                     {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                     Сохранить
                 </Button>

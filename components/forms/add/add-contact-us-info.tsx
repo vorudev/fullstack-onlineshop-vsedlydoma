@@ -30,8 +30,8 @@ interface FormProps {
 }
 
 const aboutSchema = z.object({
-    title: z.string().min(1, "Title is required").max(255, "Title must be at most 255 characters long"),
-    description: z.string().min(1, "Description is required").max(255, "Description must be at most 255 characters long"),
+    title: z.string().min(1, "Название обязательно для заполнения").max(255, "Название должно быть не более 255 символов"),
+    description: z.string().min(1, "Описание обязательно для заполнения").max(255, "Описание должно быть не более 255 символов"),
     createdAt: z.date().optional(),
     updatedAt: z.date().optional(),
 });
@@ -85,6 +85,7 @@ export function AddContactUsInfo({ contactUs }: FormProps) {
                             <FormControl>
                                 <Textarea placeholder="Введите название" {...field} />
                             </FormControl>
+                            <FormDescription>Это первое, что увидят пользователи на странице контактов</FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}
@@ -100,6 +101,7 @@ export function AddContactUsInfo({ contactUs }: FormProps) {
                             <FormControl>
                                 <Textarea placeholder="Введите описание" {...field} />
                             </FormControl>
+                            <FormDescription>Расскажите о вашей поддержке, часах работы или преимуществах</FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}

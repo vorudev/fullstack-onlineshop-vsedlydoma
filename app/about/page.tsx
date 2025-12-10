@@ -16,21 +16,8 @@ export default async function AboutPage() {
     {about?.description}
 </p>
 <div className="flex flex-col gap-3">
-<div className="flex flex-row items-center gap-4">
-<User className="w-6 h-6 text-blue-600" /> 
-<h2 className="text-[20px] font-semibold">
-    Для клиентов
-</h2>
-</div>
 
 
- <ul className=" list-disc flex flex-col gap-2 pl-4">
-   {about?.clientInfo.map((clientInfo) => (
-        <li key={clientInfo.id} className="text-[14px] ">{clientInfo.info}</li>
-    ))}
- </ul>
-
-</div>
 <div className="flex flex-row gap-4 items-center ">
 <MapPin className="w-6 h-6 text-blue-600" /> 
 <h2 className="text-[20px] font-semibold">
@@ -43,6 +30,7 @@ export default async function AboutPage() {
 </div>
 
 </div>
+       </div>
        </main>
     );
 }

@@ -40,12 +40,21 @@ export const deleteContactTelephone = async (id: string) => {
           headers: await headers()
         })
         if (!session || session.user.role !== 'admin') {
-          return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+          return {
+            success: false,
+            error: 'Unauthorized'
+          };
      }
-    const deletedContactPhone = await db.delete(contactUsTelephones).where(eq(contactUsTelephones.id, id));
-    return deletedContactPhone;
+    await db.delete(contactUsTelephones).where(eq(contactUsTelephones.id, id));
+    return {
+      success: true,
+      message: 'Contact telephone deleted successfully'
+    };
    } catch (error) {
     console.log(error);
-    return null;
+    return {
+      success: false,
+      error: 'Failed to delete contact telephone'
+    };
    }
 };

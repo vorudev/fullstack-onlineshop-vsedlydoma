@@ -37,7 +37,7 @@ interface ProductUnited {
 }
 }
 export default function ProductCard( { product}: ProductUnited) {
-  const {addToCart, cart} = useCart();
+  const {addToCart, cart, removeFromCart} = useCart();
     const rounded = Math.round(product.averageRating);
   const isInCart = cart.some(item => item.product.id === product.id);
  const getRatingColor = (rating: number) => {
@@ -72,6 +72,16 @@ function getReviewText(count: number): string {
     if (a.order !== null && b.order !== null) return a.order - b.order;
     return 0;
   });
+
+
+    const toggleCart = (product: ProductUnited['product']) => {
+
+        if (isInCart) {
+          removeFromCart(product.id);
+        } else {
+          addToCart(product);
+        }
+      };
     return ( 
         <div className="bg-white rounded-2xl lg:max-w-[450px]  transition-all duration-300 overflow-hidden  group lg:p-[12px] lg:min-w-[300px]" key={product.id}> 
         <div className="hidden lg:block flex flex-col  px-2 py-2">
@@ -134,7 +144,7 @@ function getReviewText(count: number): string {
              
               <div className="flex flex-col pt-1 gap-3 items-start ">
                  
-             <button onClick={() => addToCart(product)} className={`flex w-full items-center justify-center gap-2 px-4 py-2 rounded-md border transition-colors ${isInCart ? 'bg-white border-blue-600 text-blue-600 ' : 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer'}`}>
+             <button onClick={() => toggleCart(product)} className={`flex w-full items-center justify-center gap-2 px-4 py-2 rounded-md border transition-colors ${isInCart ? 'bg-white border-blue-600 text-blue-600 ' : 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer'}`}>
              {isInCart ? 'В корзине' : 'В корзину'}
             </button>
 

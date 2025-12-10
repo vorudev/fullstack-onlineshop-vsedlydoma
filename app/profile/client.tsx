@@ -4,6 +4,7 @@ import LogoutButton from "@/components/forms/auth/logout-button"
 import {Profile, Security, Orders} from "./tabs/cases"
 import { useSession } from "@/lib/auth-client"
 import {useState} from "react"
+import Link from "next/link"
  interface Props {
     orders: {
     orderItems: {
@@ -93,6 +94,9 @@ export default function ProfilePage({ orders, pagination, session }: Props) {
     <p className="text-[20px] font-semibold">{session?.user?.name}</p>
     <p className="text-[16px] text-gray-400 font-semibold">{session?.user?.email}</p>
     <p className="text-[16px] text-gray-400 font-semibold">{session?.user?.phoneNumber || "Телефон не указан"}</p>
+    {session?.user?.twoFactorEnabled === true && <p className="text-[16px] text-gray-400 font-semibold">Двухфакторная аутентификация: <span className="text-green-500 font-semibold">Включена</span></p>}
+    {session?.user?.twoFactorEnabled === false && <p className="text-[16px] text-gray-400 font-semibold">Двухфакторная аутентификация: <span className="text-red-500 font-semibold">Выключена</span></p>}
+    {session?.user?.role === "admin" && <div className="flex flex-col"><p className="text-[16px] text-gray-400 font-semibold">Роль: <span className="text-blue-500 font-semibold">Администратор</span></p> <Link href="/dashboard" className="text-[16px] text-blue-500 font-semibold">Перейти в админ панель</Link></div>}
  </div>
                 </div>
                <div className="

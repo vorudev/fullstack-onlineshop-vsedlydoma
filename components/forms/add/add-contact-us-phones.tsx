@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createContactPhone, updateContactPhone } from "@/lib/actions/contact-us-phones";
 import { ContactPhone } from "@/db/schema";
 import { Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
 interface AboutFormProps {
     contactPhone?: ContactPhone | null
     contactUsId: string | null 
@@ -74,12 +75,25 @@ export function AddContactUsPhones({ contactPhone, contactUsId }: AboutFormProps
                 {/* Title */}
                 <FormField
                     control={form.control}
+                    name="link"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Ссылка на профиль</FormLabel>
+                            <FormControl>
+                                <Input placeholder="https://instagram.com/your_profile" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
                     name="phone"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Телефон, айди или имя</FormLabel>
+                            <FormLabel>Текст для отображения</FormLabel>
                             <FormControl>
-                                <Textarea placeholder="Введите телефон, айди или имя в соцсети" {...field} />
+                                <Input placeholder="Например: Мы в Instagram" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -90,27 +104,15 @@ export function AddContactUsPhones({ contactPhone, contactUsId }: AboutFormProps
                     name="src"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Иконка</FormLabel>
+                            <FormLabel>Ссылка на иконку соцсети</FormLabel>
                             <FormControl>
-                                <Textarea placeholder="Введите ссылку на иконку" {...field} />
+                                <Input placeholder="https://example.com/icon.png" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                <FormField
-                    control={form.control}
-                    name="link"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Ссылка</FormLabel>
-                            <FormControl>
-                                <Textarea placeholder="Введите ссылку" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                
                
 
                

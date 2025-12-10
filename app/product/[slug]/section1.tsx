@@ -97,11 +97,24 @@ interface ProductUnited {
 }
 export default function ProductPage({productDetails, internals}: United) {
     const [isExpanded, setIsExpanded] = useState(false);
-    const {addToCart, cart} = useCart();
-    const {addToFavorite, favorite} = useFavorite();
+    const {addToCart, cart, removeFromCart} = useCart();
+    const {addToFavorite, favorite, removeFromFavorite} = useFavorite();
    const isInCart = cart.some((item) => item.product.id === productDetails.id);
       const isInFavorite = favorite.some((item) => item.product.id === productDetails.id);
-   
+      const toggleFavorite = (productDetails: ProductUnited['productDetails']) => {
+        if (isInFavorite) {
+          removeFromFavorite(productDetails.id); // или product, зависит от вашей реализации
+        } else {
+          addToFavorite(productDetails);
+        }
+      };
+      const toggleCart = (productDetails: ProductUnited['productDetails']) => {
+        if (isInCart) {
+          removeFromCart(productDetails.id);
+        } else {
+          addToCart(productDetails);
+        }
+      };
  return ( 
     <div className=" px-[16px] overflow-hidden flex w-full flex-col gap-3">
   <div className="flex overflow-x-auto gap-2 items-center px-4 md:px-0 snap-x snap-mandatory text-gray-600 text-[14px]" style={{ 
@@ -174,27 +187,12 @@ export default function ProductPage({productDetails, internals}: United) {
     </div>}
         <div className="flex items-center flex-row gap-3">
             <button 
-            onClick={() => addToFavorite(productDetails)}
+            onClick={() =>  toggleFavorite(productDetails)}
             className={isInFavorite ? 'text-red-500' : 'text-gray-900'}>
           <Heart className={`w-5 h-5 ${isInFavorite ? 'text-red-500 fill-red-500' : 'text-gray-900'}`}/>
             </button>
             <button 
-            onClick={() => addToCart({
-    averageRating: productDetails?.averageRating,
-    reviewCount: productDetails?.reviewCount,
-    id: productDetails?.id,
-    categoryId: productDetails?.categoryId,
-    inStock: productDetails?.inStock,
-    price: productDetails?.price,
-    slug: productDetails?.slug,
-    title: productDetails?.title,
-    description: productDetails?.description,
-    manufacturerId: productDetails?.manufacturerId,
-    createdAt: productDetails?.createdAt,
-    updatedAt: productDetails?.updatedAt,
-    sku: productDetails?.sku,
-    images: productDetails?.images,
-    })}
+            onClick={() => toggleCart(productDetails)}
             className={`px-[16px] py-2 border rounded-[8px] font-semibold ${isInCart ? 'border-blue-600 text-blue-600 cursor-not-allowed' : 'text-white  bg-blue-600'}`}
             >
            {isInCart ? 'В корзине' : 'В корзину'}

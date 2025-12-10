@@ -35,17 +35,39 @@ export const updateContactPhone = async (values: Omit<ContactPhone, "createdAt" 
    }
 };
 export const deleteContactPhone = async (id: string) => {
-   try{
+  try {
     const session = await auth.api.getSession({
-          headers: await headers()
-        })
-        if (!session || session.user.role !== 'admin') {
-          return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-     }
-    const deletedContactPhone = await db.delete(contactPhones).where(eq(contactPhones.id, id));
-    return deletedContactPhone;
-   } catch (error) {
+      headers: await headers()
+    })
+    
+    if (!session || session.user.role !== 'admin') {
+      // ❌ Неправильно: NextResponse нельзя возвращать из Server Action
+      // return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      
+      // ✅ Правильно: возвращаем plain object
+      return { 
+        success: false, 
+        error: 'Unauthorized' 
+      };
+    }
+    
+    // ❌ Неправильно: возвращаем результат Drizzle напрямую
+    // const deletedContactPhone = await db.delete(contactPhones).where(eq(contactPhones.id, id));
+    // return deletedContactPhone;
+    
+    // ✅ Правильно: выполняем удаление и возвращаем plain object
+    await db.delete(contactPhones).where(eq(contactPhones.id, id));
+    
+    return { 
+      success: true,
+      message: 'Contact phone deleted successfully' 
+    };
+    
+  } catch (error) {
     console.log(error);
-    return null;
-   }
+    return { 
+      success: false, 
+      error: 'Failed to delete contact phone' 
+    };
+  }
 };

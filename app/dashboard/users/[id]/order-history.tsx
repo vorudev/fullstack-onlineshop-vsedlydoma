@@ -32,6 +32,7 @@ interface Order {
     };
     id: string;
     userId: string | null;
+    sku: string | null;
     status: string;
     notes: string | null;
     total: number;
@@ -152,7 +153,7 @@ export default function AdminOrdersTable({ orders, user }: Order) {
                   <React.Fragment key={order.id}>
                     <tr className=" transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium ">{order.id}</div>
+                        <div className="text-sm font-medium ">{order.sku}</div>
                         {order.notes && (
                           <div className="text-xs mt-1">📝 {order.notes}</div>
                         )}

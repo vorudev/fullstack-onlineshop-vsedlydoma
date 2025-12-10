@@ -54,7 +54,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
               <Package className="w-8 h-8 text-blue-600" />
               <div>
                 <h1 className="text-2xl font-bold text-neutral-100">Заказ {order?.sku}</h1>
-                <p className="text-sm text-neutral-400">{order?.createdAt?.toDateString()}</p>
+                <p className="text-sm text-neutral-400">{order?.createdAt?.toLocaleDateString('ru-RU')}</p>
               </div>
             </div>
             
@@ -186,7 +186,6 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
             
                     <div className="flex-1">
                       <h3 className="font-medium text-neutral-100 mb-1">{item.title}</h3>
-                      <p className="text-sm text-neutral-400">ID: {item.productId}</p>
                       <p className="text-sm text-neutral-400">Артикул: {item.productSku}</p>
                     </div>
 
