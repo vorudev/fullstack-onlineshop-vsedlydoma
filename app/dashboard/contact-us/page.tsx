@@ -18,10 +18,16 @@ import {Suspense} from "react";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { getPrivacyPolicy } from "@/lib/actions/law-actions";
+import { getTermsOfService } from "@/lib/actions/law-actions";
 
 export default async function ContactUsPage() {
-    const contactUs = await getContactUs();
-    const about = await getAboutInfo();
+    const[contactUs, about, privacyPolicy, termsOfService] = await Promise.all([
+        getContactUs(),
+        getAboutInfo(),
+        getPrivacyPolicy(),
+        getTermsOfService(),
+    ]);
 
  
     return (
@@ -29,7 +35,7 @@ export default async function ContactUsPage() {
            <div className="p-[16px] 
  ">
             
-            <AdminContactsPage contactUs={contactUs} about={about} />
+            <AdminContactsPage contactUs={contactUs} about={about} privacyPolicy={privacyPolicy} termsOfService={termsOfService} />
            </div>
 
     );

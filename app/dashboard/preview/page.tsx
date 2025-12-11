@@ -9,6 +9,7 @@ import {
   BreadcrumbSeparator,
   BreadcrumbPage,
 } from '@/components/ui/breadcrumb';
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 
 import { AddContactUsTelephone } from "@/components/forms/add/add-contact-us-telephones";
 import { AddContactUsInfo } from "@/components/forms/add/add-contact-us-info";
@@ -93,9 +94,14 @@ import {
   QrCode,
   Download,
   RotateCcw,
+  FileText,
+  ShieldCheck,
+  CheckCircle,
 } from 'lucide-react';
 import { AddContactUsPhones } from '@/components/forms/add/add-contact-us-phones';
 import Image from 'next/image';
+import { AddPrivacyPolicy } from '@/components/forms/add/add-privacy-policy';
+import { AddTermsOfServise } from '@/components/forms/add/add-terms-of-service';
 
 interface PhoneNumber {
   id: string;
@@ -105,6 +111,25 @@ interface PhoneNumber {
   description?: string;
 }
 
+interface PrivacyPolicy {
+  privacyPolicy: {
+    id: string;
+    title: string;
+    description: string;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+  } | null
+}
+interface TermsOfService {
+  termsOfService: {
+    id: string;
+    title: string;
+    description: string;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+  } | null
+
+}
 interface SocialMedia {
   id: string;
   name: string;
@@ -174,7 +199,7 @@ const SOCIAL_ICONS = [
   { name: 'LinkedIn', icon: 'linkedin', color: '#0A66C2' },
 ];
 
-const AdminContactsPage = ({ contactUs, about }: ContactUs & About) => {
+const AdminContactsPage = ({ contactUs, about, privacyPolicy, termsOfService }: ContactUs & About & PrivacyPolicy & TermsOfService) => {
   // Основное состояние
   const [contactInfo, setContactInfo] = useState<ContactInfo>({
     title: 'Свяжитесь с нами и получите консультацию',
@@ -395,7 +420,7 @@ const AdminContactsPage = ({ contactUs, about }: ContactUs & About) => {
 
         {/* Табы */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid grid-cols-3 w-full lg:w-auto">
+          <TabsList className="grid grid-cols-4 w-full lg:w-auto">
             <TabsTrigger value="general" className="gap-2">
               <MessageSquare className="h-4 w-4" />
               Основное
@@ -414,7 +439,11 @@ const AdminContactsPage = ({ contactUs, about }: ContactUs & About) => {
                 {contactUs?.clientInfo.length}
               </Badge>
             </TabsTrigger>
-        
+            <TabsTrigger value="privacy-policy" className="gap-2">
+              <FileText className="h-4 w-4" />
+              Юридическая информация
+            </TabsTrigger>
+            
           </TabsList>
 
           {/* Вкладка: Основное */}
@@ -667,7 +696,264 @@ const AdminContactsPage = ({ contactUs, about }: ContactUs & About) => {
             </Card>
           </TabsContent>
 
-          {/* Вкладка: SEO */}
+     {/* Вкладка: Юридическая информация*/}
+<TabsContent value="privacy-policy">
+  <Card>
+    <CardHeader>
+      <CardTitle>Юридическая информация</CardTitle>
+      <CardDescription>
+        Управление юридическими документами и их предпросмотр
+      </CardDescription>
+    </CardHeader>
+    <CardContent>
+      <Tabs defaultValue="privacy" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="privacy">Политика конфиденциальности</TabsTrigger>
+          <TabsTrigger value="terms">Условия обслуживания</TabsTrigger>
+          <TabsTrigger value="preview">Предпросмотр</TabsTrigger>
+        </TabsList>
+
+        {/* Вкладка редактирования политики конфиденциальности */}
+        <TabsContent value="privacy" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-medium">Политика конфиденциальности</h3>
+              <p className="text-sm text-muted-foreground">
+                Редактирование документа
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => document.getElementById('preview-tab')?.click()}
+            >
+              <Eye className="h-4 w-4 mr-2" />
+              Предпросмотр
+            </Button>
+          </div>
+          <AddPrivacyPolicy privacyPolicy={privacyPolicy} />
+        </TabsContent>
+
+        {/* Вкладка редактирования условий обслуживания */}
+        <TabsContent value="terms" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-medium">Условия обслуживания</h3>
+              <p className="text-sm text-muted-foreground">
+                Редактирование документа
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => document.getElementById('preview-tab')?.click()}
+            >
+              <Eye className="h-4 w-4 mr-2" />
+              Предпросмотр
+            </Button>
+          </div>
+          <AddTermsOfServise termsOfService={termsOfService} />
+        </TabsContent>
+
+        {/* Вкладка предпросмотра */}
+        <TabsContent value="preview" className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-medium">Предпросмотр</h3>
+              <p className="text-sm text-muted-foreground">
+                Как будут выглядеть документы для пользователей
+              </p>
+            </div>
+            <div className="flex items-center space-x-2">
+              <ToggleGroup
+                type="single"
+                defaultValue="privacy"
+                onValueChange={(value) => {
+                  const previewContainer = document.getElementById('preview-container');
+                  if (previewContainer) {
+                    if (value === 'privacy') {
+                      previewContainer.innerHTML = `
+                        <div class="prose prose-sm max-w-none">
+                          <h1>Политика конфиденциальности</h1>
+                          ${privacyPolicy?.description || '<p class="text-muted-foreground">Документ не заполнен</p>'}
+                        </div>
+                      `;
+                    } else {
+                      previewContainer.innerHTML = `
+                        <div class="prose prose-sm max-w-none">
+                          <h1>Условия обслуживания</h1>
+                          ${termsOfService?.description || '<p class="text-muted-foreground">Документ не заполнен</p>'}
+                        </div>
+                      `;
+                    }
+                  }
+                }}
+              >
+                <ToggleGroupItem value="privacy" className="px-3">
+                  Политика
+                </ToggleGroupItem>
+                <ToggleGroupItem value="terms" className="px-3">
+                  Условия
+                </ToggleGroupItem>
+              </ToggleGroup>
+            </div>
+          </div>
+
+          {/* Карточка предпросмотра с мобильной адаптацией */}
+          <Card className="border-2">
+            <CardHeader className="bg-muted/50">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium">
+                  Предпросмотр документа
+                </CardTitle>
+                <div className="flex items-center space-x-2">
+                  <Badge variant="outline" className="text-xs">
+                    Опубликовано
+                  </Badge>
+                  <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                </div>
+              </div>
+              <CardDescription>
+                Документ обновится автоматически после сохранения
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="relative">
+                {/* Имитация мобильного устройства */}
+             
+ 
+                {/* Десктопный предпросмотр */}
+                <div className="
+               p-6">
+                  <div className="rounded-lg border bg-card p-6 shadow-sm">
+                    <div id="preview-container" className="prose prose-lg max-w-none">
+                      <h1>Политика конфиденциальности</h1>
+                      {privacyPolicy?.description || (
+                        <p className="text-muted-foreground italic">
+                          Начните редактирование документа, чтобы увидеть предпросмотр
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                 
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter className="bg-muted/30 flex-col items-start gap-2">
+              <p className="text-sm text-muted-foreground">
+                <AlertCircle className="h-4 w-4 inline mr-1" />
+                Все изменения сохраняются автоматически
+              </p>
+              <div className="flex w-full justify-between">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => (document.querySelector('[value="privacy"]') as HTMLButtonElement)?.click()}
+                >
+                  <Edit className="h-4 w-4 mr-2" />
+                  Редактировать
+                </Button>
+                <Button size="sm">
+                  <Share2 className="h-4 w-4 mr-2" />
+                  Поделиться предпросмотром
+                </Button>
+              </div>
+            </CardFooter>
+          </Card>
+
+          {/* Быстрые действия */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Статистика документа
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-sm text-muted-foreground">Символов:</span>
+                    <span className="font-medium">
+                      {privacyPolicy?.description?.length || 0}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-muted-foreground">Слов:</span>
+                    <span className="font-medium">
+                      {privacyPolicy?.description?.split(/\s+/).length || 0}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-muted-foreground">Последнее обновление политики конфиденциальности:</span>
+                  <div className="flex items-center flex-col gap-2">
+                  
+                    <span>{privacyPolicy?.updatedAt?.toLocaleDateString('ru-RU')}</span>
+
+                  </div>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-muted-foreground">Последнее обновление условий обслуживания:</span>
+                    <div className="flex items-center flex-col gap-2">
+                      <span>{termsOfService?.updatedAt?.toLocaleDateString('ru-RU')}</span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Публикация
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">Статус публикации</span>
+                    <Switch checked={true} />
+                  </div>
+                  <Button variant="outline" size="sm" className="w-full">
+                    <Download className="h-4 w-4 mr-2" />
+                    Экспорт в PDF
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Быстрые ссылки
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start"
+                    onClick={() => (document.querySelector('[value="terms"]') as HTMLButtonElement)?.click()}
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    Перейти к условиям
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start"
+                  >
+                    <Eye className="h-4 w-4 mr-2" />
+                    Посмотреть на сайте
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+      </Tabs>
+    </CardContent>
+  </Card>
+</TabsContent>
+        
         
         </Tabs>
 

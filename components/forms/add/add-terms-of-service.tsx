@@ -7,14 +7,14 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { updateAboutInfo, createAboutInfo } from "@/lib/actions/about-info";
+import { updateTermsOfService, createTermsOfService, updatePrivacyPolicy } from "@/lib/actions/law-actions";
 import { About } from "@/db/schema";
 import { Loader2 } from "lucide-react";
-interface AboutFormProps {
-    about?: {
+import { RichTextEditor } from "@/components/rich-text-editor";
+interface TermsOfServiceFormProps {
+    termsOfService?: {
     id: string;
     title: string;
-    home: string;
     description: string;
     createdAt: Date | null;
     updatedAt: Date | null;
@@ -23,8 +23,7 @@ interface AboutFormProps {
 
 const aboutSchema = z.object({
     title: z.string().min(1, "Title is required").max(255, "Title must be at most 255 characters long"),
-    description: z.string().min(1, "Description is required").max(255, "Description must be at most 255 characters long"),
-   home: z.string().min(1, "Home is required").max(255, "Home must be at most 255 characters long"),
+    description: z.string().min(1, "Description is required").max(100000, "Description must be at most 255 characters long"),
     createdAt: z.date().optional(),
     
     updatedAt: z.date().optional(),
@@ -32,30 +31,29 @@ const aboutSchema = z.object({
 
 type AboutFormValues = z.infer<typeof aboutSchema>;
 
-export function AddAboutInfo({ about }: AboutFormProps) {
+export function AddTermsOfServise({ termsOfService }: TermsOfServiceFormProps) {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
 
     const form = useForm<AboutFormValues>({
         resolver: zodResolver(aboutSchema),
         defaultValues: {
-            title: about?.title || "",
-            description: about?.description || "",
-            home: about?.home || "",
+            title: termsOfService?.title || "",
+            description: termsOfService?.description || "",
         },
     });
 
     async function onSubmit(values: AboutFormValues) {
         setIsLoading(true);
         try {
-            if (about) {
-               await updateAboutInfo({
+            if (termsOfService) {
+               await updateTermsOfService({
                 ...values,
-                id: about.id
+                id: termsOfService.id
             })
             } else 
             {
-                await createAboutInfo({
+                await createTermsOfService({
                     ...values
                 })
             }
@@ -78,49 +76,38 @@ export function AddAboutInfo({ about }: AboutFormProps) {
                     name="title"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Заголовок</FormLabel>
+                            <FormLabel>Название</FormLabel>
                             <FormControl>
-                                <Textarea placeholder="Введите заголовок" {...field} />
+                                <Textarea placeholder="Политика обработки персональных данных" {...field} />
                             </FormControl>
-                            <FormDescription>Это заголовок, который будет отображаться на странице о нас</FormDescription>
+                            <FormDescription>Это название, которое будет отображаться на странице политики обработки персональных данных</FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
 
-                {/* Description */}
+
+                {/* Home */}
                 <FormField
                     control={form.control}
                     name="description"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Описание</FormLabel>
+                            <FormLabel>Текст политики обработки персональных данных</FormLabel>
                             <FormControl>
-                                <Textarea placeholder="Введите описание" {...field} />
+                            <RichTextEditor
+          value={field.value}
+          onChange={field.onChange}
+          placeholder="Введите текст политики..."
+        />
                             </FormControl>
-                            <FormDescription>Это описание, которое будет отображаться на странице о нас</FormDescription>
+                            <FormDescription>Это текст политики обработки персональных данных, который будет отображаться на странице политики обработки персональных данных</FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
 
-                {/* Home */}
-                <FormField
-                    control={form.control}
-                    name="home"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Описание (Домашняя страница)</FormLabel>
-                            <FormControl>
-                                <Textarea placeholder="Введите описание" {...field} />
-                            </FormControl>
-                            <FormDescription>Это описание, которое будет отображаться на домашней странице </FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-
-               
+                
 
                 <Button type="submit" disabled={isLoading}>
                     {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}

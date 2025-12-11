@@ -340,6 +340,24 @@ export const adminEmails = pgTable("admin_emails", {
     emailIdx: index("admin_emails_email_idx").on(table.email),
 }));
 
+export const privacyPolicy = pgTable("privacy_policy", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    title: varchar("title", { length: 255 }).notNull(),
+    description: text("description").notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => ({
+    titleIdx: index("privacy_policy_title_idx").on(table.title),
+}));
+export const termsOfService = pgTable("terms_of_service", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    title: varchar("title", { length: 255 }).notNull(),
+    description: text("description").notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => ({
+    titleIdx: index("terms_of_service_title_idx").on(table.title),
+}));
 export const schema = {
                 
                     products, 
@@ -359,7 +377,8 @@ export const schema = {
                     categoryImages,
                     manufacturerImages,
                     about,
-                    
+                    privacyPolicy,
+                    termsOfService,
                     contactUs,
                     contactPhones,
                     contactUsTelephones,  
@@ -393,7 +412,8 @@ export type CategoryImage = typeof categoryImages.$inferSelect
 export type ManufacturerImage = typeof manufacturerImages.$inferSelect
 export type TelegramChatId = typeof telegramChatIds.$inferSelect
 export type AdminEmail = typeof adminEmails.$inferSelect
-
+export type PrivacyPolicy = typeof privacyPolicy.$inferSelect
+export type TermsOfService = typeof termsOfService.$inferSelect
 export const ordersRelations = relations(orders, ({ one, many }) => ({
   user: one(user, {
     fields: [orders.userId],
