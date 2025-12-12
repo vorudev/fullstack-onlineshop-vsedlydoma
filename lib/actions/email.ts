@@ -12,7 +12,7 @@ interface SendOrderEmailsParams {
 }
 
 export async function sendOrderEmails(params: SendOrderEmailsParams) {
-  const fromEmail = 'onboarding@resend.dev'
+  const fromEmail = 'noreply@updates.vsedlyadomasantehnika.by'
 const adminEmailsRaw = await getAdminEmails();
 const adminEmails = adminEmailsRaw.map((email) => email.email);
 

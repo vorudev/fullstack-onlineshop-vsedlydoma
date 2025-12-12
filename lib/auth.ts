@@ -36,7 +36,7 @@ emailAndPassword: {
          requireEmailVerification: true,
         sendResetPassword: async ({user, url}) => {
             resend.emails.send({
-                from: 'onboarding@resend.dev',
+                from: 'noreply@updates.vsedlyadomasantehnika.by',
                 to: user.email,
                 subject: 'Reset Password',
                 react: ForgotPasswordEmail({username: user.name, resetUrl: url, userEmail: user.email}) 
@@ -48,7 +48,7 @@ emailVerification: {
     sendOnSignUp: true,
     sendVerificationEmail: async ({user, url}) => {
         resend.emails.send({
-            from: 'onboarding@resend.dev',
+            from: 'noreply@updates.vsedlyadomasantehnika.by',
             to: user.email,
             subject: 'Verify Email',
             react: EmailVerificationEmail({username: user.name || '', verificationUrl: url, userEmail: user.email})

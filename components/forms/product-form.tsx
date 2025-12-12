@@ -49,11 +49,11 @@ interface ProductFormProps {
     manufacturers: {id: string, name: string}[]
 }
 const formSchema = z.object({
- price: z.number().min(1, "Price is required"), 
- title: z.string().min(1, "Title is required"),
-categoryId: z.string().uuid("Category ID is required"),
-manufacturerId: z.string().uuid("Manufacturer ID is required"),
-    description: z.string().min(1, "Description is required"),
+ price: z.number().min(0.1, "Цена обязательна"), 
+ title: z.string().min(1, "Название обязательно"),
+categoryId: z.string().uuid("Категория обязательна"),
+manufacturerId: z.string().uuid("Производитель обязателен"),
+    description: z.string().min(1, "Описание обязательно"),
     inStock: z.string()
 
 })
