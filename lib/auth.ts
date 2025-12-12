@@ -7,6 +7,7 @@ import { db } from "@/db/drizzle"; // your drizzle instance
 import { nextCookies } from "better-auth/next-js";
 import { Resend } from "resend";
 import ForgotPasswordEmail from "@/components/email/reset-password";
+import EmailVerificationEmail from "@/components/email/email-verification";
 const resend = new Resend(process.env.RESEND_API_KEY as string);
 
 
@@ -32,7 +33,7 @@ socialProviders: {
     updateUser: true,
 emailAndPassword: {  
         enabled: true,
-            
+         requireEmailVerification: true,
         sendResetPassword: async ({user, url}) => {
             resend.emails.send({
                 from: 'onboarding@resend.dev',
@@ -42,7 +43,18 @@ emailAndPassword: {
             })
         }
     },
-
+emailVerification: {
+    autoSignInAfterVerification: true,
+    sendOnSignUp: true,
+    sendVerificationEmail: async ({user, url}) => {
+        resend.emails.send({
+            from: 'onboarding@resend.dev',
+            to: user.email,
+            subject: 'Verify Email',
+            react: EmailVerificationEmail({username: user.name || '', verificationUrl: url, userEmail: user.email})
+        })
+    }
+},
 
 
 

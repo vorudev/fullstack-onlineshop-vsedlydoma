@@ -21,7 +21,7 @@ export default async function UsersPage({ searchParams }: PageProps) {
   const searchQuery = search || '';
   const { users, pagination } = await getAllUsers({
     page: currentPage,
-    pageSize: 21,
+    pageSize: 20,
     search: searchQuery,
 
   })

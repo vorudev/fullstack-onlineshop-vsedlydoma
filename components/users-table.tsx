@@ -53,15 +53,15 @@ export function GetAllUsers( { users }: GetAllUsersProps) {
         </TableHeader>
         <TableBody>
           {users.map((user) => (
-            <TableRow key={user.id} className="cursor-pointer " onClick={() => router.push(`/dashboard/users/${user.id}`)}>
+            <TableRow key={user.id} >
               <TableCell className="font-medium">
                 {user.name}</TableCell>
               <TableCell>{user.email}</TableCell>
               <TableCell>{user.phoneNumber || 'Нет номера'}</TableCell>
               <TableCell>{user.role}</TableCell>
               
-              <TableCell className="text-right">
-        <Dialog>
+              <TableCell className="text-right justify-end flex">
+     <div className="flex flex-row gap-2 items-center" >   <Dialog>
       <DialogTrigger asChild>
         <Button variant="ghost">
           <Pencil className="size-4" />
@@ -77,10 +77,12 @@ export function GetAllUsers( { users }: GetAllUsersProps) {
         </DialogHeader>
       </DialogContent>
     </Dialog>
-
+    <Link href={`/dashboard/users/${user.id}`} className="cursor-pointer">Открыть</Link>
+            </div>
  
 
         </TableCell>
+
             </TableRow>
           ))}
         </TableBody>

@@ -11,7 +11,7 @@ export default function Footer() {
         <Link href="/manufacturers" className="text-gray-700">Производители</Link>
 
         <Link href="/about" className="text-gray-700">О нас</Link>
-        <Link href="/contacts" className="text-gray-700">Контакты</Link>
+        <Link href="/contact-us" className="text-gray-700">Контакты</Link>
 
         <Link href="/privacy-policy" className="text-gray-700">Политика конфиденциальности</Link>
         <Link href="/privacy-policy" className="text-gray-700">Политика обработки персональных данных</Link>

@@ -1,5 +1,5 @@
 import { getAllProducts } from "@/lib/actions/product";
-import ProductList from "@/app/products/sort";
+import ProductList from "@/app/search/list";
 import Pagination from "@/components/frontend/pagination-client";
 interface SearchPageProps {
     searchParams: Promise<{

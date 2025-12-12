@@ -44,12 +44,8 @@ export const AddToCart: React.FC<ProductUnited> = ({ product }) => {
     const isInCart = cart.some((item) => item.product.id === product.id);
     
     return (
-        <button
-        className={` lg:px-3 px-2 bg-blue-600 lg:min-w-[140px]  min-w-[60px] text-[14px] lg:text-[16px] font-semibold lg:py-3 py-2 rounded-md flex items-center justify-center gap-2 transition-colors ${isInCart ? "bg-white text-blue-600 border border-blue-600" : "cursor-pointer text-white hover:bg-blue-700 border  "}`}
-        onClick={() => toggleCart(product)}
-     
-        >
-       {isInCart ? <CheckIcon className="lg:w-6 lg:h-6 w-5 h-5" /> : <ShoppingCart className="lg:w-6 lg:h-6 w-5 h-5" />} <span className="text-[14px] lg:text-[16px] hidden lg:block">{isInCart ? "В корзине" : ` Купить`}</span>
-        </button>
+        <button onClick={() => toggleCart(product)} className={`flex cursor-pointer w-full min-w-[140px] max-w-[140px] items-center justify-center gap-2 px-4 py-2 rounded-md border transition-colors ${isInCart ? 'bg-white border-blue-600  text-blue-600 ' : 'bg-blue-600 hover:bg-blue-700 text-white '}`}>
+        {isInCart ? 'В корзине' : 'В корзину'}
+       </button>
     );
  } 

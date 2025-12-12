@@ -105,7 +105,7 @@ const featuredImage = item?.product?.images?.find(img => img.isFeatured) || item
   <div className="flex flex-col items-between  lg:gap-0 lg:items-start w-full">
     <div className="flex gap-4 w-full items-start " >
     {/* Image Section */}
-    <div className="flex-shrink-0 hidden items-center justify-center lg:flex flex-col  overflow-hidden w-full lg:w-[180px]">
+    <div className="flex-shrink-0  hidden items-center justify-center lg:flex flex-col  overflow-hidden w-full lg:w-[180px]">
        <Link className="relative overflow-hidden lg:max-w-[180px] lg:max-h-[150px]  " href={`/product/${item?.product?.slug}`}>
             <ImagesSliderCardFull images={item?.product?.images} title={item?.product?.title} />
           </Link>

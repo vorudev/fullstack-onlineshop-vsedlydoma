@@ -1,6 +1,7 @@
 import { db } from "@/db/drizzle";
 import { categories, products } from "@/db/schema";
-import { eq, isNull, sql, and, inArray } from "drizzle-orm";
+import { eq, isNull, sql, and, inArray, ilike } from "drizzle-orm";
+import { NextResponse } from "next/server";
 
 export type Category = {
   id: string;
@@ -152,4 +153,74 @@ export function buildCategoryUrl(
 ) {
   const path = buildCategoryPath(breadcrumbs);
   return `/categories/${currentSlug}?chain=${encodeURIComponent(path)}`;
+}
+
+export async function getCategoriesWithChaining(page: number , limit: number , search: string = '') {
+  try {
+    const offset = (page - 1) * limit;
+    const conditions = [isNull(categories.parentId)];
+    if (search) {
+      conditions.push(ilike(categories.name, `%${search}%`));
+    }
+   
+    // 1. Получаем родительские категории
+    const rootCategories = await db
+      .select()
+      .from(categories)
+      .where(and(...conditions))
+      .orderBy(categories.name)
+      .limit(limit)
+      .offset(offset);
+
+
+    const totalCountResult = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(categories)
+      .where(isNull(categories.parentId));
+    
+    const totalCount = Number(totalCountResult[0].count);
+
+    if (rootCategories.length === 0) {
+      return {
+        categories: [],
+        totalCount: 0,
+        page,
+        limit,
+        totalPages: 0,
+      };
+    }
+
+    const rootIds = rootCategories.map(cat => cat.id);
+    const allCategories = [...rootCategories];
+    let currentLevelIds = rootIds;
+
+    // Рекурсивно получаем детей до 10 уровней вложенности
+    for (let i = 0; i < 10; i++) {
+      if (currentLevelIds.length === 0) break;
+
+      const children = await db
+        .select()
+        .from(categories)
+        .where(inArray(categories.parentId, currentLevelIds))
+        .orderBy(categories.name);
+
+      if (children.length === 0) break;
+
+      allCategories.push(...children);
+      currentLevelIds = children.map(cat => cat.id);
+    }
+
+    return {
+      categories: allCategories,
+      pagination: {
+        page,
+        pageSize: limit,
+        total: totalCount,
+        totalPages: Math.ceil(totalCount / limit),
+      }
+    };
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    throw new Error('Failed to fetch categories');
+  }
 }

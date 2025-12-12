@@ -344,6 +344,20 @@
       "when": 1765410135882,
       "tag": "0048_harsh_captain_flint",
       "breakpoints": true
+    },
+    {
+      "idx": 49,
+      "version": "7",
+      "when": 1765523861327,
+      "tag": "0049_tense_tigra",
+      "breakpoints": true
+    },
+    {
+      "idx": 50,
+      "version": "7",
+      "when": 1765526774561,
+      "tag": "0050_lazy_multiple_man",
+      "breakpoints": true
     }
   ]
 }

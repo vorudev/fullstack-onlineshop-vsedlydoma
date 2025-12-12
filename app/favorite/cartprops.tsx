@@ -10,6 +10,7 @@ import { getFeaturedImage } from "@/lib/actions/image-actions";
 import {AddToCart}from "../products/add-to-cart-prop";
 import { ProductImage } from "@/db/schema";
 import ImagesSliderCardFull from "../cart/images-slider-card-full";
+import { AddToFavorite } from "../products/add-to-favorite-prop";
 type CartItemProps = {
   item: FavoriteItem;
 };
@@ -64,86 +65,82 @@ const featuredImage = item.product.images.find(img => img.isFeatured) || item.pr
      
         
        
-           <li key={item.product.id} className="flex gap-4 w-full  p-3 bg-white rounded-lg border ">
-
-  <div className="flex flex-col items-between  lg:gap-0 lg:items-start w-full">
-    <div className="flex gap-4 w-full items-start " >
-    {/* Image Section */}
-    <div className="flex-shrink-0 hidden items-center justify-center lg:flex flex-col  overflow-hidden w-full lg:w-[180px]">
-       <Link className="relative overflow-hidden lg:max-w-[180px] lg:max-h-[150px]  " href={`/product/${item.product.slug}`}>
-            <ImagesSliderCardFull images={item.product.images} title={item.product.title} />
-          </Link>
-      <p className="text-gray-400 text-[12px] text-center">{item.product.sku}</p>
-    </div>
-
-    {/* Content Section */}
-    <div className="flex-1 flex-col gap-10 py-3 px-2 hidden lg:flex">
-      <div className="flex justify-between items-start gap-4">
-        <h2 className="text-base lg:font-medium text-[16px] cl text-gray-900 flex-1">{item.product.title}</h2>
-        <button 
-          className="text-gray-400 hover:text-red-500 cursor-pointer transition-colors flex-shrink-0" 
-          onClick={() => removeFromFavorite(item.product.id)}
-          aria-label="Удалить товар"
-        >
-          <Trash2 className="w-5 h-5" />
-        </button>
+    <li className="bg-white rounded-2xl lg:max-w-[450px]  transition-all duration-300 overflow-hidden  group lg:p-[12px] min-w-[300px]" key={item.product.id}> 
+    <div className="hidden lg:block flex flex-col  px-2 py-2">
+    <div className="flex flex-row items-start  gap-2">
+      <div className="relative  mx-auto w-[180px] h-[150px] overflow-hidden  ">
+       {featuredImage?.imageUrl ? <Image src={featuredImage?.imageUrl} alt={item.product.title} fill className="object-contain"/> : <p>Нет картинка товара</p>}
       </div>
-
-      <div className=" justify-between items-center hidden lg:flex">
-        <div className="flex items-center gap-2">
-          
-          <span className="text-sm text-gray-500">шт</span>
-
-        <div className="flex items-center px-2 py-1 rounded-lg">
-                  {rounded ? rounded && 
-                  <div className={`flex mr-2  items-center gap-1 font-semibold ${getRatingColor(rounded)}`}>
-                      <Star className="w-4 h-4" /> {rounded ? rounded : null} 
-                    </div> : null} 
-            <span className=" text-gray-500">
-             {getReviewText(item.product.reviewCount)}
-           </span>  
-         
-         </div>
-        </div>
-       
-          <p className="text-lg font-semibold text-gray-900">{item.product.price.toFixed(2)} руб</p>
-      </div> 
-    </div>
-    </div> 
-     
-    <div className="flex lg:hidden flex-row items-start  gap-2">
-      <div className="relative w-[80px] h-[80px] overflow-hidden  ">
-        <Image src={featuredImage?.imageUrl } alt={item.product.title} fill className="object-contain"/>
       </div>
-
-   <div className="flex flex-col justify-between h-full  flex-1 lg:hidden"> 
-  <Link href={`/product/${item.product.slug}`} className="text-base lg:font-medium line-clamp-2 text-[15px] text-gray-900 ">{item.product.title}</Link>
-   <div className={`${item.product.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-1 rounded-md self-start`}>
-    <p className={`text-[12px] text-gray-600 ${item.product.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>{item.product.inStock}</p>
-    </div>
-   </div>
-
-    <div className="flex flex-col gap-2 justify-start h-full ">
-       <button onClick={() => addToCart(item.product)} className="text-gray-400 hover:text-red-500 cursor-pointer transition-colors flex-shrink-0">
-            <Heart className="w-5 h-5" />
-          </button>
- <button onClick={() => removeFromFavorite(item.product.id)} className="text-gray-400 hover:text-red-500 cursor-pointer transition-colors flex-shrink-0">
-  <Trash2 className="w-5 h-5" />
- </button>
-
-    </div> 
-    </div>
-    <div className="flex gap-4 justify-between pt-4 items-center lg:hidden">
+      <Link href={`/product/${item.product.slug}`}>
+      <h3 className="text-black min-h-[70px] text-[15px] line-clamp-3">
+        {item.product.title}
+      </h3>
       
-       
-        <p className="text-lg font-semibold text-gray-900">{item.product.price.toFixed(2)} руб</p>
-         <div className="flex items-center gap-2">
-     
-          <button onClick={() => addToCart(item.product)} className="text-gray-400 hover:text-red-500 cursor-pointer transition-colors flex-shrink-0">  Купить</button>
+      </Link>
+      <div className="flex flex-row gap-2 pt-2 text-sm items-center">
+        
+      <div className="flex items-center py-1 rounded-lg">
+      {rounded ? rounded && 
+      <div className={`flex mr-2  items-center gap-1 font-semibold ${getRatingColor(rounded)}`}>
+          <Star className="w-4 h-4" /> {rounded ? rounded : null} 
+        </div> : null} 
+<span className=" text-gray-500">
+ {getReviewText(item.product.reviewCount)}
+</span>  
+
+</div>
+      </div>
+      <div className="flex flex-row gap-2 pt-3 text-sm items-center justify-between">
+     <h3 className="text-gray-900 font-semibold text-[16px]">{item.product.price} руб</h3>
+     <div className="flex items-center flex-row pr-1 gap-3">
+      
+      
+     <AddToFavorite product={item.product}/>
+        <AddToCart product={item.product}/>
+      </div>
+      </div>
+    </div>
+       <div className="lg:hidden"><Link className="relative overflow-hidden" href={`/product/${item.product.slug}`}>
+        <ImagesSliderCardFull images={item.product.images} title={item.product.title} />
+          
+          
+        </  Link>
+        
+        <div className="p-5 flex flex-col lg:flex-row gap-2 lg:gap-1 lg:p-0">
+          <Link href={`/product/${item.product.slug}`}>
+          <h3 className="text-gray-900  lg:text-[16px] text-[14px] line-clamp-2">
+            {item.product.title}
+          </h3>
+          </Link>
+          <Link className="flex items-center " href={`/product/${item.product.slug}`}>
+           {rounded ? rounded && 
+          <div className={`flex mr-2 lg:text-[16px] text-[14px] items-center gap-1 ${getRatingColor(rounded)}`}>
+              <Star className="w-4 h-4" /> {rounded ? rounded : null} 
+            </div> : null}  
+<span className=" text-gray-500 text-[14px] lg:text-[16px]">
+{getReviewText(item.product.reviewCount)}
+</span>  
+
+
+          </Link>
+          
+         
+          <div className="flex flex-row gap-3 items-center ">
+             <div className="text-[16px]
+             font-semibold text-gray-900 w-1/2">
+              <h3>{item.product.price} руб</h3></div>
+         <div className="w-1/2 flex flex-row  items-center justify-end gap-2"> 
+          <AddToFavorite product={item.product}/>
+          <AddToCart product={item.product}/>
+
+          </div>
+
+         
+          </div>
         </div>
-      </div>   
-  </div>
-</li>
+        </div>
+      </li>
         
   );
 };

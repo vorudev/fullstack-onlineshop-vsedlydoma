@@ -4,7 +4,7 @@ import SearchBar from "@/components/searchbar";
 import Pagination from "@/components/frontend/pagination-admin";
 
 import { Button } from "@/components/ui/button";
-
+import { getCategoriesWithChaining } from "@/lib/actions/categories";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { CategoryForm } from "@/components/forms/category-form";
 import { CategoriesTable } from "@/components/categories-table-admin";
@@ -21,14 +21,12 @@ interface PageProps {
 export default async function Home( { searchParams }: PageProps) {
   const { page, search, limit } = await searchParams;
   const currentPage = Number(page) || 1;
-  const limitNumber = Number(limit) || 21;
+  const limitNumber = Number(limit) || 20;
   const searchQuery = search || '';
-const { categories, pagination } = await getAllCategories(
-  {
-     page: currentPage,
-    pageSize: limitNumber,
-    search: searchQuery,
-  }
+const { categories, pagination } = await getCategoriesWithChaining(
+  currentPage,
+  limitNumber,
+  searchQuery
 ); // Fetch categories
   return (
      <div className=" w-full p-4 ">
@@ -49,14 +47,14 @@ const { categories, pagination } = await getAllCategories(
     
   {searchQuery && (
         <p className="mb-4 text-gray-600">
-          Результаты поиска: "{searchQuery}" ({pagination.total} найдено)
+          Результаты поиска: "{searchQuery}" ({pagination?.total} найдено)
         </p>
       )}
       <CategoriesTable categories={categories} />
       <div className="mt-4 text-black max-w-[600px] mx-auto">  <Pagination 
-              currentPage={pagination.page}
-              totalPages={pagination.totalPages}
-              total={pagination.total}
+              currentPage={pagination?.page || 1}
+              totalPages={pagination?.totalPages || 1}
+              total={pagination?.total || 0}
               limit={limitNumber}
             /></div>
     </div>

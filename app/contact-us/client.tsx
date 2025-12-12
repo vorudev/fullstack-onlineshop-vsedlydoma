@@ -79,40 +79,7 @@ export default function ContactUsPage({ contactUs }: ContactUsPageProps) {
     </a>
    </li>
    ))}
-       <li >
-   <a 
-   href="https://viber.com/ru/"
-   className="flex items-center gap-2 flex-row"
-    target="_blank">
-    <div className="relative h-[24px] w-[24px]">
-    <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/2044px-WhatsApp.svg.png" alt="WhatsApp" width={24} height={24}/>
-    </div>
-    <p className="text-[14px] ">+7 (999) 999-99-99</p>
-    </a>
-   </li>
-   <li>
-   <a 
-   href="https://viber.com/ru/"
-   className="flex items-center gap-2 flex-row"
-    target="_blank">
-    <div className="relative h-[24px] w-[24px]">
-    <Image src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg" alt="Instagram" width={24} height={24}/>
-    </div>
-    <p className="text-[14px] ">+7 (999) 999-99-99</p>
-    </a>
-   </li>
-   <li>
-   <a 
-   href="https://viber.com/ru/"
-   className="flex items-center gap-2 flex-row"
-    target="_blank">
-    <div className="relative h-[24px] w-[24px]">
-    <Image src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_dbOUeCrOBe-mkfGD-fEjQNECJrkromWTYg&s" alt="Telegram" width={24} height={24}/>
-    </div>
-    <p className="text-[14px] ">+7 (999) 999-99-99</p>
-    </a>
-   </li>
-           
+      
  </ul>
 
 </div>

@@ -1,6 +1,7 @@
 'use client';
 import { zodResolver } from "@hookform/resolvers/zod"
 import Link from "next/link";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { translateError } from "@/components/toast-helper"
 import { useForm } from "react-hook-form"
 import { cn } from "@/lib/utils"
@@ -31,6 +32,7 @@ import { z } from "zod"
 import { toast } from "sonner";
 import { Loader2Icon } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
+import { EmailVerification } from "./email-verification-tab";
  
 
 export const formSchema = z.object({
@@ -54,12 +56,20 @@ export const formSchema = z.object({
     )
 });
 
+type Tab = "signup" | "email-verification"
 
 export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState("")
+  const [selectedTab, setSelectedTab] = useState<Tab>("signup")
+
+  function handleTabChange(email: string) {
+    setEmail(email)
+    setSelectedTab("email-verification")
+  }
   const router = useRouter();
    const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -75,8 +85,7 @@ export function SignupForm({
     setIsLoading(true);
     const { success, message } = await signUp(values.email, values.password, values.username);
     if (success) {
-      toast.success("Вы успешно зарегистрировались");
-      router.push("/");
+      handleTabChange(values.email)
       router.refresh
     } else {
         toast.error(translateError(message))
@@ -84,6 +93,8 @@ export function SignupForm({
     setIsLoading(false);
   }
   return (
+    <Tabs defaultValue="" value={selectedTab} onValueChange={t => setSelectedTab(t as Tab)}>
+      <TabsContent value="signup">
     <div className={cn("flex flex-col w-full text-black gap-6", className)} >
       <Card className="bg-white border-none shadow-none">
         <CardContent>
@@ -172,5 +183,14 @@ export function SignupForm({
         <a href="#" className="underline underline-offset-4 text-blue-500">Политикой конфиденциальности</a>.
       </div>
     </div>
+    </TabsContent>
+    <TabsContent value="email-verification">
+      <div className="flex flex-col w-full text-black gap-6">
+
+     
+        <EmailVerification email={email} />
+      </div>
+    </TabsContent>
+    </Tabs>
   )
 }

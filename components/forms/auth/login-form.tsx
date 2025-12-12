@@ -2,6 +2,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import Link from "next/link"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
  import { translateError } from "@/components/toast-helper";
 import { Button } from "@/components/ui/button"
@@ -26,11 +27,11 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { signIn, signUp } from "@/lib/actions/users"
-
 import { z } from "zod"
 import { toast } from "sonner";
 import { Loader2Icon } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
+import { EmailVerification } from "./email-verification-tab"
  
 const formSchema = z.object({
   email: z
@@ -50,12 +51,18 @@ const formSchema = z.object({
       'Пароль должен содержать хотя бы одну букву и одну цифру'
     )
 });
+type Tab = "login" | "email-verification"
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
   const [isLoading, setIsLoading] = useState(false);
-
+  const [email, setEmail] = useState("")
+  const [selectedTab, setSelectedTab] = useState<Tab>("login")
+  function handleTabChange(email: string) {
+    setEmail(email)
+    setSelectedTab("email-verification")
+  }
   const router = useRouter();
    const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -87,6 +94,9 @@ const signInWithGithub = async () => {
    }, {
     onError: (ctx) => {
       // ctx.error содержит объект ошибки
+      if (ctx.error.code === "EMAIL_NOT_VERIFIED") {
+        handleTabChange(values.email)
+      }
       const errorMessage = ctx.error.message || "Ошибка входа";
       toast.error(translateError(errorMessage));
       console.log(ctx.error);
@@ -103,6 +113,8 @@ const signInWithGithub = async () => {
     setIsLoading(false);
   }
   return (
+    <Tabs defaultValue="" value={selectedTab} onValueChange={t => setSelectedTab(t as Tab)}>
+      <TabsContent value="login">
     <div className={cn("flex flex-col w-full text-black gap-6", className)} >
       <Card className="bg-white border-none shadow-none">
         <CardContent>
@@ -177,5 +189,10 @@ const signInWithGithub = async () => {
         <a href="#" className="underline underline-offset-4 text-blue-500">Политикой конфиденциальности</a>.
       </div>
     </div>
+    </TabsContent>
+    <TabsContent value="email-verification">
+      <EmailVerification email={email} />
+    </TabsContent>
+    </Tabs>
   )
 }

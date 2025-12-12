@@ -41,12 +41,21 @@ export interface FavoriteItem {
    product: ProductUnited['product'];
 }
 
-
+export interface ValidatedFavoriteItem {
+  product: ProductUnited['product'];
+   quantity: number;
+  
+  };
+  
 export interface FavoriteContextType {
   favorite: FavoriteItem[];
   addToFavorite: (product: ProductUnited['product']) => void;
   removeFromFavorite: (productId: string) => void;
   clearFavorite: () => void;
+  updatedFavorite?: ValidatedFavoriteItem[];
+  validationErrors: string[];
+  isValidating: boolean;
+  validateFavorite: () => void;
 }
 
 const FavoriteContext = createContext<FavoriteContextType | undefined>(undefined);
@@ -109,7 +118,9 @@ const loadFavorite = (): FavoriteItem[] => {
 
 export const FavoriteProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   const [favorite, setFavorite] = useState<FavoriteItem[]>(() => loadFavorite());
-
+  const [updatedFavorite, setUpdatedFavorite] = useState<ValidatedFavoriteItem[]>();
+const [isValidating, setIsValidating] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
   // Сохранение в localStorage при изменении корзины
   useEffect(() => {
     try {
@@ -172,7 +183,33 @@ export const FavoriteProvider: React.FC<{children: ReactNode}> = ({ children }) 
 
 
   const distinctItems = useMemo(() => favorite.length, [favorite]);
-
+  const validateFavorite = async () => {
+    try {
+      setValidationErrors([]);
+      setIsValidating(true);
+      const response = await fetch('/api/cart/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: favorite }),
+      });
+  
+      if (!response.ok) {
+        setValidationErrors(['Ошибка при валидации корзины, пожалуйста, попробуйте снова']);
+        return;
+      }
+  
+      const data = await response.json();
+  
+      // Фильтруем null, на всякий случай
+      const updatedItems = (data.updatedItems || []).filter(Boolean);
+  
+      setUpdatedFavorite(updatedItems);
+      setIsValidating(false);
+    } catch (error) {
+      setValidationErrors(['Произошла ошибка при валидации корзины, пожалуйста, попробуйте снова']);
+      setIsValidating(false);
+    }
+  };
   const value = useMemo(
     () => ({
       favorite,
@@ -184,6 +221,10 @@ export const FavoriteProvider: React.FC<{children: ReactNode}> = ({ children }) 
       distinctItems,
       isInFavorite,
       getItemQuantity,
+      validateFavorite,
+      updatedFavorite,
+      validationErrors,
+      isValidating,
     }),
     [
       favorite, 
@@ -195,6 +236,10 @@ export const FavoriteProvider: React.FC<{children: ReactNode}> = ({ children }) 
       distinctItems,
       isInFavorite,
       getItemQuantity,
+      validateFavorite,
+      updatedFavorite,
+      validationErrors,
+      isValidating,
     ]
   );
 

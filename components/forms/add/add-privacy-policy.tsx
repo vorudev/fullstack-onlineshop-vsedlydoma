@@ -10,7 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { updatePrivacyPolicy, createPrivacyPolicy } from "@/lib/actions/law-actions";
 import { About } from "@/db/schema";
 import { Loader2 } from "lucide-react";
-import { RichTextEditor } from "@/components/rich-text-editor";
+import dynamic from 'next/dynamic';
 interface PrivacyPolicyFormProps {
     privacyPolicy?: {
     id: string;
@@ -20,7 +20,12 @@ interface PrivacyPolicyFormProps {
     updatedAt: Date | null;
 } | null
 }
-
+// Динамический импорт редактора
+const RichTextEditor = dynamic(
+    () => import('@/components/rich-text-editor').then((mod) => mod.RichTextEditor),
+    { ssr: false }
+  );
+  
 const aboutSchema = z.object({
     title: z.string().min(1, "Title is required").max(255, "Title must be at most 255 characters long"),
     description: z.string().min(1, "Description is required").max(100000, "Description must be at most 255 characters long"),

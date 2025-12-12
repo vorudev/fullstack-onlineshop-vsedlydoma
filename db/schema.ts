@@ -140,6 +140,11 @@ updatedAt: timestamp("updated_at").defaultNow(),
   skuIdx: index("products_sku_idx").on(table.sku),
 
   priceIdx: index("products_price_idx").on(table.price),
+  // === pg_trgm индексы для fuzzy search ===
+  // GIN индекс для title (основной поиск)
+  titleTrigramIdx: index("products_title_trgm_idx")
+    .using('gin', sql`${table.title} gin_trgm_ops`),
+  
 }));
 export const productImages = pgTable("product_images", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -209,8 +214,17 @@ export const productAttributes = pgTable("product_attributes", {
   slug: varchar("slug", { length: 255 }).notNull(), // для фильтрации, например "Color"
   createdAt: timestamp("created_at").defaultNow(),
 }, (table) => ({
-  slugIdx: index("product_attributes_slug_idx").on(table.slug),
-  nameIdx: index("product_attributes_name_idx").on(table.name),
+  slugValueIdx: index("product_attributes_slug_value_idx")
+  .on(table.slug, table.value),
+
+// Для подсчета фильтров
+productSlugIdx: index("product_attributes_product_slug_idx")
+  .on(table.productId, table.slug),
+
+// Составной для JOIN
+productSlugValueIdx: index("product_attributes_product_slug_value_idx")
+  .on(table.productId, table.slug, table.value),
+
 }));
 
 

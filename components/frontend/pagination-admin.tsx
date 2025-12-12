@@ -51,12 +51,12 @@ const showMoreItems = (limit: number) => {
     <div className="flex flex-col items-center justify-center gap-3 mt-8">
         <button
         onClick={() => showMoreItems(limit + 20)}
-        className="px-4 py-3 border text-white hover:bg-gray-700 transition-colors duration-300 rounded-xl cursor-pointer border-gray-600 border disabled:opacity-50 disabled:cursor-not-allowed bg-gray-800 w-full  "
+        className="px-4 py-3 border text-sm text-white hover:bg-neutral-800 transition-colors duration-300 rounded-xl cursor-pointer border-neutral-700 border disabled:opacity-50 disabled:cursor-not-allowed bg-neutral-900 w-full  "
       >
         Показать ещё
       </button>
       {/* Кнопка "Предыдущая" */}
-     <div className="flex px-1  w-full border-gray-600 border rounded-xl bg-gray-800 items-center justify-between gap-2">
+     <div className="flex px-1  w-full border-neutral-700 border rounded-xl bg-neutral-900 items-center justify-between gap-2">
      <button
         onClick={() => goToPage(currentPage - 1)}
         disabled={currentPage === 1}
@@ -73,10 +73,10 @@ const showMoreItems = (limit: number) => {
         <button
           key={page}
           onClick={() => goToPage(page)}
-          className={` py-3 px-2   lg:px-4 cursor-pointer font-semibold text-gray-200 ${
+          className={` py-3 px-2 text-sm lg:px-4 cursor-pointer font-semibold text-gray-200 ${
             page === currentPage
               ? 'border-b-2  border-b-blue-600 text-gray-200 '
-              : 'hover:bg-gray-700  text-gray-200'
+              : 'hover:bg-neutral-800  text-gray-200'
           }`}
         >
           {page}

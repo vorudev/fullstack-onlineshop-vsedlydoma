@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 import { db } from "@/db/drizzle";
 import { Product, products, productAttributes, orderItems, orders, categories, productImages, reviews, Manufacturer, manufacturers, manufacturerImages } from "@/db/schema";
-import { desc, eq, gte, inArray, lte, notInArray, asc  } from "drizzle-orm";
+import { desc, eq, gte, inArray, lte, notInArray, asc, getTableColumns  } from "drizzle-orm";
 import { unstable_cache } from 'next/cache';
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
@@ -386,6 +386,34 @@ function escapeLikePattern(str: string): string {
     .replace(/%/g, '\\%')   // Экранируем %
     .replace(/_/g, '\\_');  // Экранируем _
 }
+
+export async function searchProducts(query: string, limit = 20) {
+  const productsResult = await db
+    .select({
+      id: products.id,
+      title: products.title,
+      price: products.price,
+      slug: products.slug,
+      sku: products.sku,
+      // Оценка похожести (0..1)
+      similarity: sql<number>`similarity(${products.title}, ${query})`,
+    })
+    .from(products)
+    .where(
+      // Оператор % - "похоже на"
+      sql`${products.title} % ${query}`
+      // ИЛИ явно указать порог:
+      // sql`similarity(${products.title}, ${query}) > 0.3`
+    )
+    .orderBy(
+      // Сортировка по релевантности
+      sql`similarity(${products.title}, ${query}) DESC`
+    )
+    .limit(limit);
+    return productsResult;
+}
+
+
 export const getAllProducts = async ({
   page = 1,
   pageSize = 20,
@@ -416,19 +444,14 @@ export const getAllProducts = async ({
       const searchPattern = `%${escapedSearch}%`;
 
       const searchConditions = [
-        ilike(products.title, searchPattern),
-        ilike(products.description, searchPattern),
-        ilike(products.slug, searchPattern),
-        ilike(products.sku, searchPattern),
+        sql`similarity(${products.title}, ${validatedSearch}) > 0.1`,
+        sql`similarity(${products.description}, ${validatedSearch}) > 0.1`,
+        ilike(products.sku, `%${validatedSearch}%`),
+         
+
+
       ];
 
-      // Поиск по UUID только если строка похожа на UUID
-      const uuidResult = uuidSchema.safeParse(validatedSearch);
-      if (uuidResult.success) {
-        searchConditions.push(
-          eq(products.id, uuidResult.data)
-        );
-      }
 
       // Поиск по числовым полям (цена)
       const numericSearch = Number(validatedSearch);
@@ -451,7 +474,16 @@ export const getAllProducts = async ({
     }
     // Базовые запросы
     let query = db
-      .select()
+      .select({
+        ...getTableColumns(products),
+    relevance: validatedSearch 
+      ? sql<number>`GREATEST(
+          similarity(${products.title}, ${validatedSearch}) * 3,
+          similarity(${products.description}, ${validatedSearch}) * 1
+        )`
+      : sql<number>`0`
+  })
+      
       .from(products)
       .$dynamic();
    
@@ -472,7 +504,15 @@ export const getAllProducts = async ({
       query
         .limit(pageSize)
         .offset(offset)
-        .orderBy(desc(products.createdAt)), // DESC для новых товаров первыми
+        .orderBy(
+          // Если есть поиск - сортируем по релевантности, иначе по дате
+          validatedSearch
+            ? sql`GREATEST(
+                similarity(${products.title}, ${validatedSearch}) * 3,
+                similarity(${products.description}, ${validatedSearch}) * 1
+              ) DESC`
+            : desc(products.createdAt)
+        ), // DESC для новых товаров первыми
       countQuery
     ]);
     const productIds = allProducts.map(r => r.id);

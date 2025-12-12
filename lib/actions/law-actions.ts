@@ -7,13 +7,19 @@ import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 
 export async function getPrivacyPolicy() {
-    const privacyPolicyData = await db.select().from(privacyPolicy);
-    return privacyPolicyData[0];
+    const privacyPolicyData = await db.query.privacyPolicy.findFirst();
+    if (!privacyPolicyData) {
+        return null;
+    }
+    return privacyPolicyData;
 }
 
 export async function getTermsOfService() {
-    const termsOfServiceData = await db.select().from(termsOfService);
-    return termsOfServiceData[0];
+    const termsOfServiceData = await db.query.termsOfService.findFirst();
+    if (!termsOfServiceData) {
+        return null;
+    }
+    return termsOfServiceData;
 }
 export const updatePrivacyPolicy = async (privacyPolicyInfo: Omit<PrivacyPolicy, "createdAt" | "updatedAt">) => {
     try {
