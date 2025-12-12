@@ -109,10 +109,16 @@ export default function DesktopSection({productDetails}: ProductUnited) {
            <p className="text-[12px] text-gray-600 ">Код товара {productDetails?.sku}</p>
            </div>
         
-      <div className="relative w-[90px] h-[40px]">
-          {productDetails?.manufacturer !== null && <Image src={productDetails?.manufacturer.images[0].imageUrl} alt="Product" fill className="object-contain" />}
-          </div>
-          
+           {productDetails?.manufacturer && productDetails.manufacturer.images?.length > 0 && (
+  <div className="relative w-[90px] h-[40px]">
+    <Image 
+      src={productDetails.manufacturer.images[0]?.imageUrl} 
+      alt="Product" 
+      fill 
+      className="object-contain" 
+    />
+  </div>
+)}
       </div>
       
       
