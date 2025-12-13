@@ -41,7 +41,7 @@ const manufacturersWithImages = manufacturers?.map(manufacturer => {
     return (
       
         <div className=" min-h-screen mx-auto  xl:max-w-[1400px] lg:max-w-[1000px]  text-black">
-         <div className="absolute z-10 hidden lg:flex">
+         <div className="absolute z-10 border-2 border-gray-100 rounded-xl hidden lg:flex">
   <CategoriesTable categories={categories} />
 </div>
           <div className="lg:ml-81 ml-0 overflow-hidden md:pt-10 lg:pt-5 pt-4 flex flex-col gap-7  md:px-10">
