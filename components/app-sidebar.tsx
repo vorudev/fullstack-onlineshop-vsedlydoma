@@ -181,7 +181,7 @@ export async function AppSidebar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild >
                   <Link href="/" className="h-15 flex items-center gap-2 px-2 cursor-pointer">
-                    <ChevronLeft className="size-4 text-gray-400" /> <span className="text-[15px] text-gray-400">На сайт</span>
+                    <ChevronLeft className="size-4 text-gray-100" /> <span className="text-[15px] text-gray-100">На сайт</span>
                   </Link>
                 </DropdownMenuTrigger>
               </DropdownMenu>
