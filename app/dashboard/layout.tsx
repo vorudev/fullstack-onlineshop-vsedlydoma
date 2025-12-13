@@ -2,6 +2,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import {headers} from 'next/headers'
 import {auth } from '@/lib/auth'
+import { CheckCircle } from "lucide-react"
 import { NextResponse } from "next/server"
 import { redirect } from "next/navigation"
 
@@ -19,7 +20,8 @@ if (!hasAccess.success) return redirect("/")
     <SidebarProvider>
       <AppSidebar/>
       <main className="dark w-full bg-background">
-        <SidebarTrigger />
+        <SidebarTrigger  className="w-10 h-10 bg-neutral-800" /> 
+
         {children}
       </main>
     </SidebarProvider>

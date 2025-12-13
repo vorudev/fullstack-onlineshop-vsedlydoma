@@ -5,6 +5,7 @@ import AdminPageUser from "./frontend/admin-page-user";
 import { getPendingReviewsCount } from "@/lib/actions/reviews";
 import {
   Sidebar,
+  SidebarTrigger,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
