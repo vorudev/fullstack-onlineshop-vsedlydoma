@@ -20,7 +20,7 @@ if (!hasAccess.success) return redirect("/")
     <SidebarProvider>
       <AppSidebar/>
       <main className="dark w-full bg-background">
-        <SidebarTrigger  className="w-10 h-10 bg-neutral-800" /> 
+        <SidebarTrigger  className="w-10 h-10 m-1 bg-neutral-800" /> 
 
         {children}
       </main>
