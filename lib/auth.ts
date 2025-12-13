@@ -35,7 +35,7 @@ emailAndPassword: {
         enabled: true,
          requireEmailVerification: true,
         sendResetPassword: async ({user, url}) => {
-            resend.emails.send({
+           await resend.emails.send({
                 from: 'noreply@updates.vsedlyadomasantehnika.by',
                 to: user.email,
                 subject: 'Reset Password',
@@ -47,7 +47,7 @@ emailVerification: {
     autoSignInAfterVerification: true,
     sendOnSignUp: true,
     sendVerificationEmail: async ({user, url}) => {
-        resend.emails.send({
+     await  resend.emails.send({
             from: 'noreply@updates.vsedlyadomasantehnika.by',
             to: user.email,
             subject: 'Verify Email',
