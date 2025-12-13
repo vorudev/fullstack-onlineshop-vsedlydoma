@@ -119,7 +119,7 @@ export default function CategoriesStats({ category }: CategoryStatsProps) {
                     Выручка
                   </p>
                   <p className="text-2xl font-bold text-neutral-100">
-                    ₽{category.current.totalRevenue.toLocaleString()}
+                    {category.current.totalRevenue.toLocaleString()} руб
                   </p>
                 </div>
               </div>

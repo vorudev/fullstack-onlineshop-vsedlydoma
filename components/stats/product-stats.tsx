@@ -110,7 +110,7 @@ export default function TopProducts({ topProducts }: { topProducts: TopProduct[]
                   <div>
                     <p className="md:hidden text-neutral-400 text-xs mb-0.5">Выручка</p>
                     <p className="text-neutral-100 font-semibold text-sm md:text-right">
-                      ₽{product.totalRevenue.toLocaleString()}
+                      {product.totalRevenue.toLocaleString()} руб
                     </p>
                   </div>
                 </div>

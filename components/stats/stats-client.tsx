@@ -41,7 +41,7 @@ export default function AdminStats({ stats }: { stats: StatCardProps }) {
     },
     {
       title: 'Общая выручка',
-      value: `₽${stats.current.totalRevenue.toLocaleString()}`,
+      value: `${stats.current.totalRevenue.toLocaleString()} руб`,
       growth: stats.growth.totalRevenue,
       icon: DollarSign,
       color: 'text-emerald-500',
@@ -49,7 +49,7 @@ export default function AdminStats({ stats }: { stats: StatCardProps }) {
     },
     {
       title: 'Средний чек',
-      value: `₽${stats.current.averageOrderValue.toLocaleString()}`,
+      value: `${stats.current.averageOrderValue.toLocaleString()} руб`,
       growth: stats.growth.averageOrderValue,
       icon: TrendingUp,
       color: 'text-purple-500',
