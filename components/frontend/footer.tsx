@@ -44,7 +44,7 @@ export default function Footer({ contacts }: Props) {
       {/* Социальные сети */}
       <div className="flex items-center gap-4 mt-6">
         {contacts?.clientInfo.map((client) => (
-          <Link href={client.link} target="_blank" className="relative w-[24px] h-[24px] ">
+          <Link key={client.id} href={client.link} target="_blank" className="relative w-[24px] h-[24px] ">
             <Image src={client.src} alt={client.phone} width={24} height={24} />
           </Link>
         ))}
