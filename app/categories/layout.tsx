@@ -1,17 +1,18 @@
 import Footer from "@/components/frontend/footer";
 import Header from "@/components/frontend/header";
 import NavMenuMobile from "@/components/frontend/nav-menu-mobile";
-
-export default function CategoryLayout({ children }: { children: React.ReactNode }) {
+import { getContactUs } from "@/lib/actions/contact-us";
+export default async function CategoryLayout({ children }: { children: React.ReactNode }) {
+    const contacts = await getContactUs()
     return (
     <>
 
-    <Header />
+    <Header contacts={contacts} />
     <div className="bg-gray-100">
            
             {children}
       
     <NavMenuMobile />
-    <Footer />  </div>
+    <Footer contacts={contacts} />  </div>
     </>
 )}

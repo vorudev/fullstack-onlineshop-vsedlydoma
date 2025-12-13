@@ -200,13 +200,29 @@ interface ProductUnited {
   reviewsLimit: number;
 }
 
-interface Manufacturer {
-  id: string;
-  name: string;
-  logo: string;
+interface Manufacturers {
+  manufacturers: {
+    id: string;
+    name: string;
+    slug: string;
+    description: string | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+}[];
+}
+interface Categories { 
+  categories: {
+    id: string;
+    name: string;
+    slug: string;
+    description: string | null;
+    parentId: string | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+}[];
 }
 
-const AdminProductPage = ({ productDetails, reviewsLimit }: ProductUnited) => {
+const AdminProductPage = ({ productDetails, reviewsLimit, categories, manufacturers }: ProductUnited & Categories & Manufacturers ) => {
   // Состояния основной информации
   const [productName, setProductName] = useState<string>('iPhone 15 Pro Max');
   const [isActive, setIsActive] = useState<boolean>(true);
@@ -321,7 +337,7 @@ const AdminProductPage = ({ productDetails, reviewsLimit }: ProductUnited) => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                    <ProductForm product={productDetails} categories={[]} manufacturers={[]} />
+                    <ProductForm product={productDetails} categories={categories} manufacturers={manufacturers} />
                   
 
                  
@@ -707,7 +723,7 @@ const AdminProductPage = ({ productDetails, reviewsLimit }: ProductUnited) => {
               </div>
             </CardContent>
             <CardFooter>
-              <Button variant="outline" className="w-full gap-2" onClick={() => router.push(`/dashboard/categories/${productDetails.breadcrumbs?.slug}`)}>
+              <Button variant="outline" className="w-full gap-2" onClick={() => router.push(`/dashboard/categories/${productDetails.categoryId}`)}>
                 <Layers className="h-4 w-4" />
                 Управление категорией товара
               </Button>

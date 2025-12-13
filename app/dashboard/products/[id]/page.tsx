@@ -4,7 +4,7 @@ import { getProductAttributesWithCategories } from "@/lib/actions/attributes";
 import AttributesTable from "@/components/attributes-table";
 import AttributeForm from "@/components/forms/attributes-form";
 import Image from "next/image";
-import { getCategories } from "@/lib/actions/product-categories";
+import { getAllCategories, getCategories } from "@/lib/actions/product-categories";
 import { getProductImages } from "@/lib/actions/image-actions";
 import {CreateImagesToProductForm} from "@/components/forms/create-images-to-product-form";
 import { Button } from "@/components/ui/button";
@@ -29,7 +29,11 @@ export default async function ProductPage({ params, searchParams }:{
   const { id } = await params;
   const { reviewsLimit: reviewsLimitParam } = await searchParams;
   const reviewsLimit = parseInt(reviewsLimitParam || '5');
-const productDetails = await getProductsWithDetailsAdmin(id, reviewsLimit);
+const [productDetails, manufacturers, categories] = await Promise.all([
+  getProductsWithDetailsAdmin(id, reviewsLimit),
+  getAllManufacturers(),
+  getAllCategories(),
+]);
   if (!productDetails) {
     return <div>Товар не найден</div>
   }
@@ -37,7 +41,7 @@ const productDetails = await getProductsWithDetailsAdmin(id, reviewsLimit);
 
   return (
   
-    <AdminProductPage productDetails={productDetails} reviewsLimit={reviewsLimit} />
+    <AdminProductPage productDetails={productDetails} reviewsLimit={reviewsLimit} categories={categories.categories} manufacturers={manufacturers.manufacturers}/>
      
     
   );

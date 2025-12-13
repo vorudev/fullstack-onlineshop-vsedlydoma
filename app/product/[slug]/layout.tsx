@@ -1,18 +1,20 @@
 import Header from "@/components/frontend/header";
 import NavMenuMobile from "@/components/frontend/nav-menu-mobile";
 import Footer from "@/components/frontend/footer";
-export default function ProductLayout({
+import { getContactUs } from "@/lib/actions/contact-us";
+export default async function ProductLayout({
     children,
   }: {
     children: React.ReactNode;
   }) {
+    const contacts = await getContactUs()
     return (
       <>
-        <Header />
+        <Header contacts={contacts} />
  <main className="min-h-screen lg:bg-gray-100">
         {children}
                 <NavMenuMobile />
-                <Footer />
+                <Footer contacts={contacts}   />
                 </main>
       </>
     );

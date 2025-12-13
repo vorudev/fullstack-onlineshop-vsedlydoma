@@ -1,7 +1,31 @@
 import Link from "next/link";
 import Image from "next/image";
-
-export default function Footer() {
+interface Props { 
+  contacts: {
+    clientInfo: {
+        id: string;
+        phone: string;
+        src: string;
+        link: string;
+        contactUsId: string | null;
+        createdAt: Date | null;
+        updatedAt: Date | null;
+    }[];
+    contactUsTelephones: {
+        id: string;
+        phone: string;
+        contactUsId: string | null;
+        createdAt: Date | null;
+        updatedAt: Date | null;
+    }[];
+    id: string;
+    title: string;
+    description: string;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+} | null
+}
+export default function Footer({ contacts }: Props) {
   return (
     <footer className="mt-10  bg-[#F7F7F8] border-t border-gray-200 px-4 py-6 mb-[52px] lg:mb-0">
       {/* Верхние ссылки */}
@@ -19,17 +43,12 @@ export default function Footer() {
 
       {/* Социальные сети */}
       <div className="flex items-center gap-4 mt-6">
-       <Link href="https://viber.click/375293808246" target="_blank" className="relative w-[24px] h-[24px] ">
-        <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Viber_logo_2018_%28without_text%29.svg/970px-Viber_logo_2018_%28without_text%29.svg.png" alt="viber" width={24} height={24} />
-       </Link>
-
-        <Link href="https://t.me/Dmitry2407" target="_blank" className="relative w-[24px] h-[24px] ">
-        <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Telegram_logo.svg/1200px-Telegram_logo.svg.png" alt="telegram" width={24} height={24} />
-       </Link>
-
-        <Link href="https://www.instagram.com/santehmir_.by/" target="_blank" className="relative w-[24px] h-[24px] ">
-        <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/1200px-Instagram_logo_2016.svg.png" alt="instagram" width={24} height={24} />
-       </Link>
+        {contacts?.clientInfo.map((client) => (
+          <Link href={client.link} target="_blank" className="relative w-[24px] h-[24px] ">
+            <Image src={client.src} alt={client.phone} width={24} height={24} />
+          </Link>
+        ))}
+      
 
        
       </div>

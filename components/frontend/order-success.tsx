@@ -49,12 +49,7 @@ export default function OrderSuccess({ order }: OrderSuccessProps) {
     });
   };
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('ru-RU', {
-      style: 'currency',
-      currency: 'RUB'
-    }).format(price);
-  };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-teal-50 to-cyan-50 py-12 px-4">
@@ -97,11 +92,19 @@ export default function OrderSuccess({ order }: OrderSuccessProps) {
             <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-lg">
               <Package className="w-5 h-5 text-slate-600 mt-1" />
               <div>
-                <p className="text-sm text-slate-600 mb-1">Статус</p>
-                <span className="inline-block px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm font-medium">
-                  {order.status}
-                </span>
-              </div>
+  <p className="text-sm text-slate-600 mb-1">Статус</p>
+  <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
+    order.status === 'completed' ? 'bg-green-100 text-green-800' :
+    order.status === 'pending' ? 'bg-amber-100 text-amber-800' :
+    order.status === 'cancelled' ? 'bg-red-100 text-red-800' :
+    'bg-gray-100 text-gray-800'
+  }`}>
+    {order.status === 'completed' ? 'Завершен' :
+     order.status === 'pending' ? 'Оформлен' :
+     order.status === 'cancelled' ? 'Отменен' :
+     order.status}
+  </span>
+</div>
             </div>
           </div>
 
@@ -163,12 +166,12 @@ export default function OrderSuccess({ order }: OrderSuccessProps) {
                     <p className="text-sm text-slate-500">Артикул: {item.productSku}</p>
                   )}
                   <p className="text-sm text-slate-600 mt-1">
-                    {formatPrice(item.price)} × {item.quantity} шт.
+                    {(item.price).toFixed(2)} руб × {item.quantity} шт.
                   </p>
                 </div>
                 <div className="text-right">
                   <p className="font-bold text-slate-800 text-lg">
-                    {formatPrice(item.price * item.quantity)}
+                    {(item.price * item.quantity).toFixed(2)} руб
                   </p>
                 </div>
               </div>
@@ -180,7 +183,7 @@ export default function OrderSuccess({ order }: OrderSuccessProps) {
             <div className="flex items-center justify-between">
               <span className="text-xl font-bold text-slate-800">Итого:</span>
               <span className="text-2xl font-bold text-slate-800">
-                {formatPrice(order.total)}
+                {order.total.toFixed(2)} руб
               </span>
             </div>
           </div>

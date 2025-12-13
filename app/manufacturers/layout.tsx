@@ -1,19 +1,20 @@
 import Header from "@/components/frontend/header";
 import NavMenuMobile from "@/components/frontend/nav-menu-mobile";
-
+import { getContactUs } from "@/lib/actions/contact-us";
 import Footer from "@/components/frontend/footer";
-export default function ManufacturersLayout({ children }: { children: React.ReactNode }) {
+export default async function ManufacturersLayout({ children }: { children: React.ReactNode }) {
+    const contacts = await getContactUs()
     return (
     <>
 
-    <Header />
+    <Header contacts={contacts} />
 
     <div className="bg-gray-100 ">
            
             {children}
         
     <NavMenuMobile />
-    <Footer />
+    <Footer  contacts={contacts}/>
     </div>
 </>
     )

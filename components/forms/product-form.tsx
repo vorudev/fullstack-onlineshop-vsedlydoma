@@ -152,11 +152,13 @@ export function ProductForm({product, categories: initialCategories, manufacture
         } 
         if (product) {
           await updateProduct({ ...productData, id: product.id });
+          
         } else {
           await createProduct(productData);
+          form.reset();
         }
 
-        form.reset();
+        
         setIsLoading(false);
         router.refresh();
       } catch (error) {

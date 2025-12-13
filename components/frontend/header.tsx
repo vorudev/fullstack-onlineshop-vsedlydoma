@@ -10,8 +10,32 @@ import UserElement from "./icons-header/user-header"
 import CartHeader from "./icons-header/cart-header"
 import { getCategories } from "@/lib/actions/product-categories";
 
-
-export default function Header() {
+interface Props { 
+  contacts: {
+    clientInfo: {
+        id: string;
+        phone: string;
+        src: string;
+        link: string;
+        contactUsId: string | null;
+        createdAt: Date | null;
+        updatedAt: Date | null;
+    }[];
+    contactUsTelephones: {
+        id: string;
+        phone: string;
+        contactUsId: string | null;
+        createdAt: Date | null;
+        updatedAt: Date | null;
+    }[];
+    id: string;
+    title: string;
+    description: string;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+} | null
+}
+export default function Header({ contacts }: Props) {
   return (
     <>
       <header className="bg-white lg:hidden flex flex-col text-black mx-auto gap-3 py-2 px-3">
@@ -65,8 +89,10 @@ className="px-6 py- disabled:opacity-50 items-center gap-2 hidden md:flex"
     <Link href="/profile" className="2xl:text-lg">Профиль</Link>
   </div>
 
-  {/* Правый блок */}
-  <p>8-800-555-35-35</p>
+
+ <p> {contacts?.contactUsTelephones[0]?.phone}
+ </p>
+
 </nav>
         
         <div className="flex flex-row justify-between gap-3 items-center text-gray-600 py-2 px-3">
