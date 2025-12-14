@@ -10,8 +10,43 @@ import Header from '@/components/frontend/header';
 import Image from 'next/image';
 import { Suspense } from 'react';
 import Subcat from './subcat';
+import { Metadata } from 'next';
 interface PageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({ params  }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const data = await getCategoryWithNavigation(slug);
+  
+  if (!data) {
+    notFound();
+  }
+
+  const { category, breadcrumbs, subcategories} = data;
+  if (subcategories.length === 0) {
+    redirect(`/products?category=${category.slug}`);
+  }
+
+  
+  const canonicalUrl = `https://fullstack-onlineshop-vsedlydoma.vercel.app/categories/${category.slug}`;
+  return {
+    title: category.name, // или productDetails.title
+    description: `${category.description} — ${category.description || 'Купить в Минске по выгодной цене'}`,
+    keywords: `${category.name || ''}, сантехника, товары для дома минск`,
+    alternates: {
+      canonical: canonicalUrl, // ← Вот это нужно добавить
+    },
+    openGraph: {
+      type: 'website', 
+      url: canonicalUrl, // Тоже хорошо для соцсетей
+      title: category.name,
+      description: category.description || "",
+      siteName: 'Магазин Всё для дома',
+      locale: 'ru_RU',
+
+    },
+  };
 }
 
 export default async function CategoryPage({ params }: PageProps) {

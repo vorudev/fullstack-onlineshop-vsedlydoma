@@ -5,14 +5,53 @@ import { ReviewsTable } from "@/components/reviews-table";
 import Link from "next/link";
 import { buildCategoryChain } from "@/lib/actions/product";
 import Section1 from "./section1";
-import Section2 from "./section2";
+import type { Metadata } from "next";
 import {getProductsWithDetailsLeftJoin} from "@/lib/actions/product";
 
-import Image from "next/image";
 interface ProductPageProps {
   params:  Promise<{ slug: string }>;
   searchParams: Promise<{ reviewsLimit?: string}>;
 }
+export async function generateMetadata({ params,  searchParams  }: ProductPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const { reviewsLimit: reviewsLimitParam } = await searchParams;
+  const reviewsLimit = parseInt(reviewsLimitParam || '5');
+  const productDetails = await getProductsWithDetailsLeftJoin(slug, reviewsLimit);
+
+  if (!productDetails) {
+    return {
+      title: 'Товар не найден',
+      description: 'Запрашиваемый товар не найден',
+    };
+  }
+  const canonicalUrl = `https://fullstack-onlineshop-vsedlydoma.vercel.app/product/${slug}`;
+  return {
+    title: productDetails.title, // или productDetails.title
+    description: `${productDetails.description} — ${productDetails.description || 'Купить в Минске по выгодной цене'}`,
+    keywords: `${productDetails.keywords || ''}, сантехника, товары для дома минск`,
+    alternates: {
+      canonical: canonicalUrl, // ← Вот это нужно добавить
+    },
+    openGraph: {
+      type: 'website', 
+      url: canonicalUrl, // Тоже хорошо для соцсетей
+      title: productDetails.title,
+      description: productDetails.description,
+      images: [
+        {
+          url: productDetails.images[0].imageUrl,
+          width: 1200,
+          height: 630,
+          alt: productDetails.title,
+        },
+      ],
+      siteName: 'Магазин Всё для дома',
+      locale: 'ru_RU',
+
+    },
+  };
+}
+
 export default async function ProductPage({ params, searchParams }: ProductPageProps) {
   // Ожидаем params перед использованием
   const { slug } = await params;

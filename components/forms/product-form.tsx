@@ -54,8 +54,8 @@ const formSchema = z.object({
 categoryId: z.string().uuid("Категория обязательна"),
 manufacturerId: z.string().uuid("Производитель обязателен"),
     description: z.string().min(1, "Описание обязательно"),
-    inStock: z.string()
-
+    inStock: z.string().min(1, "статус наличия обязателен"),
+keywords: z.string().min(1, "Ключевые слова обязательны"),
 })
 
 export function ProductForm({product, categories: initialCategories, manufacturers: initialManufacturers}: ProductFormProps) {
@@ -415,6 +415,20 @@ export function ProductForm({product, categories: initialCategories, manufacture
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="keywords"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Ключевые слова для браузера</FormLabel>
+                <FormControl>
+                  <Textarea placeholder="Введите ключевые слова для браузера" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
               </div>
 
           <Button type="submit" disabled={isLoading} className="w-full">

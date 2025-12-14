@@ -138,6 +138,7 @@ interface ProductUnited {
       categoryId: string | null;
       manufacturerId: string | null;
       createdAt: Date | null;
+      keywords: string | null;
       updatedAt: Date | null;
       images: {
           id: string;
@@ -748,6 +749,10 @@ const AdminProductPage = ({ productDetails, reviewsLimit, categories, manufactur
                 <div className="flex justify-between">
                   <span className="text-sm text-muted-foreground">Артикул товара</span>
                   <span className="text-sm font-medium">{productDetails.sku}</span>
+                </div>
+                <div className="flex flex-col ">
+                  <span className="text-sm text-muted-foreground">Теги для браузера:</span>
+                  <span className="text-sm font-medium">{productDetails.keywords}</span>
                 </div>
               </div>
             </CardContent>

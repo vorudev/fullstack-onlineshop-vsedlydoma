@@ -15,10 +15,9 @@ import { getCategories } from "@/lib/actions/product-categories";
 import { getAboutInfo } from "@/lib/actions/about-info";
 export default async function HomePage () {
   
-const [categories, {productsWithDetails, images}, {manufacturers, ManufacturerImages}, about ] = await Promise.all([
+const [categories, {productsWithDetails, images}, about ] = await Promise.all([
   getCategories(),
   getRandomProductsFast(), 
-  getRandomManufacturers(),
   getAboutInfo()
 ]);
 const productsWithDetailAndImages = productsWithDetails?.map(product => {
@@ -30,13 +29,7 @@ const productsWithDetailAndImages = productsWithDetails?.map(product => {
     images: productImages,
   };
 });
-const manufacturersWithImages = manufacturers?.map(manufacturer => {
-  const manufacturerImages = ManufacturerImages?.filter(img => img.manufacturerId === manufacturer.id) || [];
-  return {
-    ...manufacturer,
-    images: manufacturerImages,
-  };
-});
+
 
     return (
       

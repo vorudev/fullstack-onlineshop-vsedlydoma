@@ -12,6 +12,7 @@ import { getProductImages } from '@/lib/actions/image-actions';
 import { notFound } from "next/navigation";
 import Pagination from "@/components/frontend/pagination-client";
 import Link from "next/link";
+import { Metadata } from "next";
 interface PageProps {
   searchParams: Promise<{
     category: string;
@@ -23,6 +24,45 @@ interface PageProps {
 
     [key: string]: string | string[] | undefined;
   }>;
+}
+export async function generateMetadata({ searchParams  }: PageProps): Promise<Metadata> {
+  const resolvedSearchParams = await searchParams; 
+    const selectedFilters: Record<string, string[]> = {};
+  const categorySlug = resolvedSearchParams.category as string | undefined;
+   if (categorySlug) {
+    Object.keys(resolvedSearchParams).forEach(key => {
+    const value = resolvedSearchParams[key];
+    
+    // Пропускаем category и chain
+    if (value && key !== 'category' && key !== 'chain' && key !== 'priceFrom' && key !== 'priceTo' && key !== 'page' && key !== 'limit') { 
+      selectedFilters[key] = Array.isArray(value) ? value : value.split(',');
+    }
+  });
+  }
+  const data = await getCategoryWithNavigation(categorySlug || '');
+  if (!data) {
+    notFound();
+  }
+  const {category, breadcrumbs} = data;
+  
+  const canonicalUrl = `https://fullstack-onlineshop-vsedlydoma.vercel.app/products/${categorySlug}`;
+  return {
+    title: category.name, // или productDetails.title
+    description: `${category.description} — ${category.description || 'Купить в Минске по выгодной цене'}`,
+    keywords: `${category.name || ''}, сантехника, товары для дома минск`,
+    alternates: {
+      canonical: canonicalUrl, // ← Вот это нужно добавить
+    },
+    openGraph: {
+      type: 'website', 
+      url: canonicalUrl, // Тоже хорошо для соцсетей
+      title: category.name,
+      description: category.description || "",
+      siteName: 'Магазин Всё для дома',
+      locale: 'ru_RU',
+
+    },
+  };
 }
 export default async function ProductsPage({ searchParams }: PageProps) {
   const resolvedSearchParams = await searchParams; 

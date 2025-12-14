@@ -125,7 +125,7 @@ export default function ProductPage({productDetails, internals}: United) {
         
         </div>
          <div className="flex flex-col lg:hidden gap-1">
-            <h3 className="text-[20px] text-gray-900 font-semibold  leading-tight lg:text-[32px]">{productDetails?.title}</h3>
+            <h2 className="text-[20px] text-gray-900 font-semibold  leading-tight lg:text-[32px]">{productDetails?.title}</h2>
             <p className="text-[12px] text-gray-600 ">Код товара   { productDetails?.sku}</p>
             </div>
             <div className="flex flex-row gap-1 items-center lg:hidden">
@@ -179,9 +179,9 @@ export default function ProductPage({productDetails, internals}: United) {
         <div className={`${productDetails?.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-1 rounded-md self-start`}>
     <p className={`text-[12px] text-gray-600 ${productDetails?.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>{productDetails?.inStock}</p>
     </div>
-      <h1 className="text-[24px] text-gray-900 font-semibold">
+      <h2 className="text-[24px] text-gray-900 font-semibold">
 {productDetails?.price} руб
-        </h1>
+        </h2>
         </div> :  <div className={`${productDetails?.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-2 rounded-md self-start`}>
     <p className={`text-[16px] text-gray-600  font-semibold ${productDetails?.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>Уточните наличие</p>
     </div>}

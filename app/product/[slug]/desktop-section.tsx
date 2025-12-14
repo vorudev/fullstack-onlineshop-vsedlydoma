@@ -105,7 +105,7 @@ export default function DesktopSection({productDetails}: ProductUnited) {
            
       <div className="flex flex-row justify-between w-full">
           <div className="flex flex-col max-w-[60%]">
-           <h3 className="text-[20px] text-gray-900 font-semibold leading-tight  ">{productDetails?.title}</h3>
+           <h1 className="text-[20px] text-gray-900 font-semibold leading-tight  ">{productDetails?.title}</h1>
            <p className="text-[12px] text-gray-600 ">Код товара {productDetails?.sku}</p>
            </div>
         
@@ -136,9 +136,9 @@ export default function DesktopSection({productDetails}: ProductUnited) {
         <div className={`${productDetails?.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-1 rounded-md self-start`}>
     <p className={`text-[12px] text-gray-600 ${productDetails?.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>{productDetails?.inStock}</p>
     </div>
-      <h1 className="text-[28px] text-gray-900 font-semibold">
+      <h2 className="text-[28px] text-gray-900 font-semibold">
 {productDetails?.price} руб
-        </h1>
+        </h2>
         </div> :  <div className={`${productDetails?.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-2 rounded-md self-start`}>
     <p className={`text-[16px] text-gray-600  font-semibold ${productDetails?.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>Уточните наличие</p>
     </div>}
@@ -159,9 +159,9 @@ export default function DesktopSection({productDetails}: ProductUnited) {
       </div>
        <div className="flex flex-row w-full justify-between  ">
        <div className="flex flex-col gap-3 hidden xl:block ">
-      <h3 className="text-sm text-gray-900 font-semibold mb-3">
+      <h2 className="text-sm text-gray-900 font-semibold mb-3">
         Характеристики:
-      </h3>
+      </h2>
       {productDetails?.attributes.length > 0 ? (
       <div className="max-w-[150px]">
         <div className="">
@@ -203,9 +203,9 @@ export default function DesktopSection({productDetails}: ProductUnited) {
             <div className={productDetails?.inStock === 'В наличии' ? 'w-2 h-2 bg-green-500 rounded-full' : 'w-2 h-2 bg-red-500 rounded-full'}></div>
             <span className={productDetails?.inStock === 'В наличии' ? 'text-green-700' : 'text-red-700'}>{productDetails?.inStock}</span>
           </div>
-      <h1 className="text-[28px] text-gray-900 font-semibold">
+      <h2 className="text-[28px] text-gray-900 font-semibold">
 {productDetails?.price} руб
-        </h1>
+        </h2>
         </div> :  <div className={`${productDetails?.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-2 rounded-md self-start`}>
     <p className={`text-[16px] text-gray-600  font-semibold ${productDetails?.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>Уточните наличие</p>
     </div>}

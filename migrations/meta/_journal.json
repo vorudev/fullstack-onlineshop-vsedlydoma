@@ -358,6 +358,13 @@
       "when": 1765526774561,
       "tag": "0050_lazy_multiple_man",
       "breakpoints": true
+    },
+    {
+      "idx": 51,
+      "version": "7",
+      "when": 1765716190634,
+      "tag": "0051_sleepy_meteorite",
+      "breakpoints": true
     }
   ]
 }
