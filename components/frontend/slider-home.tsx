@@ -88,7 +88,7 @@ const windowWidth = useInitialWindowWidth();
         {/* Swiper слайдер - для демо используем CDN версию */}
         <Swiper
   modules={[Navigation, Pagination]}
-  spaceBetween={20}
+  spaceBetween={16}
   slidesPerView={2}
 onSlideChange={(swiper) => setCurrentSlide(swiper.activeIndex)}
   grabCursor={true}

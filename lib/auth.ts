@@ -34,7 +34,7 @@ socialProviders: {
 emailAndPassword: {  
         enabled: true,
          requireEmailVerification: true,
-        sendResetPassword: async ({user, url}) => {
+        sendResetPassword: async ({user, url, token}) => {
            await resend.emails.send({
                 from: 'noreply@updates.vsedlyadomasantehnika.by',
                 to: user.email,
