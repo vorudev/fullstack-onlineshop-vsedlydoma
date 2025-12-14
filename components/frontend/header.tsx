@@ -90,8 +90,9 @@ className="px-6 py- disabled:opacity-50 items-center gap-2 hidden md:flex"
   </div>
 
 
- <p> {contacts?.contactUsTelephones[0]?.phone}
- </p>
+  <p>
+  {contacts?.contactUsTelephones?.[0]?.phone || "Телефон не указан"}
+</p>
 
 </nav>
         

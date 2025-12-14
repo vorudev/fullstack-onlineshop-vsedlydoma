@@ -147,8 +147,8 @@ export default function Checkout() {
 <div className="flex flex-row items-center gap-6">
 <div className="bg-white rounded-full w-6 h-6 flex items-center justify-center font-semibold text-gray-600 border-gray-300 border">3</div>
 <div>
-    <h2 className="text-[16px] font-semibold">Способ получения</h2>
-    <p className="text-[14px] text-gray-600">Выберите способ получения</p>
+    <h2 className="text-[16px] font-semibold">Заполните данные</h2>
+    <p className="text-[14px] text-gray-600"></p>
 </div>
 
                 </div>

@@ -26,6 +26,7 @@ interface Props {
 } | null
 }
 export default function Footer({ contacts }: Props) {
+
   return (
     <footer className="mt-10  bg-[#F7F7F8] border-t border-gray-200 px-4 py-6 mb-[52px] lg:mb-0">
       {/* Верхние ссылки */}
@@ -43,11 +44,15 @@ export default function Footer({ contacts }: Props) {
 
       {/* Социальные сети */}
       <div className="flex items-center gap-4 mt-6">
-        {contacts?.clientInfo.map((client) => (
-          <Link key={client.id} href={client.link} target="_blank" className="relative w-[24px] h-[24px] ">
-            <Image src={client.src} alt={client.phone} width={24} height={24} />
-          </Link>
-        ))}
+      {(contacts?.clientInfo?.length ?? 0) > 0 ? (
+  contacts?.clientInfo!.map((client) => (
+    <Link key={client.id} href={client.link} target="_blank" className="relative w-[24px] h-[24px]">
+      <Image src={client.src} alt={client.phone} width={24} height={24} />
+    </Link>
+  ))
+) : (
+  <p>Ссылки не указаны</p>
+)}
       
 
        
