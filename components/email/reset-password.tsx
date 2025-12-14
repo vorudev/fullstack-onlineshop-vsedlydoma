@@ -60,7 +60,7 @@ const ForgotPasswordEmail = (props: ForgotPasswordEmailProps) => {
             </Text>
 
             <Text className="text-blue-500 text-center text-sm leading-5 mb-6 mt-0 break-all">
-              {props.resetUrl}
+            {`${props.resetUrl}reset-password`}
             </Text>
 
             <Text className="text-gray-600 text-sm text-center leading-5 mb-6 mt-0">
