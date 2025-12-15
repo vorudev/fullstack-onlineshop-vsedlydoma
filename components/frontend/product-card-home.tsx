@@ -106,9 +106,15 @@ function getReviewText(count: number): string {
    </span>  
  
  </div>
+ <div className={`${product.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-1 rounded-md self-start`}>
+    <p className={`text-[12px] text-gray-600 ${product.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>{product.inStock}</p>
+    </div>
           </div>
           <div className="flex flex-row gap-2 pt-3 text-sm items-center justify-between">
-         <h3 className="text-gray-900 font-semibold text-[16px]">{product.price} руб</h3>
+          {product.inStock === 'В наличии' ? (  <h3 className="text-gray-900 font-semibold text-[16px]">{product.price} руб</h3> )
+          :(
+            <h3 className="text-gray-900 font-semibold text-[16px]">Наличие уточняйте</h3>
+          )}
          <div className="flex items-center flex-row pr-1 gap-3">
           
           
@@ -124,8 +130,11 @@ function getReviewText(count: number): string {
             
             <div className=" p-1 flex flex-col lg:flex-row gap-2 lg:gap-1 lg:p-0">
               <Link href={`/product/${product.slug}`}>
-              <h3 className="text-[16px] font-semibold text-gray-900">{product.price} руб</h3>
-              <h3 className="text-gray-900  lg:text-[16px] text-[14px] line-clamp-2">
+              {product.inStock === 'В наличии' ? (    <h3 className="text-[16px] font-semibold text-gray-900">{product.price} руб</h3>)
+              : ( 
+                <h3 className="text-[16px] font-semibold text-gray-900">Наличие уточняйте</h3>
+              ) }
+              <h3 className="text-gray-900 h-[42px]  lg:text-[16px] text-[14px] line-clamp-2">
                 {product.title}
               </h3>
               </Link>
@@ -141,6 +150,9 @@ function getReviewText(count: number): string {
 
               </Link>
               
+              <div className={`${product.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-1 rounded-md self-start`}>
+    <p className={`text-[12px] text-gray-600 ${product.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>{product.inStock}</p>
+    </div>
              
               <div className="flex flex-col pt-1 gap-3 items-start ">
                  

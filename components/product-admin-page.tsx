@@ -269,7 +269,7 @@ const AdminProductPage = ({ productDetails, reviewsLimit, categories, manufactur
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/admin/products">Товары</BreadcrumbLink>
+              <BreadcrumbLink href="/dashboard/products">Товары</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>

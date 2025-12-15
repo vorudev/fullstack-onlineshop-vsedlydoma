@@ -101,11 +101,11 @@ export default function DesktopSection({productDetails}: ProductUnited) {
       };
 
     return (
-        <div className="lg:flex lg:flex-col items-start hidden justify-start gap-[12px] w-full  ">
+        <div className="lg:flex lg:flex-col  items-start hidden justify-start gap-[12px] w-full  ">
            
       <div className="flex flex-row justify-between w-full">
           <div className="flex flex-col max-w-[60%]">
-           <h1 className="text-[20px] text-gray-900 font-semibold leading-tight  ">{productDetails?.title}</h1>
+           <h1 className="text-[20px] text-gray-900  font-semibold leading-tight  ">{productDetails?.title}</h1>
            <p className="text-[12px] text-gray-600 ">Код товара {productDetails?.sku}</p>
            </div>
         
@@ -123,12 +123,12 @@ export default function DesktopSection({productDetails}: ProductUnited) {
       
       
       
-      <div className="flex flex-row gap-1 items-center ">
+      <div className="flex flex-row gap-1  items-center ">
                   <Star className="w-[16px] h-[16px] text-yellow-300" fill="#FFD700"/>
                   <p className="text-[16px] text-gray-900 font-semibold">{productDetails?.averageRating.toFixed(2)} </p>
                   <p className="text-[16px] text-gray-600 pl-[6px]">{productDetails?.reviewCount} отзыва</p>
        </div>
-       <div className="flex flex-col gap-3 xl:hidden items-start">
+       <div className="flex flex-col gap-3 xl:hidden  items-start">
         <div className="flex flex-col items-start  gap-2">
           
          {productDetails?.inStock === 'В наличии' ?  <div className="flex flex-col "> 
@@ -194,7 +194,7 @@ export default function DesktopSection({productDetails}: ProductUnited) {
      </div>
     
     
-      <div className="xl:flex hidden flex-col gap-3 items-end">
+      <div className="xl:flex hidden  flex-col gap-3 items-end">
         <div className="flex flex-col items-end gap-2">
           
           {productDetails?.inStock === 'В наличии' ?  <div className="flex flex-col "> 

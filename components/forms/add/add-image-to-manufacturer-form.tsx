@@ -63,7 +63,7 @@ export function CreateImagesToManufacturerForm({ manufacturer, images }: CreateI
       imageUrl: "",
       manufacturerId: manufacturer.id,
       order: null,
-      isFeatured: false,
+      isFeatured: true,
       mode: "upload",
     },
   })

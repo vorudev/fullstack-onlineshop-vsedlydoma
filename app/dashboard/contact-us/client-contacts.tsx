@@ -389,7 +389,7 @@ const AdminContactsPage = ({ contactUs, about, privacyPolicy, termsOfService }: 
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/admin">Админка</BreadcrumbLink>
+              <BreadcrumbLink href="/dashboard">Панель</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>

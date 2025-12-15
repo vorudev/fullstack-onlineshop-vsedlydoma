@@ -1,6 +1,6 @@
 import { AddContactUsPhones } from "@/components/forms/add/add-contact-us-phones";
 import {getContactUs} from "@/lib/actions/contact-us";
-import AdminContactsPage from "@/app/dashboard/preview/page";
+import AdminContactsPage from "@/app/dashboard/contact-us/client-contacts";
 import { AddContactUsTelephone } from "@/components/forms/add/add-contact-us-telephones";
 import { Pencil, Plus, User, MapPin } from "lucide-react";
 import { AddContactUsInfo } from "@/components/forms/add/add-contact-us-info";

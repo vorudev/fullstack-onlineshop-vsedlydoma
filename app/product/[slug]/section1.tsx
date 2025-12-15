@@ -134,7 +134,7 @@ export default function ProductPage({productDetails, internals}: United) {
             <p className="text-[14px] text-gray-600 ">{productDetails?.reviewCount} отзыва</p>
             </div>
             <div className="flex flex-col lg:bg-white lg:p-[30px] lg:rounded-xl gap-10">
-        <div className="flex flex-col lg:flex-row lg:justify-start lg:items-start gap-[12px] lg:gap-[80px] ">
+        <div className="flex flex-col border-b-2 border-gray-100  lg:flex-row lg:justify-start lg:items-start gap-[12px] lg:gap-[80px] ">
             <ImagesSliderProductPage images={productDetails?.images} />
  <DesktopSection productDetails={productDetails} /> 
 
@@ -143,7 +143,7 @@ export default function ProductPage({productDetails, internals}: United) {
  
 
         </div>
-        <div className="flex flex-col gap-[12px] items-start pt-10  hidden lg:block">
+        <div className="flex flex-col gap-[12px] items-start pt-5  hidden lg:block">
             <h3 className="text-[24px] text-gray-900 font-semibold pb-4">О товаре</h3>
             <p className="text-[14px] text-gray-900 max-w-[600px]">
 

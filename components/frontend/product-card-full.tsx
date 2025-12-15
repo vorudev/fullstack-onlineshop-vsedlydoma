@@ -86,10 +86,15 @@ function getReviewText(count: number): string {
      {getReviewText(product.reviewCount)}
    </span>  
  
- </div>
+ </div> <div className={`${product.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-1 rounded-md self-start`}>
+    <p className={`text-[12px] text-gray-600 ${product.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>{product.inStock}</p>
+    </div>
           </div>
           <div className="flex flex-row gap-2 pt-3 text-sm items-center justify-between">
-         <h3 className="text-gray-900 font-semibold text-[16px]">{product.price} руб</h3>
+          {product.inStock === 'В наличии' ? (  <h3 className="text-gray-900 font-semibold text-[16px]">{product.price} руб</h3> )
+          :(
+            <h3 className="text-gray-900 font-semibold text-[16px]">Наличие уточняйте</h3>
+          )}
          <div className="flex items-center flex-row pr-1 gap-3">
           
           
@@ -121,12 +126,17 @@ function getReviewText(count: number): string {
 
 
               </Link>
-              
+              <div className={`${product.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-1 rounded-md self-start`}>
+    <p className={`text-[12px] text-gray-600 ${product.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>{product.inStock}</p>
+    </div>
              
               <div className="flex flex-row gap-3 items-center ">
                  <div className="text-[16px]
                  font-semibold text-gray-900 w-1/2">
-                  <h3>{product.price} руб</h3></div>
+                  {product.inStock === 'В наличии' ? (  <h3 className="text-gray-900 font-semibold text-[16px]">{product.price} руб</h3> )
+          :(
+            <h3 className="text-gray-900 font-semibold text-[16px]">Наличие уточняйте</h3>
+          )}</div>
              <div className="w-1/2 flex flex-row  items-center justify-end gap-2"> 
               <AddToFavorite product={product}/>
               <AddToCart product={product}/>

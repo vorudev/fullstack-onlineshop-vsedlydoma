@@ -85,6 +85,7 @@ export function ProductForm({product, categories: initialCategories, manufacture
         price: product?.price ? Number(product.price) : 0, 
         categoryId: product?.categoryId || "",
         title: product?.title || "",
+        keywords: product?.keywords || "",
         inStock: product?.inStock || "",
         description: product?.description || "",
         manufacturerId: product?.manufacturerId || "",

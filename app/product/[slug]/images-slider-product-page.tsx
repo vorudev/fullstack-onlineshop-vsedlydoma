@@ -28,7 +28,7 @@ export default function ProductGallery({images}: ProductUnited) {
 
 
   return (
-    <div className="flex flex-col-reverse lg:flex-row gap-2 max-w-full">
+    <div className="flex flex-col-reverse  border-r-2 border-gray-100 lg:flex-row gap-2 max-w-full">
       {/* Thumbnails */}
       <div className="w-full h-20 lg:w-[60px] lg:h-auto lg:max-h-[470px]">
         {/* Mobile: горизонтальный слайдер */}
@@ -74,7 +74,7 @@ export default function ProductGallery({images}: ProductUnited) {
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
         }}
-        className="hidden lg:flex max-h-[470px] lg:flex-col gap-2 overflow-y-auto h-full scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+        className="hidden lg:flex max-h-[470px]   lg:flex-col gap-2 overflow-y-auto h-full scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
           {images.map((img, idx) => (
             <div 
               key={idx}
