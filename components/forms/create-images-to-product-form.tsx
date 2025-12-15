@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { or } from "drizzle-orm";
+import { toast } from "sonner";
 
 interface CreateImagesToProductFormProps {
   product: Product
@@ -122,11 +123,13 @@ export function CreateImagesToProductForm({ product, images }: CreateImagesToPro
       }
 
       form.reset()
+      toast.success("Фото успешно добавлено")
       setSelectedFile(null)
       setPreviewUrl(null)
       router.refresh()
     } catch (error) {
       console.error(error)
+      toast.error(error as string)
     } finally {
       setIsLoading(false)
     }

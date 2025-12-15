@@ -20,6 +20,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { createFilterCategory} from "@/lib/actions/filter-categories";
 import { FilterCategory } from "@/db/schema";
+import { toast } from "sonner";
 
 interface FilterCategoryFormProps {
     category?: FilterCategory;
@@ -54,11 +55,13 @@ export function FilterCategoryForm({ category, productCategoryId }: FilterCatego
                   locale: 'ru',
                 }),
             }
-            await createFilterCategory(filterCategoryData);            
+            await createFilterCategory(filterCategoryData); 
+            toast.success("Категория фильтров успешно создана")
             form.reset();
             setIsLoading(false);
             router.refresh();
         } catch (error) {
+            toast.error(error as string)
             console.log(error);
             setIsLoading(false);
         }

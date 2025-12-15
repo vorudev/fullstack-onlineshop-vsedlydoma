@@ -19,6 +19,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { createManufacturer, updateManufacturer } from "@/lib/actions/manufacturer";
 import { Manufacturer } from "@/db/schema";
+import { toast } from "sonner";
 
 interface ManufacturerFormProps {
     manufacturer?: Manufacturer
@@ -46,14 +47,17 @@ export function ManufacturerForm({ manufacturer }: ManufacturerFormProps) {
         try {
             if (manufacturer) {
                 await updateManufacturer({ ...values, id: manufacturer.id, slug: slugify(values.name, { lower: true, strict: true, locale: 'ru' }) });
+                toast.success("Производитель успешно обновлен")
             } else {
                 await createManufacturer({ ...values, slug: slugify(values.name, { lower: true, strict: true, locale: 'ru' }) });
+                toast.success("Производитель успешно создан")
             }
             form.reset();
             setLoading(false);
             router.refresh();
         } catch (error) {
             console.error("Error submitting form:", error);
+            toast.error(error as string)
             setLoading(false);
             router.refresh();
         }

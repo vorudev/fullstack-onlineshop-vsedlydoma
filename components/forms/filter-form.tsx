@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import slugify from "slugify";
 import { useState } from "react";
 import {
@@ -57,10 +58,12 @@ export function FilterForm({ filter, category }: FilterFormProps) {
                 }),
             }
             await createFilter(filterData);
+            toast.success("Фильтр успешно создан")
             form.reset();
             setIsLoading(false);
             router.refresh();
         } catch (error) {
+            toast.error(error as string)
             console.error("Error submitting form:", error);
             throw new Error("Failed to submit form");
         }

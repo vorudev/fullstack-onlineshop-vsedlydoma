@@ -39,6 +39,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface CategoryFormProps {
   category?: Category
@@ -101,9 +102,10 @@ export function CategoryForm({category, categories: initialCategories}: Category
         }
         if (category) {
             await updateCategory({ ...categoryData, id: category.id });
-
+            toast.success("Категория успешно обновлена")
         } else {
             await createCategory(categoryData);
+            toast.success("Категория успешно создана")
             form.reset({
             name: "",
             description: "",
@@ -114,6 +116,7 @@ export function CategoryForm({category, categories: initialCategories}: Category
         setIsLoading(false);
         router.refresh();
     } catch (error) {
+      toast.error(error as string)
         console.error("Error submitting form:", error);
         throw new Error("Failed to submit form");
     }
