@@ -28,7 +28,7 @@ export default function ProductGallery({images}: ProductUnited) {
 
 
   return (
-    <div className="flex flex-col-reverse  border-r-2 border-gray-100 lg:flex-row gap-2 max-w-full">
+    <div className="flex flex-col-reverse  lg:border-r-2 lg:border-gray-100 lg:flex-row gap-2 max-w-full">
       {/* Thumbnails */}
       <div className="w-full h-20 lg:w-[60px] lg:h-auto lg:max-h-[470px]">
         {/* Mobile: горизонтальный слайдер */}

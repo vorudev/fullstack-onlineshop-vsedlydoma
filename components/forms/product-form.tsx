@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form"
 import { updateProduct, createProduct } from "@/lib/actions/product";
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useEffect } from "react";
@@ -153,9 +154,10 @@ export function ProductForm({product, categories: initialCategories, manufacture
         } 
         if (product) {
           await updateProduct({ ...productData, id: product.id });
-          
+          toast.success("Успешно обновлено")
         } else {
           await createProduct(productData);
+          toast.success("Товар успешно создан")
           form.reset();
         }
 
@@ -164,6 +166,7 @@ export function ProductForm({product, categories: initialCategories, manufacture
         router.refresh();
       } catch (error) {
         console.error("Error submitting form:", error);
+        toast.error(error as string)
         setIsLoading(false);
         throw new Error("Failed to submit form");
       }
