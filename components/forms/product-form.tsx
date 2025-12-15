@@ -166,7 +166,8 @@ export function ProductForm({product, categories: initialCategories, manufacture
         router.refresh();
       } catch (error) {
         console.error("Error submitting form:", error);
-        toast.error(error as string)
+        toast.error( "Произошла неизвестная ошибка"
+        )
         setIsLoading(false);
         throw new Error("Failed to submit form");
       }
