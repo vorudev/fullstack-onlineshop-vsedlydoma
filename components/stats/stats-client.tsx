@@ -41,7 +41,7 @@ export default function AdminStats({ stats }: { stats: StatCardProps }) {
     },
     {
       title: 'Общая выручка',
-      value: `${stats.current.totalRevenue.toLocaleString()} руб`,
+      value: `${stats.current.totalRevenue.toFixed(2)} руб`,
       growth: stats.growth.totalRevenue,
       icon: DollarSign,
       color: 'text-emerald-500',
