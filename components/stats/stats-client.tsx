@@ -49,7 +49,7 @@ export default function AdminStats({ stats }: { stats: StatCardProps }) {
     },
     {
       title: 'Средний чек',
-      value: `${stats.current.averageOrderValue.toLocaleString()} руб`,
+      value: `${stats.current.averageOrderValue.toFixed(2)} руб`,
       growth: stats.growth.averageOrderValue,
       icon: TrendingUp,
       color: 'text-purple-500',

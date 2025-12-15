@@ -119,7 +119,7 @@ createdAt: timestamp("created_at").defaultNow(),
 updatedAt: timestamp("updated_at").defaultNow(),
  sku: varchar("sku", { length: 16 })
     .unique()
-    .default(sql`'PRD-' || upper(to_hex(floor(random() * 4294967295)::int))`),
+    .default(sql`'PRD-' || upper(to_hex(floor(random() * 4294967295)::bigint))`)
 }, (table) => ({
   // Индекс для поиска по title
   titleIdx: index("products_title_idx").on(table.title),
