@@ -81,7 +81,6 @@ export async function getRootCategories(): Promise<Category[]> {
     id: string;
     name: string;
     slug: string;
-    description: string | null;
     parentId: string | null;
     hasChildren: boolean;
   }>(sql`
@@ -102,7 +101,6 @@ export async function getRootCategories(): Promise<Category[]> {
       c.id,
       c.name,
       c.slug,
-      c.description,
       c.parent_id,
       EXISTS(
         SELECT 1 FROM ${categories} child 
@@ -111,7 +109,7 @@ export async function getRootCategories(): Promise<Category[]> {
     FROM ${categories} c
     LEFT JOIN category_tree ct ON c.id = ct.root_id
     WHERE c.parent_id IS NULL
-    GROUP BY c.id, c.name, c.slug, c.description, c.parent_id, ct.root_id
+    GROUP BY c.id, c.name, c.slug, c.parent_id, ct.root_id
     ORDER BY c.name
   `);
 
