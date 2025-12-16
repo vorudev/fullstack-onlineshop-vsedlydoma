@@ -51,7 +51,10 @@ export async function getFilteredProducts(
       })
       .from(products)
       .innerJoin(manufacturers, eq(products.manufacturerId, manufacturers.id))
-      .where(eq(products.categoryId, categoryId));
+      .where(and(
+        eq(products.categoryId, categoryId),
+        eq(products.isActive, true)
+      ))
 
     // Функция для добавления условий цены
     const addPriceConditions = (conditions: any[]) => {
@@ -66,7 +69,7 @@ export async function getFilteredProducts(
 
     // 2. Если фильтры не выбраны - возвращаем все продукты (с учетом цены)
     if (!selectedFilters || Object.keys(selectedFilters).length === 0) {
-      const whereConditions = addPriceConditions([eq(products.categoryId, categoryId)]);
+      const whereConditions = addPriceConditions([and(eq(products.categoryId, categoryId), eq(products.isActive, true))]);
         
 
       const result = await db

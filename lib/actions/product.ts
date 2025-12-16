@@ -247,6 +247,7 @@ interface GetProductsParams {
   search?: string;
   category?: string;
   manufacturer?: string; 
+  status?: boolean;
 }
 export const getRandomProductsFast = async ({
   limit = 10,
@@ -260,7 +261,9 @@ export const getRandomProductsFast = async ({
   try {
     let query = db.select().from(products);
     
-    const conditions = [];
+    const conditions = [
+      eq(products.isActive, true)
+    ];
     
     if (category) {
       conditions.push(eq(products.categoryId, category));
@@ -421,7 +424,8 @@ export const getAllProducts = async ({
   pageSize = 20,
   search = '',
   category,
-  manufacturer
+  manufacturer, 
+  status = true
 }: GetProductsParams = {}) => {
   try {
     // Валидация всех параметров
@@ -437,7 +441,9 @@ export const getAllProducts = async ({
     const validatedManufacturer = manufacturer ? slugSchema.parse(manufacturer) : null;
 
     const offset = (validatedPage - 1) * validatedPageSize;
-    const conditions = [];
+    const conditions = [
+      eq(products.isActive, status)
+    ];
 
     // Обработка поискового запроса
     if (validatedSearch) {
@@ -463,7 +469,10 @@ export const getAllProducts = async ({
         );
       }
 
-      conditions.push(or(...searchConditions));
+      const searchCondition = or(...searchConditions);
+      if (searchCondition) {
+        conditions.push(searchCondition);
+      }
     }
 
     // Добавляем фильтры по категории и производителю

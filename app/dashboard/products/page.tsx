@@ -8,6 +8,7 @@ import ProductsTable from "@/components/products-table";
 import { categories } from "@/db/schema";
 import Pagination  from "@/components/pagination";
 import { CategoryFilter } from "@/components/category-filter";
+import { StatusFilter } from "@/components/status-filter";
 import { getAllManufacturers } from "@/lib/actions/manufacturer";
 import { getAllProducts } from "@/lib/actions/product";
 import { ManufacturerFilter } from "@/components/manufacturer-filter";
@@ -20,6 +21,7 @@ interface PageProps {
     manufacturer?: string;
     manufacturerPage?: string;
     manufacturerSearch?: string;
+    status?: string;
   }>;
 
 }
@@ -28,14 +30,16 @@ export default async function Home({ searchParams }: PageProps) {
     page, 
     search, 
     category,
-    manufacturer, // фильтр по производителю (переименовал!)
+    manufacturer,
+    status
   } = await searchParams;
   
   const currentPage = Number(page) || 1;
   const searchQuery = search || '';
   const categoryFilter = category || '';
   const manufacturerFilter = manufacturer || ''; // переименовал переменную!
-  
+  const statusFilter = status !== undefined ? false : undefined;
+
   const [{ categories}, { manufacturers }, { products, pagination }] = 
     await Promise.all([
       getAllCategories({
@@ -51,7 +55,9 @@ export default async function Home({ searchParams }: PageProps) {
         pageSize: 21,
         search: searchQuery,
         category: categoryFilter,
-        manufacturer: manufacturerFilter // используем правильную переменную
+        manufacturer: manufacturerFilter, 
+        status: statusFilter
+         // используем правильную переменную
       }),
     ]);
 
@@ -81,6 +87,7 @@ export default async function Home({ searchParams }: PageProps) {
         <SearchBar />
         <CategoryFilter categories={categories} selectedCategory={categoryFilter} />
         <ManufacturerFilter manufacturers={manufacturers} selectedManufacturer={manufacturerFilter} />
+        <StatusFilter />
       </div>
 
       {/* Показываем активные фильтры */}

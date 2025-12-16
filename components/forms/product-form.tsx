@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+
 import { useEffect } from "react";
 import { getCategories } from "@/lib/actions/product-categories";
 import {
@@ -42,6 +43,7 @@ import {
 } from "@/components/ui/popover"
 import { Input } from "@/components/ui/input"
 import { ca } from "zod/v4/locales";
+import { Switch } from "../ui/switch";
 
 
 interface ProductFormProps {
@@ -56,6 +58,7 @@ categoryId: z.string().uuid("Категория обязательна"),
 manufacturerId: z.string().uuid("Производитель обязателен"),
     description: z.string().min(1, "Описание обязательно"),
     inStock: z.string().min(1, "статус наличия обязателен"),
+    isActive: z.boolean(),
 keywords: z.string().min(1, "Ключевые слова обязательны"),
 })
 
@@ -433,7 +436,28 @@ export function ProductForm({product, categories: initialCategories, manufacture
               </FormItem>
             )}
           />
-
+<FormField
+              control={form.control}
+              name="isActive"
+              render={({ field = {} }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Статус активности</FormLabel>
+                  <div className="flex items-center space-x-3 mt-5">
+                    <FormControl>
+                      <Switch
+                      className="scale-125"
+                        checked={field.value || false}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <span className="text-sm text-muted-foreground">
+                      {field.value ? 'Активен' : 'Неактивен'}
+                    </span>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
               </div>
 
           <Button type="submit" disabled={isLoading} className="w-full">
