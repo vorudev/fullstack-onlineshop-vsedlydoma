@@ -175,30 +175,13 @@ const AdminManufacturerPage = ({ manufacturer, images }: Manufacturer) => {
               <CardContent className="space-y-6">
                 {/* Название */}
                 <ManufacturerForm manufacturer={manufacturer} />
-                <div className="space-y-2">
-                  <Label htmlFor="manufacturer-name">
-                    Название производителя <span className="text-destructive">*</span>
-                  </Label>
-                  <p className="text-xl font-semibold text-white">{manufacturer.name}</p>
-                </div>
+               
 
                 {/* Описание */}
-                <div className="space-y-2">
-                  <Label htmlFor="manufacturer-description">Описание</Label>
-                  
-                  <p className="text-sm text-muted-foreground">
-                    Это описание будет отображаться на странице производителя на сайте.
-                  </p>
-                </div>
+                
 
                 {/* Статус */}
-                <div className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="space-y-0.5">
-                    <Label htmlFor="active-status">Статус производителя</Label>
-
-                  </div>
-                 
-                </div>
+                
               </CardContent>
             </Card>
 
