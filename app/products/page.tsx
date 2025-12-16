@@ -48,7 +48,7 @@ export async function generateMetadata({ searchParams  }: PageProps): Promise<Me
   const canonicalUrl = `https://fullstack-onlineshop-vsedlydoma.vercel.app/products/${categorySlug}`;
   return {
     title: category.name, // или productDetails.title
-    description: `${category.description} — ${category.description || 'Купить в Минске по выгодной цене'}`,
+    description: `${category.name} — ${ 'Купить в Минске по выгодной цене'}`,
     keywords: `${category.name || ''}, сантехника, товары для дома минск`,
     alternates: {
       canonical: canonicalUrl, // ← Вот это нужно добавить
@@ -57,7 +57,7 @@ export async function generateMetadata({ searchParams  }: PageProps): Promise<Me
       type: 'website', 
       url: canonicalUrl, // Тоже хорошо для соцсетей
       title: category.name,
-      description: category.description || "",
+      description: category.name || "",
       siteName: 'Магазин Всё для дома',
       locale: 'ru_RU',
 
