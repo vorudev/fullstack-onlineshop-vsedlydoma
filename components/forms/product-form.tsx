@@ -91,6 +91,7 @@ export function ProductForm({product, categories: initialCategories, manufacture
         title: product?.title || "",
         keywords: product?.keywords || "",
         inStock: product?.inStock || "",
+        isActive: product?.isActive || false,
         description: product?.description || "",
         manufacturerId: product?.manufacturerId || "",
       },
