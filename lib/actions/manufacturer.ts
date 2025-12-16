@@ -110,7 +110,9 @@ export const getAllProductsByManufacturerId = async ({
 }: GetProductsByManufacturerIdParams = {}) => {
     try {
         const offset = (page - 1) * pageSize;
-        const conditions = [];
+        const conditions = [
+            eq(products.isActive, true),
+        ];
         
         // ✅ Добавляем фильтр по manufacturerId
         if (manufacturerId) {
