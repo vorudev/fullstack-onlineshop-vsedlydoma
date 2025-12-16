@@ -167,7 +167,53 @@ export async function uploadManufacturerImage(file: File) {
             throw new Error("Failed to fetch featured manufacturer image");
         }
     }
-        
+
+export async function setFeaturedImage(imageId: string) {
+  try {
+    // ✅ Проверяем права
+    const session = await auth.api.getSession({
+      headers: await headers()
+    });
+
+    if (!session || session.user.role !== 'admin') {
+      return { error: 'Unauthorized' };
+    }
+
+    // ✅ Получаем информацию о выбранном изображении
+    const [selectedImage] = await db
+      .select()
+      .from(productImages)
+      .where(eq(productImages.id, imageId))
+      .limit(1);
+
+    if (!selectedImage) {
+      return { error: 'Image not found' };
+    }
+
+    // ✅ Сбрасываем флаг featured у всех фото этого продукта
+    await db
+      .update(productImages)
+      .set({ isFeatured: false })
+      .where(
+        and(
+          eq(productImages.productId, selectedImage.productId),
+          eq(productImages.isFeatured, true)
+        )
+      );
+
+    // ✅ Устанавливаем новое featured фото
+    const [updatedImage] = await db
+      .update(productImages)
+      .set({ isFeatured: true })
+      .where(eq(productImages.id, imageId))
+      .returning();
+
+    return { success: true, image: updatedImage };
+  } catch (error) {
+    console.error('Set featured image error:', error);
+    return { error: 'Failed to set featured image' };
+  }
+}
     export async function uploadNewsImage(file: File) {
         // ✅ Проверяем права и выбрасываем ошибку
         const session = await auth.api.getSession({

@@ -8,7 +8,9 @@ import {
   BreadcrumbLink,
   BreadcrumbSeparator,
   BreadcrumbPage,
+
 } from '@/components/ui/breadcrumb';
+import { SetFeaturedButton } from './set-featured-photo';
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -595,6 +597,7 @@ const AdminProductPage = ({ productDetails, reviewsLimit, categories, manufactur
                                     Главное
                                   </Badge>
                                 </div>}
+                                {image.isFeatured == false && <SetFeaturedButton imageId={image.id} />}
                                <DeleteImageFromProductButton image={image} />
                              
                             </div>
