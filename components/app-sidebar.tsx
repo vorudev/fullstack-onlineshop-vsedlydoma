@@ -2,6 +2,7 @@
 import { Calendar, Home, User, Phone,  ClipboardList, Package, ChartBarStacked, Info, ChevronLeft} from "lucide-react"
 import Link from "next/link"
 import AdminPageUser from "./frontend/admin-page-user";
+import { getPendingOrdersCount } from "@/lib/actions/orders";
 import { getPendingReviewsCount } from "@/lib/actions/reviews";
 import {
   Sidebar,
@@ -75,7 +76,11 @@ const items = [
 ]
 
 export async function AppSidebar() {
-    const count = await getPendingReviewsCount();
+  const [countReviews, countOrder] = await Promise.all([ 
+    getPendingReviewsCount(),
+    getPendingOrdersCount()
+       ]);
+
   return (
     <Sidebar>
   <SidebarContent>
@@ -108,9 +113,20 @@ export async function AppSidebar() {
                 <SidebarMenuSub>
                   <SidebarMenuSubItem>
                     <SidebarMenuSubButton asChild>
-                      <Link href="/dashboard/order">
-                        <span>Активные</span>
-                      </Link>
+                    <Link 
+  href="/dashboard/order" 
+  className={` ${countOrder > 0 ? "bg-green-600/20  " : ""}`}
+>
+  {countOrder > 0 ? (
+    <span className="font-semibold text-green-500">
+      Активные {countOrder}
+    </span>
+  ) : (
+    <span className=" ">
+      Нет активных заказов
+    </span>
+  )}
+</Link>
                     </SidebarMenuSubButton>
                   </SidebarMenuSubItem>
                   <SidebarMenuSubItem>
@@ -146,11 +162,11 @@ export async function AppSidebar() {
                     <SidebarMenuSubButton asChild>
 <Link 
   href="/dashboard/reviews/pending" 
-  className={` ${count > 0 ? "bg-red-700/20  " : ""}`}
+  className={` ${countReviews > 0 ? "bg-red-700/20  " : ""}`}
 >
-  {count > 0 ? (
+  {countReviews > 0 ? (
     <span className="font-semibold text-red-500">
-      Требуют одобрения {count}
+      Требуют одобрения {countReviews}
     </span>
   ) : (
     <span className=" ">

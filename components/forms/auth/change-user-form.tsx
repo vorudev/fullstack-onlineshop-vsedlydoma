@@ -36,11 +36,8 @@ email: z.string().email({
 role: z.enum(["user", "admin"], {
     message: "Роль должна быть user или admin.",
 }),
-phoneNumber: z.string().min(10, {
-    message: "Номер телефона должен содержать не менее 10 символов.",
-}).max(15, {
-    message: "Номер телефона должен содержать не более 15 символов.",
-}),
+phoneNumber: z.string(),
+
 banned: z.boolean().optional(),
 });
 
@@ -68,7 +65,6 @@ export function ChangeUserForm({ user }: ChangeUserFormProps) {
             } else {
                 throw new Error("User not found");
             }
-            form.reset();
             setIsLoading(false);
             router.refresh();
         } catch (error) {

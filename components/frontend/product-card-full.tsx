@@ -61,13 +61,21 @@ function getReviewText(count: number): string {
   }
   
   return `${count} ${word}`;
-}
+}  const sortedImages = product.images.sort((a, b) => {
+  if (a.isFeatured && !b.isFeatured) return -1;
+  if (!a.isFeatured && b.isFeatured) return 1;
+  if (a.order === null && b.order !== null) return 1;
+  if (a.order !== null && b.order === null) return -1;
+  if (a.order !== null && b.order !== null) return a.order - b.order;
+  return 0;
+});
+
 
     return ( 
         <div className="bg-white rounded-2xl lg:max-w-[450px]  transition-all duration-300 overflow-hidden  group lg:p-[12px] min-w-[300px]" key={product.id}> 
         <div className="hidden lg:block flex flex-col  px-2 py-2">
-          <Link className="relative overflow-hidden" href={`/product/${product.slug}`}>
-            <ImagesSliderCardFull images={product.images} title={product.title} />
+        <Link className="relative overflow-hidden flex justify-center" href={`/product/${product.slug}`}>
+          <img src={sortedImages[0]?.imageUrl} alt={product.title} className="w-[156px]  h-[156px] object-contain transition-transform duration-300 " />
           </Link>
           <Link href={`/product/${product.slug}`}>
           <h3 className="text-black min-h-[70px] text-[15px] line-clamp-3">

@@ -63,7 +63,7 @@ export function FilterForm({ filter, category }: FilterFormProps) {
             setIsLoading(false);
             router.refresh();
         } catch (error) {
-            toast.error(error as string)
+            toast.error("Неизвестная ошибка")
             console.error("Error submitting form:", error);
             throw new Error("Failed to submit form");
         }

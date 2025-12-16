@@ -61,7 +61,7 @@ export function FilterCategoryForm({ category, productCategoryId }: FilterCatego
             setIsLoading(false);
             router.refresh();
         } catch (error) {
-            toast.error(error as string)
+            toast.error("Неизвестная ошибка")
             console.log(error);
             setIsLoading(false);
         }

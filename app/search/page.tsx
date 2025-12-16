@@ -19,7 +19,7 @@ export default async function SearchPage({searchParams}: SearchPageProps) {
     }),
   ]);
   return (
-      <main className="text-black min-h-screen xl:max-w-[1400px] mx-auto lg:max-w-[1000px] pb-40 ">
+      <main className="text-black min-h-screen xl:max-w-[1400px] pt-10 mx-auto lg:max-w-[1000px] pb-40 ">
 <ProductList products={products}/>
  <div className="w-full max-w-[600px] mx-auto">
 <Pagination

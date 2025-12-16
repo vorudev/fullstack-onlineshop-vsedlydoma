@@ -167,11 +167,11 @@ const productsWithDetailAndImages = productsWithDetails?.map(product => {
               <div className="flex flex-wrap gap-3 mt-2">
                 <div className="flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-lg">
                   <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-                  <span className="text-sm font-semibold text-blue-600">Более 5000 товаров</span>
+                  <span className="text-sm font-semibold text-blue-600">Проверены временем</span>
                 </div>
                 <div className="flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-lg">
                   <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-                  <span className="text-sm font-semibold text-blue-600">Гарантия на все</span>
+                  <span className="text-sm font-semibold text-blue-600">Большой ассортимент</span>
                 </div>
                 <div className="flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-lg">
                   <div className="w-2 h-2 bg-blue-600 rounded-full"></div>

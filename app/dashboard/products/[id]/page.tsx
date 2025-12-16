@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { ReviewsTableAdmin } from "@/components/reviews-table-admin";
 import { Pencil, Plus } from "lucide-react";
 import { getAllManufacturers, getManufacturerById } from "@/lib/actions/manufacturer";
+import { getFilterCategoriesWithFiltersByProductCategory } from "@/lib/actions/filter-categories";
 import AdminProductPage  from "@/components/product-admin-page";
 import ImagesSlider from "@/components/images/images-slider-product";
 import Link from "next/link";
@@ -34,11 +35,14 @@ const productDetails = await getProductsWithDetailsAdmin(id, reviewsLimit)
   if (!productDetails) {
     return <div>Товар не найден</div>
   }
+  const categoryFilters = productDetails?.categoryId 
+  ? await getFilterCategoriesWithFiltersByProductCategory(productDetails.categoryId)
+  : [];
 
 
   return (
   
-    <AdminProductPage productDetails={productDetails} reviewsLimit={reviewsLimit} categories={productDetails?.breadcrumbs ? [productDetails.breadcrumbs] : []} manufacturers={productDetails?.manufacturer ? [productDetails.manufacturer] : []}/>
+    <AdminProductPage productDetails={productDetails} filtersWithCategory={categoryFilters} reviewsLimit={reviewsLimit} categories={productDetails?.breadcrumbs ? [productDetails.breadcrumbs] : []} manufacturers={productDetails?.manufacturer ? [productDetails.manufacturer] : []}/>
      
     
   );

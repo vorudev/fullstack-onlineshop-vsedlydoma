@@ -11,9 +11,10 @@ export default async function SearchLayout({ children }: { children: React.React
              <Header contacts={contacts} />
 
            
-            {children}
+           <main className="bg-gray-100"> {children}
              <NavMenuMobile />
              <Footer contacts={contacts} />
+             </main>
         </>
     );
 }

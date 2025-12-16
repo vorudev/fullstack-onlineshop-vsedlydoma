@@ -53,6 +53,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from '@/components/ui/dialog';
 import {
   Table,
@@ -106,7 +107,17 @@ import {
   ExternalLink,
   Filter,
   HelpCircle,
+  Info,
+  GripVertical,
+  Lightbulb,
+  PlusIcon,
 } from 'lucide-react';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
+import { DeleteFilterButton } from './delete-filter-button';
+import { FilterCategoryForm } from './forms/filter-category-form';
+import { FilterForm } from './forms/filter-form';
+import { DeleteFilterCategoryButton } from './delete-filter-category-button';
+import { Checkbox } from '@radix-ui/react-checkbox';
 
 interface ProductImage {
   id: string;
@@ -201,8 +212,22 @@ interface ProductUnited {
 } | null
   } 
   reviewsLimit: number;
-}
 
+}
+interface Filter {
+  id: string;
+  name: string;
+  slug: string;
+  displayOrder: number;
+}
+interface FilterCategoryWithFilters {
+  id: string;
+  name: string;
+  slug: string;
+  displayOrder: number;
+  productCategory: string;
+  filters: Filter[];
+}
 interface Manufacturers {
   manufacturers: {
     id: string;
@@ -223,8 +248,11 @@ interface Categories {
     updatedAt: Date | null;
 }[];
 }
+interface Filters { 
+  filtersWithCategory: FilterCategoryWithFilters[];
+}
 
-const AdminProductPage = ({ productDetails, reviewsLimit, categories, manufacturers }: ProductUnited & Categories & Manufacturers ) => {
+const AdminProductPage = ({ productDetails, reviewsLimit, categories, manufacturers, filtersWithCategory }: ProductUnited & Categories & Manufacturers  & Filters) => {
   // Состояния основной информации
   const [productName, setProductName] = useState<string>('iPhone 15 Pro Max');
   const [isActive, setIsActive] = useState<boolean>(true);
@@ -392,7 +420,7 @@ const AdminProductPage = ({ productDetails, reviewsLimit, categories, manufactur
             </TabsContent>
 
             {/* Вкладка: Характеристики */}
-            <TabsContent value="characteristics">
+            <TabsContent value="characteristics" className="space-y-5">
               <Card>
                 <CardHeader>
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -519,6 +547,198 @@ const AdminProductPage = ({ productDetails, reviewsLimit, categories, manufactur
                   </div>
                 </CardContent>
               </Card>
+              <Card>
+          <CardHeader>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <CardTitle>Фильтры для покупателей</CardTitle>
+                <CardDescription className="flex flex-wrap items-center gap-1">
+                  Добавьте свойства, по которым покупатели будут отбирать товары в этой категории.
+                  
+                </CardDescription>
+              </div>
+              <Dialog >
+                      <DialogTrigger asChild><Button>Добавить Категорию фильтра<PlusIcon /></Button></DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Добавить Категорию фильтра</DialogTitle>
+              
+              
+                        </DialogHeader>
+                                          <FilterCategoryForm productCategoryId={productDetails.categoryId || ""} />
+                      </DialogContent>
+                    </Dialog>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {/* Сообщение, если фильтров нет */}
+          
+
+            {/* Список категорий фильтров */}
+            <Accordion type="multiple" className="w-full">
+              {filtersWithCategory.map((category) => (
+                <AccordionItem key={category.id} value={category.id}>
+                  <AccordionTrigger className="hover:no-underline px-4">
+                    <div className="flex items-center justify-between flex-1 pr-4">
+                      <div className="flex items-center gap-3">
+                        <GripVertical className="h-5 w-5 text-muted-foreground cursor-move flex-shrink-0" />
+                        <span className="font-semibold text-left">
+                          {category.name || 'Новая категория'}
+                        </span>
+                        <Badge variant="outline" className="flex-shrink-0">
+                          {category.filters.length} значений
+                        </Badge>
+                      </div>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-4">
+                    <div className="space-y-6 pl-8 pr-2 py-2">
+                      {/* Редактирование названия категории фильтра */}
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Label>Название категории фильтра:</Label>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                              </TooltipTrigger>
+                              <TooltipContent className="max-w-xs">
+                                Это название увидят покупатели (например, "Цвет").
+                                Оно должно совпадать с названием характеристики у товара.
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                       </div>
+
+                      {/* Список значений фильтра */}
+                      <div className="space-y-3">
+                        <Label>Значения фильтра:</Label>
+                        
+                        {category.filters.length > 0 ? (
+                          <div className="flex flex-wrap gap-2 mb-4">
+                            {category.filters.map((value) => (
+                              <Badge
+                                key={value.id}
+                                variant="secondary"
+                                className="pl-3 pr-2 py-1 flex items-center gap-1"
+                              >
+                                {value.name}
+                               <Dialog>
+                                <DialogTrigger>
+                                <button
+
+                                  className="ml-1 mt-1 text-muted-foreground hover:text-foreground rounded-sm"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                                </DialogTrigger>
+                                <DialogContent>
+                                    <DialogTitle>
+                                        Вы уверены что хотите удалить фильтр "{value.name}"
+                                    </DialogTitle>
+                                    <DialogDescription>
+                                        Это действие невозможно отменить, оно навсегда удалит фильтр {value.name}
+                                    </DialogDescription>
+                                    <DeleteFilterButton filterId={value.id} />
+                                </DialogContent>
+                                </Dialog>
+                              </Badge>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-sm text-muted-foreground mb-4">
+                            Нет добавленных значений. Добавьте хотя бы одно значение для фильтра.
+                          </p>
+                        )}
+
+                        {/* Форма добавления нового значения */}
+                        <FilterForm category={category} />
+                       
+                        <p className="text-sm text-muted-foreground">
+                          Эти значения будут отображаться как чекбоксы или кнопки на сайте.
+                          Убедитесь, что в характеристиках товаров используются точно такие же значения.
+                        </p>
+                      </div>
+
+                      {/* Кнопка удаления категории */}
+                      <div className="pt-2">
+                     <Dialog>  
+                        <DialogTrigger>
+                         <Button
+                          variant="ghost"
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10 gap-2"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          Удалить эту категорию фильтра
+                        </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogTitle>
+                                Вы уверенны что хотите удалить "{category.name}"?
+                            </DialogTitle>
+                            <DialogDescription>
+                                Это действие не отменить, это навсегда удалить категорию "{category.name}" из датабазы
+                            </DialogDescription>
+                             <DeleteFilterCategoryButton categoryId={category.id} />
+                        </DialogContent>
+                        </Dialog>
+                       
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+
+            {/* Визуальный пример */}
+            <Separator className="my-6" />
+            <Alert>
+              <Lightbulb className="h-4 w-4" />
+              <AlertTitle>Как это будет выглядеть на сайте?</AlertTitle>
+              <AlertDescription className="space-y-3 mt-2">
+                
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span>в боковой панели фильтров автоматически появится блок:</span>
+                  </div>
+                  <div className="border rounded-md p-4 bg-muted/50 max-w-xs">
+                 {filtersWithCategory.length > 0 ? (
+  <>
+    {filtersWithCategory.map((category) => (
+      <div key={category.id}> 
+        <p className="font-medium my-3">{category.name}</p>
+        {category.filters.length > 0 ? (
+          <div className="space-y-2">
+            {category.filters.map((value) => (
+              <div className="flex items-center gap-2" key={value.id}>
+                <Checkbox id={`filter-${value.id}`} />
+                <Label htmlFor={`filter-${value.id}`} className="cursor-pointer">
+                  {value.name}
+                </Label>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground mb-4">
+            Нет добавленных значений
+          </p>
+        )}
+      </div>
+    ))}
+  </>
+) : (
+  <div>Пока фильтров нет, попробуйте их создать и увидете здесь!</div>
+)}
+                    <p className="text-xs text-muted-foreground mt-3">
+                      Покупатель выбирает значение — товары фильтруются автоматически
+                    </p>
+                  </div>
+                </div>
+              </AlertDescription>
+            </Alert>
+          </CardContent>
+        </Card>
             </TabsContent>
 
             {/* Вкладка: Изображения */}

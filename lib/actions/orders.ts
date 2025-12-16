@@ -714,6 +714,18 @@ export async function getOrderByUserId(userId: string) {
         throw new Error("Failed to fetch orders");
     }
 }
+export async function getPendingOrdersCount() {
+  try { 
+      const result = await db
+          .select({ count: sql<number>`count(*)` })
+          .from(orders)
+          .where(eq(orders.status, 'pending'));
+      return result[0].count;
+  } catch (error) {
+      console.error("Error fetching pending reviews count:", error);
+      return 0;
+  }
+}
 
 export async function updateOrder(order: Omit<Order, "createdAt" | "updatedAt" | "userId" | "sku">) {
 try { 

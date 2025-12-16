@@ -7,7 +7,6 @@ export default async function AboutPage() {
     return (
        <main className=" mx-auto bg-gray-100 lg:min-h-screen  lg:bg-white xl:max-w-[1400px] lg:max-w-[1000px] text-black pt-[24px] pr-[12px] pl-[12px] ">
 <div className="flex flex-col gap-5">
-<h1 className="text-[24px] font-semibold lg:pl-[16px]">О компании</h1>
 <div className="p-[16px] bg-white flex-col flex gap-5 rounded-xl ">
 <h2 className="text-[20px] md:text-[32px] font-semibold leading-tight">
    {about?.title}
