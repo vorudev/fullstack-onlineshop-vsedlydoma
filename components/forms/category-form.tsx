@@ -116,9 +116,9 @@ export function CategoryForm({category, categories: initialCategories}: Category
         setIsLoading(false);
         router.refresh();
     } catch (error) {
-      toast.error(error as string)
-        console.error("Error submitting form:", error);
-        throw new Error("Failed to submit form");
+      toast.error("Ошибка при создании категории")
+        console.error("Ошибка при создании категории:", error);
+        throw new Error("Ошибка при создании категории");
     }
   }
   return (

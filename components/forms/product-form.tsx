@@ -224,7 +224,8 @@ export function ProductForm({product, categories: initialCategories, manufacture
           type="number"
           placeholder="0"
           {...field}
-          value={field.value || ''}
+          value={field.value ?? ''}
+
           onChange={(e) => {
             const value = e.target.value;
             field.onChange(value === '' ? '' : Number(value));

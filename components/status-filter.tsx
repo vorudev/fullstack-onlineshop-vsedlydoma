@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/popover"
 import { cn } from '@/lib/utils';
 interface CategoryFilterProps {
-  selectedStatus?: string;
+  selectedStatus?: boolean | undefined;
 }
 
 export function StatusFilter({ selectedStatus }: CategoryFilterProps) {
@@ -71,7 +71,7 @@ export function StatusFilter({ selectedStatus }: CategoryFilterProps) {
           role="combobox"
           className="w-[200px] justify-between"
         >
-        
+         {selectedStatus === false ? "Неактивные" : selectedStatus === true ? "Активные" : "Активные"}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -80,7 +80,7 @@ export function StatusFilter({ selectedStatus }: CategoryFilterProps) {
           
           
           <CommandEmpty>
-      
+          {selectedStatus === false ? "Неактивные" : selectedStatus === true ? "Активные" : "Активные"}
           </CommandEmpty>
           <CommandGroup className="max-h-64 overflow-auto">
         

@@ -87,7 +87,7 @@ export default async function Home({ searchParams }: PageProps) {
         <SearchBar />
         <CategoryFilter categories={categories} selectedCategory={categoryFilter} />
         <ManufacturerFilter manufacturers={manufacturers} selectedManufacturer={manufacturerFilter} />
-        <StatusFilter />
+        <StatusFilter selectedStatus={statusFilter}/>
       </div>
 
       {/* Показываем активные фильтры */}
