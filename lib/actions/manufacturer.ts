@@ -114,21 +114,22 @@ export const getAllProductsByManufacturerId = async ({
             eq(products.isActive, true),
         ];
         
-        // ✅ Добавляем фильтр по manufacturerId
         if (manufacturerId) {
             conditions.push(eq(products.manufacturerId, manufacturerId));
         }
         
         if (search) {
-            conditions.push(
-                or(
-                    ilike(products.title, `%${search}%`),
-                    ilike(products.description, `%${search}%`),
-                    ilike(products.slug, `%${search}%`),
-                    ilike(products.sku, `%${search}%`),
-                    sql`CAST(${products.id} AS TEXT) ILIKE ${`%${search}%`}` // ✅ Исправлено
-                )
+            const searchCondition = or(
+                ilike(products.title, `%${search}%`),
+                ilike(products.description, `%${search}%`),
+                ilike(products.slug, `%${search}%`),
+                ilike(products.sku, `%${search}%`),
+                sql`CAST(${products.id} AS TEXT) ILIKE ${`%${search}%`}`
             );
+            
+            if (searchCondition) {
+                conditions.push(searchCondition);
+            }
         }
 
         let query = db
