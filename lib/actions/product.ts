@@ -96,6 +96,7 @@ export async function getProductsWithDetailsAdmin(id: string, limit: number) {
       manufacturerId: product.products.manufacturerId,
       createdAt: product.products.createdAt,
       updatedAt: product.products.updatedAt,
+      isActive: product.products.isActive,
       images: productImagesData,
       reviews: reviewsData,
       attributes: attributesData,

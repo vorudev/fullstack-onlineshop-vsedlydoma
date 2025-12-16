@@ -138,6 +138,7 @@ interface ProductUnited {
       categoryId: string | null;
       manufacturerId: string | null;
       createdAt: Date | null;
+      isActive: boolean | null;
       keywords: string | null;
       updatedAt: Date | null;
       images: {
