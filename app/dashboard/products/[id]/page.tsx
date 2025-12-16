@@ -38,11 +38,21 @@ const productDetails = await getProductsWithDetailsAdmin(id, reviewsLimit)
   const categoryFilters = productDetails?.categoryId 
   ? await getFilterCategoriesWithFiltersByProductCategory(productDetails.categoryId)
   : [];
+  const [categories, manufacturers] = await Promise.all([
+    getAllCategories({
+      page: 1,
+      pageSize: 150,
+    }),
+    getAllManufacturers({
+      page: 1,
+      pageSize: 150,
+    }),
+  ])
 
 
   return (
   
-    <AdminProductPage productDetails={productDetails} filtersWithCategory={categoryFilters} reviewsLimit={reviewsLimit} categories={productDetails?.breadcrumbs ? [productDetails.breadcrumbs] : []} manufacturers={productDetails?.manufacturer ? [productDetails.manufacturer] : []}/>
+    <AdminProductPage productDetails={productDetails} filtersWithCategory={categoryFilters} reviewsLimit={reviewsLimit} categories={categories.categories} manufacturers={manufacturers.manufacturers}/>
      
     
   );

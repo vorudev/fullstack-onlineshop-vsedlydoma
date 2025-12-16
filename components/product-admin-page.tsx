@@ -111,6 +111,7 @@ import {
   GripVertical,
   Lightbulb,
   PlusIcon,
+  Trash,
 } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
 import { DeleteFilterButton } from './delete-filter-button';
@@ -118,6 +119,7 @@ import { FilterCategoryForm } from './forms/filter-category-form';
 import { FilterForm } from './forms/filter-form';
 import { DeleteFilterCategoryButton } from './delete-filter-category-button';
 import { Checkbox } from '@radix-ui/react-checkbox';
+import { SetManuNullButton } from './set-manufacturer-null';
 
 interface ProductImage {
   id: string;
@@ -406,6 +408,18 @@ const AdminProductPage = ({ productDetails, reviewsLimit, categories, manufactur
                     </div>
                     <div className="flex-1">
                       <h3 className="font-semibold">{productDetails.manufacturer?.name}</h3>
+                   {productDetails.manufacturer  &&  <Dialog>
+                    <DialogTrigger>
+                      <Trash className="text-red-500 size-4" />
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogTitle>
+                        Убрать произвотеля у этого товара товара?
+                      </DialogTitle>
+                      <SetManuNullButton productId={productDetails.id} />
+                    </DialogContent>
+                    </Dialog> 
+                    }  
                       <p className="text-sm text-muted-foreground">
                         Производитель товара
                       </p>

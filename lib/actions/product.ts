@@ -420,6 +420,51 @@ export async function searchProducts(query: string, limit = 20) {
 }
 
 
+export async function removeManufacturerFromProduct(productId: string) {
+  try {
+    // ✅ Проверяем права
+    const session = await auth.api.getSession({
+      headers: await headers()
+    });
+
+    if (!session || session.user.role !== 'admin') {
+      return { error: 'Unauthorized' };
+    }
+
+    // ✅ Проверяем что продукт неактивен
+    const [product] = await db
+      .select()
+      .from(products)
+      .where(eq(products.id, productId))
+      .limit(1);
+
+    if (!product) {
+      return { error: 'Product not found' };
+    }
+
+    if (product.isActive) {
+      return { error: 'Cannot remove manufacturer from active product' };
+    }
+
+    // ✅ Обнуляем manufacturerId
+    const [updatedProduct] = await db
+      .update(products)
+      .set({ manufacturerId: null })
+      .where(
+        and(
+          eq(products.id, productId),
+          eq(products.isActive, false)
+        )
+      )
+      .returning();
+
+
+    return { success: true, product: updatedProduct };
+  } catch (error) {
+    console.error('Remove manufacturer error:', error);
+    return { error: 'Failed to remove manufacturer' };
+  }
+}
 export const getAllProducts = async ({
   page = 1,
   pageSize = 20,
