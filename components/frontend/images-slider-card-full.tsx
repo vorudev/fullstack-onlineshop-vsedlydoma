@@ -54,7 +54,7 @@ export default function ImagesSlider({ images, title }: Images) {
           <Image
             src={image.imageUrl}
             fill
-            alt={`${title}${image.isFeatured ? ' - главное фото' : ''}`}
+            alt={``}
             className="w-full h-full object-contain"
             draggable={false}
           />

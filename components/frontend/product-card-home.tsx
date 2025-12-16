@@ -85,8 +85,8 @@ function getReviewText(count: number): string {
     return ( 
         <div className="bg-white border-gray-100 border-2 rounded-2xl lg:max-w-[450px]  transition-all duration-300 overflow-hidden  group lg:p-[12px] lg:min-w-[300px]" key={product.id}> 
         <div className="hidden lg:block flex flex-col  px-2 py-2">
-          <Link className="relative overflow-hidden" href={`/product/${product.slug}`}>
-            <ImagesSliderCardFull images={product.images} title={product.title} />
+          <Link className="relative overflow-hidden flex justify-center" href={`/product/${product.slug}`}>
+          <img src={sortedImages[0]?.imageUrl} alt={product.title} className="w-[156px]  h-[156px] object-contain transition-transform duration-300 " />
           </Link>
           <Link href={`/product/${product.slug}`} className=" ">
           <h3 className="text-black min-h-[70px] text-[15px] line-clamp-3">
@@ -106,15 +106,18 @@ function getReviewText(count: number): string {
    </span>  
  
  </div>
- <div className={`${product.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-1 rounded-md self-start`}>
-    <p className={`text-[12px] text-gray-600 ${product.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>{product.inStock}</p>
+ <div className={`${product.inStock === 'В наличии' ? 'bg-green-600/20' : product.inStock === 'Уточнить на наличие' ? 'bg-yellow-600/20' : 'bg-red-600/20'} text-white px-2 py-1 rounded-md self-start`}>
+    <p className={`text-[12px] text-gray-600 ${product.inStock === 'В наличии' ? 'text-green-600' : product.inStock === 'Уточнить на наличие' ? 'text-yellow-600' : 'text-red-600'}`}>{product.inStock}</p>
     </div>
           </div>
           <div className="flex flex-row gap-2 pt-3 text-sm items-center justify-between">
-          {product.inStock === 'В наличии' ? (  <h3 className="text-gray-900 font-semibold text-[16px]">{product.price} руб</h3> )
-          :(
-            <h3 className="text-gray-900 font-semibold text-[16px]">Наличие уточняйте</h3>
-          )}
+          {product.inStock === 'В наличии' ? (
+  <h3 className="text-gray-900 font-semibold text-[16px]">{product.price} руб</h3>
+) : product.inStock === 'Уточнить на наличие' ? (
+  <h3 className="text-gray-900 font-semibold text-[16px]">Наличие уточняйте</h3>
+) : (
+  <h3 className="text-gray-900 font-semibold text-[16px]">Нет в наличии</h3>
+)}
          <div className="flex items-center flex-row pr-1 gap-3">
           
           
@@ -125,7 +128,7 @@ function getReviewText(count: number): string {
         </div>
            <div className="lg:hidden">
             <Link className="relative overflow-hidden flex items-center justify-center" href={`/product/${product.slug}`}>
-            <img src={sortedImages[0]?.imageUrl} alt={product.title} className="w-[156px] h-[156px] object-contain transition-transform duration-300 group-hover:scale-105" />
+            <img src={sortedImages[0]?.imageUrl} alt={product.title} className="w-[156px] h-[156px] object-contain transition-transform duration-300" />
             </Link>
             
             <div className=" p-1 flex flex-col lg:flex-row gap-2 lg:gap-1 lg:p-0">
