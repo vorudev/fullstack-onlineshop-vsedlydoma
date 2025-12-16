@@ -31,7 +31,6 @@ type Category = {
   id: string;
   name: string;
   slug: string;
-  description: string | null;
   parentId: string | null;
   createdAt: Date | null;
   updatedAt: Date | null;
