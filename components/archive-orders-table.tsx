@@ -730,7 +730,7 @@ const showMoreItems = (limit: number) => {
                             
                             {customer.userId && (
                               <DropdownMenuItem asChild>
-                                <Link href={`/admin/users/${customer.userId}`}>
+                                <Link href={`/dashboard/users/${customer.userId}`}>
                                   <User className="mr-2 h-4 w-4" />
                                   Профиль покупателя
                                 </Link>
@@ -1036,7 +1036,7 @@ const showMoreItems = (limit: number) => {
                   </Button>
                   <ExportToExcel 
                       orders={[selectedOrder]} 
-                      fileName={`order_${selectedOrder.sku}`} 
+                      fileName={`Счёт-справка`} 
                       buttonText="Скачать Excel"
                     />
                 </DialogFooter>

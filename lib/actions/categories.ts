@@ -7,7 +7,6 @@ export type Category = {
   id: string;
   name: string;
   slug: string;
-  description: string | null;
   parentId: string | null;
   hasChildren: boolean;
 };
@@ -40,7 +39,6 @@ export async function getCategoryWithNavigation(
         id: categories.id,
         name: categories.name,
         slug: categories.slug,
-        description: categories.description,
         parentId: categories.parentId,
       })
       .from(categories)

@@ -38,7 +38,6 @@ interface CategoryTableProps {
     id: string;
     name: string;
     slug: string;
-    description: string | null;
     parentId: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;
@@ -50,7 +49,6 @@ interface CategoryNode {
   id: string;
   name: string;
   slug: string;
-  description: string | null;
   parentId: string | null;
   createdAt: Date | null;
   updatedAt: Date | null;
@@ -203,7 +201,7 @@ export function CategoriesTable({
         }
         
         if (node.hasChildren) totalWithChildren++;
-        if (!node.description) totalWithoutDescription++;
+      
         
         if (node.children.length > 0) {
           countCategories(node.children);
@@ -377,7 +375,6 @@ export function CategoriesTable({
       id: 'null',
       name: 'Корень (без родителя)',
       slug: '',
-      description: null,
       parentId: null,
       createdAt: null,
       updatedAt: null,
@@ -503,7 +500,7 @@ export function CategoriesTable({
               
               <TableHead className="w-[350px]">Название и структура</TableHead>
               <TableHead className="w-[150px]">Slug</TableHead>
-              <TableHead>Описание</TableHead>
+             
               <TableHead className="w-[120px]">Дата</TableHead>
               <TableHead className="w-[120px]">Статус</TableHead>
               <TableHead className="text-right w-[140px]">Действия</TableHead>
@@ -626,24 +623,7 @@ export function CategoriesTable({
                     </TableCell>
                     
                     {/* Описание */}
-                    <TableCell>
-                      {category.description ? (
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <p className="line-clamp-2 text-sm cursor-help truncate">
-                                {category.description}
-                              </p>
-                            </TooltipTrigger>
-                            <TooltipContent className="max-w-xs">
-                              <p className="whitespace-pre-wrap">{category.description}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      ) : (
-                        <span className="text-sm text-muted-foreground italic">—</span>
-                      )}
-                    </TableCell>
+                    
                     
                     {/* Дата создания */}
                     <TableCell>

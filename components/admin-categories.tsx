@@ -98,7 +98,6 @@ interface CategoryProps {
     id: string;
     name: string;
     slug: string;
-    description: string | null;
     parentId: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;
@@ -107,7 +106,6 @@ interface CategoriesProps {
 id: string;
     name: string;
     slug: string;
-    description: string | null;
     parentId: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;

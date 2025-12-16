@@ -195,7 +195,6 @@ interface ProductUnited {
     id: string;
     name: string;
     slug: string;
-    description: string | null;
     parentId: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;
@@ -219,7 +218,6 @@ interface Categories {
     id: string;
     name: string;
     slug: string;
-    description: string | null;
     parentId: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;

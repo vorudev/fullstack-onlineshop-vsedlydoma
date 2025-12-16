@@ -62,7 +62,6 @@ export function CategoryForm({category, categories: initialCategories}: Category
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: category?.name || "",
-      description: category?.description || "",
       parentId: category?.parentId || null,
     },
   })
@@ -202,19 +201,7 @@ export function CategoryForm({category, categories: initialCategories}: Category
             )}
           />
 
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Описание</FormLabel>
-              <FormControl>
-                <Textarea placeholder="Описание категории" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    
         <Button type="submit" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Сохранить

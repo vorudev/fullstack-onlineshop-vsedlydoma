@@ -81,7 +81,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
           {order && (
   <ExportToExcel 
     orders={[order]} 
-    fileName={`order_${order.id}`} 
+    fileName={`Счёт-справка`} 
     buttonText="Скачать Excel"
   />
 )}

@@ -579,7 +579,6 @@ export const getAllCategories = async ({
       conditions.push(
         or(
           ilike(categories.name, `%${search}%`),
-          ilike(categories.description, `%${search}%`),
           ilike(categories.slug, `%${search}%`)
         )
       );
@@ -590,7 +589,6 @@ export const getAllCategories = async ({
         id: categories.id,
         name: categories.name,
         slug: categories.slug,
-        description: categories.description, 
         parentId: categories.parentId, 
         createdAt: categories.createdAt,
         updatedAt: categories.updatedAt

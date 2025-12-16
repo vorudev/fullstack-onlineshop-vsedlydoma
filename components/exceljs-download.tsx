@@ -79,11 +79,11 @@ const ExportToExcel: React.FC<ExportOrdersToExcelProps> = ({
 
       // Стилизуем заголовки
       const headerRow = worksheet.getRow(1);
-      headerRow.font = { bold: true, size: 12, color: { argb: 'FFFFFFFF' } };
+      headerRow.font = { bold: true, size: 12, color: { argb: '00000000' } };
       headerRow.fill = {
         type: 'pattern',
         pattern: 'solid',
-        fgColor: { argb: 'FF4472C4' },
+        fgColor: { argb: 'FFFFFFFF' },
       };
       headerRow.alignment = { vertical: 'middle', horizontal: 'center' };
 

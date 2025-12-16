@@ -90,7 +90,7 @@ const statusConfig = getStatusConfig(order?.status);
           {order && (
   <ExportToExcel 
     orders={[order]} 
-    fileName={`order_${order.id}`} 
+    fileName={`Счёт-справка`} 
     buttonText="Скачать Excel"
   />
 )}

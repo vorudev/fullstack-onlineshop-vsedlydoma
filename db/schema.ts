@@ -65,7 +65,6 @@ export const categories = pgTable("categories", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 255 }).notNull().unique(),
   slug: varchar("slug", { length: 255 }).notNull().unique(),
-  description: text("description"),
   parentId: uuid("parent_id").references((): AnyPgColumn => categories.id, {
     onDelete: "cascade",
   }),

@@ -1017,7 +1017,7 @@ const showMoreItems = (limit: number) => {
                   </Button>
                   <ExportToExcel 
                       orders={[selectedOrder]} 
-                      fileName={`order_${selectedOrder.sku}`} 
+                      fileName={`Счёт-справка`} 
                       buttonText="Скачать Excel"
                     />
                 </DialogFooter>
