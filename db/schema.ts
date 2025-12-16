@@ -1,6 +1,6 @@
 import { phoneNumber } from "better-auth/plugins";
 import { desc, or, relations, sql } from "drizzle-orm";
-import { integer, text, boolean, pgTable, uuid, real, timestamp, varchar, pgEnum, AnyPgColumn, index} from "drizzle-orm/pg-core";
+import { integer, text, boolean, pgTable, uuid, real, timestamp, varchar, pgEnum, AnyPgColumn, index, uniqueIndex} from "drizzle-orm/pg-core";
 
 export const roleEnum = pgEnum('role', ['admin', 'user']);
 
@@ -162,6 +162,9 @@ export const productImages = pgTable("product_images", {
 }, (table) => ({
   // Индекс для поиска по productId
   productIdIdx: index("product_images_product_id_idx").on(table.productId),
+  uniqueFeaturedIdx: uniqueIndex("product_images_unique_featured_idx")
+  .on(table.productId)
+  .where(sql`${table.isFeatured} = true`),
 }));
 export const manufacturerImages = pgTable("manufacturer_images", {
   id: uuid("id").primaryKey().defaultRandom(),

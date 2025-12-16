@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "product_images_unique_featured_idx" ON "product_images" USING btree ("product_id") WHERE "product_images"."is_featured" = true;

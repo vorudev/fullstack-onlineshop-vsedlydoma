@@ -21,11 +21,18 @@ interface ProductUnited {
    
     }[];
 }
+
 export default function ProductGallery({images}: ProductUnited) {
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
   const [mainSwiper, setMainSwiper] = useState<MainSwiperType | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
+  // ✅ Сортируем изображения по order
+  const sortedImages = [...images].sort((a, b) => {
+    const orderA = a.order ?? 0;
+    const orderB = b.order ?? 0;
+    return orderA - orderB;
+  });
 
   return (
     <div className="flex flex-col-reverse  lg:border-r-2 lg:border-gray-100 lg:flex-row gap-2 max-w-full">
@@ -41,8 +48,8 @@ export default function ProductGallery({images}: ProductUnited) {
             modules={[Thumbs]}
             className="h-full w-full"
           >
-            {images.map((img, idx) => (
-              <SwiperSlide key={idx} className="!w-[60px]">
+            {sortedImages.map((img, idx) => (
+              <SwiperSlide key={img.id} className="!w-[60px]">
                 <div 
                   className={`
                     h-[60px] w-[60px] cursor-pointer transition-opacity
@@ -75,9 +82,9 @@ export default function ProductGallery({images}: ProductUnited) {
           msOverflowStyle: 'none',
         }}
         className="hidden lg:flex max-h-[470px]   lg:flex-col gap-2 overflow-y-auto h-full scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-          {images.map((img, idx) => (
+          {sortedImages.map((img, idx) => (
             <div 
-              key={idx}
+              key={img.id}
               className={`
                 h-[60px] w-[60px] flex-shrink-0 cursor-pointer transition-opacity
                 border-l-3 overflow-hidden select-none
@@ -112,14 +119,14 @@ export default function ProductGallery({images}: ProductUnited) {
           onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
           initialSlide={activeIndex}
          onSwiper={(swiper) => {
-            setMainSwiper(swiper); // Сохраняем ссылку на основной Swiper
+            setMainSwiper(swiper);
             if (activeIndex !== swiper.activeIndex) {
               swiper.slideTo(activeIndex);
             }
           }}
         >
-          {images.map((img, idx) => (
-            <SwiperSlide key={idx}>
+          {sortedImages.map((img, idx) => (
+            <SwiperSlide key={img.id}>
               <div className="flex items-center justify-center h-full w-full select-none">
                 <img 
                   src={img.imageUrl} 

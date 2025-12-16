@@ -262,6 +262,13 @@ const AdminProductPage = ({ productDetails, reviewsLimit, categories, manufactur
     };
     return config[status];
   };
+    // ✅ Сортируем изображения по order
+    const sortedImages = [...productDetails.images].sort((a, b) => {
+      const orderA = a.order ?? 0;
+      const orderB = b.order ?? 0;
+      return orderA - orderB;
+    });
+  
 
   return (
     <div className="min-h-screen bg-background p-6">
@@ -565,7 +572,7 @@ const AdminProductPage = ({ productDetails, reviewsLimit, categories, manufactur
                       
                       {productDetails.images.length > 0 ? (
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                          {productDetails.images.map((image) => (
+                          {sortedImages.map((image) => (
                             <div
                               key={image.id}
                               onClick={() => setMainImage(image.imageUrl)}
