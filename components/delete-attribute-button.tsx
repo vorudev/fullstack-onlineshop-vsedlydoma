@@ -13,6 +13,7 @@ import {
 import { deleteProductAttribute } from "@/lib/actions/attributes";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface DeleteAttributeButtonProps {
     attributeId: string;
@@ -28,8 +29,10 @@ export default function DeleteAttributeButton({ attributeId }: DeleteAttributeBu
             setIsLoading(true);
             await deleteProductAttribute(attributeId);
             setIsOpen(false);
+            toast.success("Характеристика успешно удалена")
             router.refresh();
         } catch (error) {
+            toast.error("Произошла неизвестная ошибка")
             console.error("Error deleting attribute:", error);
         } finally {
             setIsLoading(false);

@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { ManufacturerForm} from "@/components/forms/create-manufacturert-form";
 import { getCategories } from "@/lib/actions/product-categories";
 import ManufacturersTable from "@/components/manufacturers-table";
-import Pagination  from "@/components/pagination";
+import Pagination  from "@/components/frontend/pagination-admin";
 
 import { getAllManufacturers } from "@/lib/actions/manufacturer";
 import SearchBar from "@/components/searchbar";
@@ -17,33 +17,19 @@ interface PageProps {
     page?: string;
     search?: string;
     category?: string;
+    limit: number;
   }>;
 
 }
-export const metadata: Metadata = {
-  title: "Производители",
-  description: "Мы более 10 лет на рынке, проверены временем в мире сантехники и товаров для дома в Минске. Консультации специалистов, доступные цены, большой ассортимент",
-  keywords: "санхника, строительные материалы, сантехнические услуги, Минск, ремонт, консультации, товары для дома, сантехника минск, строительные материалы минск, сантехнические услуги минск, товары для дома минск",
-  robots: { 
-    index: true,
-    follow: true, 
-    nocache: false,
-    googleBot: { 
-        index: true, 
-        follow: true, 
-        "max-snippet": -1, 
-        "max-image-preview": "large",
-        "max-video-preview": "large"
-    }
-}
-};
+
 export default async function Home({ searchParams }: PageProps) {
-  const { page, search, category } = await searchParams;
+  const { page, search, category, limit } = await searchParams;
+  const limitNumber = Number(limit) || 20;
   const currentPage = Number(page) || 1;
   const searchQuery = search || '';
   const { manufacturers, pagination } = await getAllManufacturers({
     page: currentPage,
-    pageSize: 21,
+    pageSize: limitNumber,
     search: searchQuery,
 
   });
@@ -75,11 +61,12 @@ export default async function Home({ searchParams }: PageProps) {
       )}
 
       <ManufacturersTable manufacturers={manufacturers} />
- <Pagination 
+ <div className="max-w-[600px] mx-auto"><Pagination 
         currentPage={pagination.page}
         totalPages={pagination.totalPages}
         total={pagination.total}
-      />
+        limit={limitNumber}
+      /></div>
 
     </div>
   );

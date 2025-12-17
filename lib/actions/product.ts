@@ -617,6 +617,119 @@ export const getAllProducts = async ({
   }
 };
 
+
+export const getAllProductsForOrders = async ({
+  page = 1,
+  pageSize = 20,
+  search = '', 
+  status = true
+}: GetProductsParams = {}) => {
+  try {
+    // Валидация всех параметров
+    const validatedPage = pageSchema.parse(page);
+    const validatedPageSize = pageSizeSchema.parse(pageSize);
+    
+    // Двойная санитизация поискового запроса
+    const sanitizedSearch = sanitizeString(search);
+    const validatedSearch = serverSearchSchema.parse(sanitizedSearch);
+  
+    const offset = (validatedPage - 1) * validatedPageSize;
+    const conditions = [
+      eq(products.isActive, status)
+    ];
+
+    // Обработка поискового запроса
+    if (validatedSearch) {
+      // Экранируем спецсимволы для LIKE
+      const escapedSearch = escapeLikePattern(validatedSearch);
+      const searchPattern = `%${escapedSearch}%`;
+
+      const searchConditions = [
+        sql`similarity(${products.title}, ${validatedSearch}) > 0.1`,
+        sql`similarity(${products.description}, ${validatedSearch}) > 0.1`,
+        ilike(products.sku, `%${validatedSearch}%`),
+         
+
+
+      ];
+
+
+      // Поиск по числовым полям (цена)
+      const numericSearch = Number(validatedSearch);
+      if (!isNaN(numericSearch) && numericSearch > 0 && numericSearch < 1000000) {
+        searchConditions.push(
+          eq(products.price, numericSearch)
+        );
+      }
+
+      const searchCondition = or(...searchConditions);
+      if (searchCondition) {
+        conditions.push(searchCondition);
+      }
+    }
+
+    // Добавляем фильтры по категории и производителю
+   
+    // Базовые запросы
+    let query = db
+      .select({
+        ...getTableColumns(products),
+    relevance: validatedSearch 
+      ? sql<number>`GREATEST(
+          similarity(${products.title}, ${validatedSearch}) * 3,
+          similarity(${products.description}, ${validatedSearch}) * 1
+        )`
+      : sql<number>`0`
+  })
+      
+      .from(products)
+      .$dynamic();
+   
+    let countQuery = db
+      .select({ count: sql<number>`count(*)` })
+      .from(products)
+      .$dynamic();
+   
+    // Применяем фильтры
+    if (conditions.length > 0) {
+      const whereClause = and(...conditions);
+      query = query.where(whereClause);
+      countQuery = countQuery.where(whereClause);
+    }
+   
+    // Выполняем запросы параллельно для скорости
+    const [allProducts, [{ count }]] = await Promise.all([
+      query
+        .limit(pageSize)
+        .offset(offset)
+        .orderBy(
+          // Если есть поиск - сортируем по релевантности, иначе по дате
+          validatedSearch
+            ? sql`GREATEST(
+                similarity(${products.title}, ${validatedSearch}) * 3,
+                similarity(${products.description}, ${validatedSearch}) * 1
+              ) DESC`
+            : desc(products.createdAt)
+        ), // DESC для новых товаров первыми
+      countQuery
+    ]);
+   
+   
+    return {
+      products: allProducts,
+      pagination: {
+        page,
+        pageSize,
+        total: Number(count),
+        totalPages: Math.ceil(Number(count) / pageSize),
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    throw new Error("Failed to fetch products");
+  }
+};
+
 export async function createProduct(product: Omit<Product, "id" | "createdAt" | "updatedAt" | "sku">) {
   try {
     const session = await auth.api.getSession({

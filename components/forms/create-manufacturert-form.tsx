@@ -47,15 +47,17 @@ export function ManufacturerForm({ manufacturer }: ManufacturerFormProps) {
         try {
             if (manufacturer) {
                 await updateManufacturer({ ...values, id: manufacturer.id, slug: slugify(values.name, { lower: true, strict: true, locale: 'ru' }) });
-     
+                toast.success("Производитель успешно обновлен")
             } else {
                 await createManufacturer({ ...values, slug: slugify(values.name, { lower: true, strict: true, locale: 'ru' }) });
-                
+                toast.success("Производитель успешно создан")
+                form.reset();
             }
-            form.reset();
+            
             setLoading(false);
             router.refresh();
         } catch (error) {
+            toast.error("Произошла Неизвестная ошибка")
             console.error("Error submitting form:", error);
             setLoading(false);
             router.refresh();

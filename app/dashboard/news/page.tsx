@@ -72,7 +72,7 @@ export const metadata: Metadata = {
 <div className="relative min-w-[270px]  rounded-md aspect-[356/240] max-w-[356px] max-h-[240px] overflow-hidden">
 
  {news.images.length > 0 ?
-  <div><Link href={`/dashboard/news/${news.slug}`}><Image src={featuredImage.imageUrl} alt="" fill
+  <div><Link href={`/dashboard/news/${news.slug}`}><img src={featuredImage.imageUrl} alt=""
 
 className="object-cover aspect-[356/240]"/></Link>
 <DeleteImageFromNewsButton image={featuredImage} />

@@ -1,5 +1,5 @@
 'use client'
- import { Heart, ShoppingCart , ChartNoAxesColumn, Star} from "lucide-react";
+ import { Heart, ShoppingCart , ChartNoAxesColumn, Star, Minus, Plus} from "lucide-react";
 import { getAverageRatingByProductId } from "@/lib/actions/reviews";
 import { getProductImages } from "@/lib/actions/image-actions";
 import { AddToCart } from "@/app/products/add-to-cart-prop";
@@ -37,7 +37,8 @@ interface ProductUnited {
 }
 }
 export default function ProductCard( { product}: ProductUnited) {
-  const {addToCart, cart, removeFromCart} = useCart();
+  const {addToCart, cart, removeFromCart, updateQuantity} = useCart();
+  const quantity = cart.find(item => item.product.id === product.id)?.quantity || 0;
     const rounded = Math.round(product.averageRating);
   const isInCart = cart.some(item => item.product.id === product.id);
  const getRatingColor = (rating: number) => {
@@ -74,22 +75,38 @@ function getReviewText(count: number): string {
   });
 
 
-    const toggleCart = (product: ProductUnited['product']) => {
+    
+  const handleIncrement = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isInCart) {
+        updateQuantity(product.id, quantity + 1);
+    } else {
+        addToCart(product);
+    }
+};
 
-        if (isInCart) {
-          removeFromCart(product.id);
-        } else {
-          addToCart(product);
-        }
-      };
+const handleDecrement = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (quantity > 1) {
+        updateQuantity(product.id, quantity - 1);
+    } else if (quantity === 1) {
+        removeFromCart(product.id);
+    }
+};
+
+const handleMainClick = () => {
+    if (!isInCart) {
+        addToCart(product);
+    }
+};
     return ( 
-        <div className="bg-white border-gray-100 border-2 rounded-2xl lg:max-w-[450px]  transition-all duration-300 overflow-hidden  group lg:p-[12px] lg:min-w-[300px]" key={product.id}> 
+        <div className="bg-white border-gray-100 border-2 rounded-2xl lg:max-w-[450px]  transition-all duration-300 overflow-hidden  group p-1 lg:p-[12px] lg:min-w-[280px] xl-min-w-[300px]" key={product.id}> 
         <div className="hidden lg:block flex flex-col  px-2 py-2">
           <Link className="relative overflow-hidden flex justify-center" href={`/product/${product.slug}`}>
           <img src={sortedImages[0]?.imageUrl} alt={product.title} className="w-[156px]  h-[156px] object-contain transition-transform duration-300 " />
           </Link>
           <Link href={`/product/${product.slug}`} className=" ">
-          <h3 className="text-black min-h-[70px] text-[15px] line-clamp-3">
+          <h3 className="text-black min-h-[45px] text-[15px] line-clamp-2">
             {product.title}
           </h3>
           
@@ -106,14 +123,14 @@ function getReviewText(count: number): string {
    </span>  
  
  </div>
- <div className={`${product.inStock === 'В наличии' ? 'bg-green-600/20' : product.inStock === 'Уточнить на наличие' ? 'bg-yellow-600/20' : 'bg-red-600/20'} text-white px-2 py-1 rounded-md self-start`}>
-    <p className={`text-[12px] text-gray-600 ${product.inStock === 'В наличии' ? 'text-green-600' : product.inStock === 'Уточнить на наличие' ? 'text-yellow-600' : 'text-red-600'}`}>{product.inStock}</p>
+ <div className={`${product.inStock === 'В наличии' ? 'bg-green-600/20' : product.inStock === 'Наличие уточняйте' ? 'bg-yellow-600/20' : 'bg-red-600/20'} text-white px-2 py-1 rounded-md self-start`}>
+    <p className={`text-[12px] text-gray-600 ${product.inStock === 'В наличии' ? 'text-green-600' : product.inStock === 'Наличие уточняйте' ? 'text-yellow-600' : 'text-red-600'}`}>{product.inStock}</p>
     </div>
           </div>
-          <div className="flex flex-row gap-2 pt-3 text-sm items-center justify-between">
+          <div className="flex flex-row gap-2 min-h-[57px] pt-3 text-sm items-center justify-between">
           {product.inStock === 'В наличии' ? (
   <h3 className="text-gray-900 font-semibold text-[16px]">{product.price} руб</h3>
-) : product.inStock === 'Уточнить на наличие' ? (
+) : product.inStock === 'Наличие уточняйте' ? (
   <h3 className="text-gray-900 font-semibold text-[16px]">Наличие уточняйте</h3>
 ) : (
   <h3 className="text-gray-900 font-semibold text-[16px]">Нет в наличии</h3>
@@ -133,10 +150,13 @@ function getReviewText(count: number): string {
             
             <div className=" p-1 flex flex-col lg:flex-row gap-2 lg:gap-1 lg:p-0">
               <Link href={`/product/${product.slug}`}>
-              {product.inStock === 'В наличии' ? (    <h3 className="text-[16px] font-semibold text-gray-900">{product.price} руб</h3>)
-              : ( 
-                <h3 className="text-[16px] font-semibold text-gray-900">Наличие уточняйте</h3>
-              ) }
+              {product.inStock === 'В наличии' ? (
+  <h3 className="text-gray-900 font-semibold text-[16px]">{product.price} руб</h3>
+) : product.inStock === 'Наличие уточняйте' ? (
+  <h3 className="text-gray-900 font-semibold text-[16px]">Наличие уточняйте</h3>
+) : (
+  <h3 className="text-gray-900 font-semibold text-[16px]">Нет в наличии</h3>
+)}
               <h3 className="text-gray-900 h-[42px]  lg:text-[16px] text-[14px] line-clamp-2">
                 {product.title}
               </h3>
@@ -153,15 +173,47 @@ function getReviewText(count: number): string {
 
               </Link>
               
-              <div className={`${product.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-1 rounded-md self-start`}>
-    <p className={`text-[12px] text-gray-600 ${product.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>{product.inStock}</p>
+              <div className={`${product.inStock === 'В наличии' ? 'bg-green-600/20' : product.inStock === 'Наличие уточняйте' ? 'bg-yellow-600/20' : 'bg-red-600/20'} text-white px-2 py-1 rounded-md self-start`}>
+    <p className={`text-[12px] text-gray-600 ${product.inStock === 'В наличии' ? 'text-green-600' : product.inStock === 'Наличие уточняйте' ? 'text-yellow-600' : 'text-red-600'}`}>{product.inStock}</p>
     </div>
              
               <div className="flex flex-col pt-1 gap-3 items-start ">
                  
-             <button onClick={() => toggleCart(product)} className={`flex w-full items-center justify-center gap-2 px-4 py-2 rounded-md border transition-colors ${isInCart ? 'bg-white border-blue-600 text-blue-600 ' : 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer'}`}>
-             {isInCart ? 'В корзине' : 'В корзину'}
-            </button>
+              <div className="flex items-center w-full ">
+            {isInCart ? (
+                // Состояние: товар в корзине
+                <div className="flex items-center w-full rounded-md border border-blue-600 overflow-hidden bg-white">
+                    <button
+                        onClick={handleDecrement}
+                        className="flex-shrink-0 w-8 h-9 flex items-center justify-center hover:bg-blue-50 text-blue-600 transition-colors"
+                        aria-label="Уменьшить количество"
+                    >
+                        <Minus className="w-4 h-4" />
+                    </button>
+                    
+                    <div className="flex-1 flex items-center justify-center px-2 py-2 text-blue-600">
+                        <span className="text-sm font-medium">{quantity}</span>
+                    </div>
+                    
+                    <button
+                        onClick={handleIncrement}
+                        className="flex-shrink-0 w-8 h-9 flex items-center justify-center hover:bg-blue-50 text-blue-600 transition-colors"
+                        aria-label="Увеличить количество"
+                    >
+                        <Plus className="w-4 h-4" />
+                    </button>
+                </div>
+            ) : (
+                // Состояние: товар не в корзине
+                <button
+                    onClick={handleMainClick}
+                    className="flex items-center justify-center gap-2 w-full xl:px-4 py-1.5 px-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white border border-blue-600 transition-colors"
+                >
+                    <ShoppingCart className="w-4 h-4 hidden xl:block" />
+                    <span>В корзину</span>
+                </button>
+            )}
+        </div>
 
              
               </div>

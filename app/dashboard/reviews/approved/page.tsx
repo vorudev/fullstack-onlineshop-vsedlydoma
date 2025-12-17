@@ -1,6 +1,6 @@
 import { ReviewModerationTable } from "@/components/approved-reviews-table"
 import { getAllPendingReviews } from "@/lib/actions/reviews"
-import Pagination  from "@/components/pagination"
+import Pagination  from "@/components/frontend/pagination-admin"
 import SearchBar from "@/components/searchbar"
 import { Metadata } from "next";
 
@@ -52,6 +52,7 @@ export const metadata: Metadata = {
                     currentPage={pagination.page}
                     totalPages={pagination.totalPages}
                     total={pagination.total}
+                    limit={limitNumber}
                   />
             </main>
 

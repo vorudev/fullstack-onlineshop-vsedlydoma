@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { updateContactUs, createContactUsInfo} from "@/lib/actions/contact-us";
 import { ContactPhone } from "@/db/schema";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 interface FormProps {
     contactUs: {
     clientInfo: {
@@ -58,8 +59,10 @@ export function AddContactUsInfo({ contactUs }: FormProps) {
                     ...values,
                     id: contactUs.id,
                 });
+                toast.success("Информация успешно добавлена")
             } else {
                 await createContactUsInfo(values);
+                toast.success("Информация успешно добавлена")
             }
             form.reset();
             setIsLoading(false);

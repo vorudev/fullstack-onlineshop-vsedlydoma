@@ -13,6 +13,7 @@ import {
 import { deleteItemFromOrder } from "@/lib/actions/orders";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export const DeleteItemFromOrderButton = ({ orderId, itemId }: { orderId: string, itemId: string }) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -24,9 +25,11 @@ export const DeleteItemFromOrderButton = ({ orderId, itemId }: { orderId: string
             setIsLoading(true);
             await deleteItemFromOrder(orderId, itemId);
             setOpen(false);
+            toast.success("Товар успешно удален из заказа")
             router.refresh();
         } catch (error) {
             console.error("Error deleting item from order:", error);
+            toast.error("Произошла ошибка")
         } finally {
             setIsLoading(false);
         }

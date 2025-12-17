@@ -13,6 +13,7 @@ import {
 import { deleteManufacturer } from "@/lib/actions/manufacturer";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export function DeleteManufacturerButton({ id }: { id: string }) {
     const [loading, setLoading] = useState(false);
@@ -24,9 +25,12 @@ export function DeleteManufacturerButton({ id }: { id: string }) {
             setLoading(true);
             await deleteManufacturer(id);
             setLoading(false);
+          
             router.refresh();
+            toast.success("Производитель успешно удален")
         } catch (error) {
             console.error("Error deleting manufacturer:", error);
+            toast.error("Произошла неизвестная ошибка")
         } finally {
             setLoading(false);
         }
@@ -41,15 +45,15 @@ export function DeleteManufacturerButton({ id }: { id: string }) {
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Are you sure?</DialogTitle>
+                    <DialogTitle>Вы уверенны?</DialogTitle>
                     <DialogDescription>
-                        This action cannot be undone. This will permanently delete the manufacturer from the database.
+                        Это действие навсегда удалит производителя с базы данных
                     </DialogDescription>
                 </DialogHeader>
                 <div className="flex justify-end gap-2">
                     <DialogTrigger asChild>
                         <Button variant="ghost" onClick={() => setIsOpen(false)}>
-                            Cancel
+                            Отмена
                         </Button>
                     </DialogTrigger>
                     <DialogTrigger asChild>
@@ -61,7 +65,7 @@ export function DeleteManufacturerButton({ id }: { id: string }) {
                             {loading ? (
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             ) : (
-                                "Delete"
+                                "Удалить"
                             )}
                         </Button>
                     </DialogTrigger>

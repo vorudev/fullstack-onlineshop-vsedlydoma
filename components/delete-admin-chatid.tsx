@@ -13,6 +13,7 @@ import {
 import { deleteTelegramChatId } from "@/lib/actions/admin";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export function DeleteAdminChatIdButton({ id }: { id: string }) {
     const [loading, setLoading] = useState(false);
@@ -25,8 +26,10 @@ export function DeleteAdminChatIdButton({ id }: { id: string }) {
             await deleteTelegramChatId(id);
             setLoading(false);
             router.refresh();
+            toast.success("Chat id успешно удален")
         } catch (error) {
             console.error("Error deleting telegram chat id:", error);
+            toast.error("Произошла неизвестная ошибка")
         } finally {
             setLoading(false);
         }

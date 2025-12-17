@@ -219,7 +219,7 @@ export default function AdminOrdersTable({ orders, user }: Order) {
                             ))}
                             
                             <div className="flex justify-between items-center pt-3 border-t">
-                              <span className="text-sm text-gray-500">обновлено: {order.updatedAt?.toLocaleString()}                              </span>
+                              <span className="text-sm text-gray-500">обновлено: {order.updatedAt?.toLocaleString('ru-RU')}                              </span>
                               <span className="text-lg font-bold ">
                                 Итого: {order.total.toFixed(2)} руб
                               </span>

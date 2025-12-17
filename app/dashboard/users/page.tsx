@@ -4,7 +4,7 @@ import  DashboardPage from "./change-user";
 
 
 import type { User }  from "@/db/schema";
-import Pagination  from "@/components/pagination";
+import Pagination  from "@/components/frontend/pagination-admin";
 import SearchBar from "../../../components/searchbar";
 import { getAllUsers } from "@/lib/actions/admin";
 import { Metadata } from "next";
@@ -13,6 +13,7 @@ interface PageProps {
     page?: string;
     search?: string;
     category?: string;
+    limit?: string;
   }>;
 
 }
@@ -34,12 +35,13 @@ export const metadata: Metadata = {
 }
 };
 export default async function UsersPage({ searchParams }: PageProps) {
-   const { page, search} = await searchParams;
+   const { page, search, limit} = await searchParams;
    const currentPage = Number(page) || 1;
+   const limitNumber = Number(limit) || 20;
   const searchQuery = search || '';
   const { users, pagination } = await getAllUsers({
     page: currentPage,
-    pageSize: 20,
+    pageSize: limitNumber,
     search: searchQuery,
 
   })
@@ -50,11 +52,12 @@ export default async function UsersPage({ searchParams }: PageProps) {
             <h1 className="text-2xl font-bold mb-4">Пользователи</h1>
                 <SearchBar />
            <GetAllUsers  users={users}/>
- <Pagination 
+ <div className="max-w-[600px] mx-auto"><Pagination 
         currentPage={pagination.page}
         totalPages={pagination.totalPages}
         total={pagination.total}
-      />
+        limit={limitNumber}
+      /></div>
         </div>
     );
  } 

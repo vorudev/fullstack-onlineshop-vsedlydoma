@@ -28,7 +28,7 @@ export async function createManufacturer(manufacturer: Omit<Manufacturer, "id" |
             if (!session || session.user.role !== 'admin') {
               return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
             }
-        return await db.insert(manufacturers).values(manufacturer);
+        await db.insert(manufacturers).values(manufacturer).returning();
     } catch (error) {
         console.error("Error creating manufacturer:", error);
         throw new Error("Failed to create manufacturer");
@@ -42,7 +42,8 @@ export async function updateManufacturer(manufacturer: Omit<Manufacturer, "creat
             if (!session || session.user.role !== 'admin') {
               return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
             }
-        return await db.update(manufacturers).set(manufacturer).where(eq(manufacturers.id, manufacturer.id));
+         await db.update(manufacturers).set(manufacturer).where(eq(manufacturers.id, manufacturer.id)).returning()
+         ;
     } catch (error) {
         console.error("Error updating manufacturer:", error);
         throw new Error("Failed to update manufacturer");
@@ -56,7 +57,7 @@ export async function deleteManufacturer(id: string) {
             if (!session || session.user.role !== 'admin') {
               return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
             }
-        return await db.delete(manufacturers).where(eq(manufacturers.id, id));
+      await db.delete(manufacturers).where(eq(manufacturers.id, id)).returning();
     } catch (error) {
         console.error("Error deleting manufacturer:", error);
         throw new Error("Failed to delete manufacturer");

@@ -94,14 +94,14 @@ function getReviewText(count: number): string {
      {getReviewText(product.reviewCount)}
    </span>  
  
- </div> <div className={`${product.inStock === 'В наличии' ? 'bg-green-600/20' :  product.inStock === 'Уточнить на наличие' ? 'bg-yellow-600/20' : 'bg-red-600/20'} text-white px-2 py-1 rounded-md self-start`}>
-    <p className={`text-[12px] text-gray-600 ${product.inStock === 'В наличии' ? 'text-green-600' : product.inStock === 'Уточнить на наличие' ? 'text-yellow-600' : 'text-red-600'}`}>{product.inStock}</p>
+ </div> <div className={`${product.inStock === 'В наличии' ? 'bg-green-600/20' :  product.inStock === 'Наличие уточняйте' ? 'bg-yellow-600/20' : 'bg-red-600/20'} text-white px-2 py-1 rounded-md self-start`}>
+    <p className={`text-[12px] text-gray-600 ${product.inStock === 'В наличии' ? 'text-green-600' : product.inStock === 'Наличие уточняйте' ? 'text-yellow-600' : 'text-red-600'}`}>{product.inStock}</p>
     </div>
           </div>
           <div className="flex flex-row gap-2 pt-3 text-sm items-center justify-between">
           {product.inStock === 'В наличии' ? (
   <h3 className="text-gray-900 font-semibold text-[16px]">{product.price} руб</h3>
-) : product.inStock === 'Уточнить на наличие' ? (
+) : product.inStock === 'Наличие уточняйте' ? (
   <h3 className="text-gray-900 font-semibold text-[16px]">Наличие уточняйте</h3>
 ) : (
   <h3 className="text-gray-900 font-semibold text-[16px]">Нет в наличии</h3>
@@ -137,7 +137,7 @@ function getReviewText(count: number): string {
 
 
               </Link>
-              <div className={`${product.inStock === 'В наличии' ? 'bg-green-600/20' : product.inStock === 'Уточнить на наличие' ? 'bg-yellow-600/20' : 'bg-red-600/20'} text-white px-2 py-1 rounded-md self-start`}>
+              <div className={`${product.inStock === 'В наличии' ? 'bg-green-600/20' : product.inStock === 'Наличие уточняйте' ? 'bg-yellow-600/20' : 'bg-red-600/20'} text-white px-2 py-1 rounded-md self-start`}>
     <p className={`text-[12px] text-gray-600 ${product.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>{product.inStock}</p>
     </div>
              
@@ -146,7 +146,7 @@ function getReviewText(count: number): string {
                  font-semibold text-gray-900 w-1/2">
                   {product.inStock === 'В наличии' ? (
   <h3 className="text-gray-900 font-semibold text-[16px]">{product.price} руб</h3>
-) : product.inStock === 'Уточнить на наличие' ? (
+) : product.inStock === 'Наличие уточняйте' ? (
   <h3 className="text-gray-900 font-semibold text-[16px]">Наличие уточняйте</h3>
 ) : (
   <h3 className="text-gray-900 font-semibold text-[16px]">Нет в наличии</h3>

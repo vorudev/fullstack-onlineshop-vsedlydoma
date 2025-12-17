@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 interface  NewsProps {
      adminEmail? : AdminEmail
         
@@ -40,16 +41,20 @@ export function AddAdminEmail({ adminEmail }: NewsProps) {
                 await updateAdminEmail({
                     ...values,
                     id: adminEmail.id,
+                    
                 });
+                toast.success("Почта успешно добавлена")
             } else {
                 await createAdminEmail({
                     ...values,
                 });
+                 toast.success("Почта успешно добавлена")
             }
             form.reset();
             setIsLoading(false);
             router.refresh();
         } catch (error) {
+             toast.error("Произошла ошибка")
             console.error("Error submitting form:", error);
             throw new Error("Failed to submit form");
         }

@@ -6,7 +6,7 @@ import { ProductForm} from "@/components/forms/product-form";
 import { getAllCategories } from "@/lib/actions/product-categories";
 import ProductsTable from "@/components/products-table";
 import { categories } from "@/db/schema";
-import Pagination  from "@/components/pagination";
+import Pagination  from "@/components/frontend/pagination-admin";
 import { CategoryFilter } from "@/components/category-filter";
 import { StatusFilter } from "@/components/status-filter";
 import { getAllManufacturers } from "@/lib/actions/manufacturer";
@@ -19,6 +19,7 @@ interface PageProps {
     page?: string;
     search?: string;
     category?: string;
+    limit: number;
     manufacturer?: string;
     manufacturerPage?: string;
     manufacturerSearch?: string;
@@ -49,10 +50,12 @@ export default async function Home({ searchParams }: PageProps) {
     search, 
     category,
     manufacturer,
-    status
+    status, 
+    limit
   } = await searchParams;
   
   const currentPage = Number(page) || 1;
+  const limitNumber = Number(limit) || 20;
   const searchQuery = search || '';
   const categoryFilter = category || '';
   const manufacturerFilter = manufacturer || ''; // переименовал переменную!
@@ -70,7 +73,7 @@ export default async function Home({ searchParams }: PageProps) {
       }),
       getAllProducts({
         page: currentPage,
-        pageSize: 21,
+        pageSize: limitNumber,
         search: searchQuery,
         category: categoryFilter,
         manufacturer: manufacturerFilter, 
@@ -134,11 +137,12 @@ export default async function Home({ searchParams }: PageProps) {
         manufacturers={manufacturers} 
       />
       
-      <Pagination
+      <div className="max-w-[600px] mx-auto"><Pagination 
         currentPage={pagination.page}
         totalPages={pagination.totalPages}
         total={pagination.total}
-      />
+        limit={limitNumber}
+      /></div>
     </div>
   );
 }

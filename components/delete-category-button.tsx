@@ -12,6 +12,7 @@ import {
 import { deleteCategory } from "@/lib/actions/product-categories";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface DeleteCategoryButtonProps {
   categoryId: string;
@@ -27,10 +28,12 @@ export default function DeleteCategoryButton({ categoryId }: DeleteCategoryButto
       setIsLoading(true);
       await deleteCategory(categoryId);
       setIsOpen(false);
+      toast.success("Категория успешно удалена")
       router.refresh();
     } catch (error) {
       console.error("Error deleting category:", error);
       router.refresh();
+      toast.error("Произошла неизвестная ошибка")
       setIsOpen(false)
     } finally {
       setIsLoading(false);

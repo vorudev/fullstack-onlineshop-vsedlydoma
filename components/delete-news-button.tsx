@@ -13,6 +13,7 @@ import {
 import { deleteNews } from "@/lib/actions/news";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export function DeleteNewsButton({ id }: { id: string }) {
     const [loading, setLoading] = useState(false);
@@ -25,8 +26,10 @@ export function DeleteNewsButton({ id }: { id: string }) {
             await deleteNews(id);
             setLoading(false);
             router.refresh();
+            toast.success("Новость успешно удалена")
         } catch (error) {
             console.error("Error deleting news:", error);
+            toast.error("Произошла неизвестная ошибка")
         } finally {
             setLoading(false);
         }

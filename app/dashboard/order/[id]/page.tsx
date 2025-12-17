@@ -1,5 +1,5 @@
 import { getOrderById } from "@/lib/actions/orders";
-import { getAllProducts } from "@/lib/actions/product";
+import { getAllProductsForOrders } from "@/lib/actions/product";
 import { UpdateOrderForm } from "@/components/forms/update-order-form";
 import AddOrderItemForm from "@/components/forms/add/add-items-to-order-form";
 import ExportToExcel from "@/components/exceljs-download";
@@ -32,11 +32,10 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
   const searchQuery = search || '';
 
   const [{products}, order] = await Promise.all([
-    getAllProducts({
+    getAllProductsForOrders({
       page: currentPage,
-      pageSize: 21,
+      pageSize: 150,
       search: searchQuery,
-      category,
     }),
     getOrderById(id),
   ])

@@ -1,7 +1,7 @@
 'use client';
 import { useCart } from "@/app/context/cartcontext"; 
-import { ShoppingCart } from "lucide-react";
 import { CheckIcon } from "lucide-react";
+import { Minus, Plus, ShoppingCart, Check } from 'lucide-react';
 interface ProductUnited {
    
   product: {
@@ -30,22 +30,74 @@ interface ProductUnited {
     }[]
 }
 }
+
+
 export const AddToCart: React.FC<ProductUnited> = ({ product }) => {
-    const { addToCart, cart, removeFromCart } = useCart();
-    const toggleCart = (product: ProductUnited['product']) => {
+    const { addToCart, cart, removeFromCart, updateQuantity } = useCart();
+    
+    const cartItem = cart.find((item) => item.product.id === product.id);
+    const isInCart = cartItem !== undefined;
+    const quantity = cartItem?.quantity || 0;
+
+    const handleIncrement = (e: React.MouseEvent) => {
+        e.stopPropagation();
         if (isInCart) {
-          removeFromCart(product.id);
+            updateQuantity(product.id, quantity + 1);
         } else {
-          addToCart(product);
+            addToCart(product);
         }
-      };
-   
-    
-    const isInCart = cart.some((item) => item.product.id === product.id);
-    
+    };
+
+    const handleDecrement = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (quantity > 1) {
+            updateQuantity(product.id, quantity - 1);
+        } else if (quantity === 1) {
+            removeFromCart(product.id);
+        }
+    };
+
+    const handleMainClick = () => {
+        if (!isInCart) {
+            addToCart(product);
+        }
+    };
+
     return (
-        <button onClick={() => toggleCart(product)} className={`flex cursor-pointer w-full min-w-[140px] max-w-[140px] items-center justify-center gap-2 px-4 py-2 rounded-md border transition-colors ${isInCart ? 'bg-white border-blue-600  text-blue-600 ' : 'bg-blue-600 hover:bg-blue-700 text-white '}`}>
-        {isInCart ? 'В корзине' : 'В корзину'}
-       </button>
+        <div className="flex items-center w-full xl:min-w-[140px] min-w-[100px] max-w-[140px]">
+            {isInCart ? (
+                // Состояние: товар в корзине
+                <div className="flex items-center w-full rounded-md border border-blue-600 overflow-hidden bg-white">
+                    <button
+                        onClick={handleDecrement}
+                        className="flex-shrink-0 w-8 h-9 flex items-center justify-center hover:bg-blue-50 text-blue-600 transition-colors"
+                        aria-label="Уменьшить количество"
+                    >
+                        <Minus className="w-4 h-4" />
+                    </button>
+                    
+                    <div className="flex-1 flex items-center justify-center px-2 py-2 text-blue-600">
+                        <span className="text-sm font-medium">{quantity}</span>
+                    </div>
+                    
+                    <button
+                        onClick={handleIncrement}
+                        className="flex-shrink-0 w-8 h-9 flex items-center justify-center hover:bg-blue-50 text-blue-600 transition-colors"
+                        aria-label="Увеличить количество"
+                    >
+                        <Plus className="w-4 h-4" />
+                    </button>
+                </div>
+            ) : (
+                // Состояние: товар не в корзине
+                <button
+                    onClick={handleMainClick}
+                    className="flex items-center justify-center gap-2 w-full xl:px-4 py-2 px-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white border border-blue-600 transition-colors"
+                >
+                    <ShoppingCart className="w-4 h-4 hidden xl:block" />
+                    <span>В корзину</span>
+                </button>
+            )}
+        </div>
     );
- } 
+};

@@ -66,7 +66,7 @@ const windowWidth = useInitialWindowWidth();
   // Определяем количество слайдов согласно вашим breakpoints
   const getSlidesPerView = () => {
     if (!windowWidth) return 2; // default значение при SSR
-    if (windowWidth >= 1280) return 3;
+    if (windowWidth >= 1400) return 3;
     if (windowWidth >= 1024) return 2;
     if (windowWidth >= 768) return 4;
     if (windowWidth >= 640) return 3;
@@ -104,7 +104,7 @@ onSlideChange={(swiper) => setCurrentSlide(swiper.activeIndex)}
     640: { slidesPerView: 3 },
     768: { slidesPerView: 4 },
     1024: { slidesPerView: 2 },
-    1280: { slidesPerView: 3 },
+    1400: { slidesPerView: 3 },
   }}
 >
     {loading ? (

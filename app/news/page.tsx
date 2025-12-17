@@ -31,11 +31,9 @@ interface PageProps {
   return (
     <Link href={`/news/${news.slug}`} className="flex flex-col gap-5 md:max-w-[356px] w-full" key={news.id}>
       <div className="relative min-w-[270px] w-full rounded-md aspect-[356/240] max-w-[356px] max-h-[240px] overflow-hidden">
-        <Image
+        <img
           src={featuredImage?.imageUrl || "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM="}
           alt=""
-          fill
-          sizes="100vw"
           className="object-cover aspect-[356/240] w-full" 
         />
       </div>

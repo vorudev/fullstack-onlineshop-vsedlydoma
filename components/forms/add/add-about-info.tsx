@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { updateAboutInfo, createAboutInfo } from "@/lib/actions/about-info";
 import { About } from "@/db/schema";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 interface AboutFormProps {
     about?: {
     id: string;
@@ -53,15 +54,18 @@ export function AddAboutInfo({ about }: AboutFormProps) {
                 ...values,
                 id: about.id
             })
+            toast.success("Информация успешно добавлена")
             } else 
             {
                 await createAboutInfo({
                     ...values
                 })
+                toast.success("Информация успешно добавлена")
             }
             setIsLoading(false);
             router.refresh();
         } catch (error) {
+            toast.error("Произошла ошибка")
             console.error("Error submitting form:", error);
             throw new Error("Failed to submit form");
         }

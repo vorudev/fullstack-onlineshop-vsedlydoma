@@ -31,7 +31,7 @@ export async function updateNews(newaId: Omit<News, "createdAt" | "updatedAt">) 
             if (!session || session.user.role !== 'admin') {
               return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
             }
-        return await db.update(news).set(newaId).where(eq(news.id, newaId.id));
+        await db.update(news).set(newaId).where(eq(news.id, newaId.id)).returning();
     } catch (error) {
         console.error("Error updating news:", error);
         throw new Error("Failed to update news");
@@ -45,7 +45,7 @@ export async function deleteNews(id: string) {
             if (!session || session.user.role !== 'admin') {
               return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
             }
-        return await db.delete(news).where(eq(news.id, id));
+        await db.delete(news).where(eq(news.id, id)).returning();
     } catch (error) {
         console.error("Error deleting news:", error);
         throw new Error("Failed to delete news");

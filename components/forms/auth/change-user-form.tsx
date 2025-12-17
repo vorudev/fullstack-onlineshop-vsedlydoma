@@ -21,6 +21,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { set, z } from "zod"
 import { phoneNumber } from "better-auth/plugins";
+import { toast } from "sonner";
 
 interface ChangeUserFormProps {
     user: Omit<User, "createdAt" | "updatedAt" | "emailVerified" | "image" | "phoneNumberVerified"|"twoFactorEnabled">;
@@ -62,18 +63,21 @@ export function ChangeUserForm({ user }: ChangeUserFormProps) {
             } 
             if (user) { 
                 await updateUser(user.id, userData);
+                toast.success("Пользователь успешно обновлен")
+                
             } else {
                 throw new Error("User not found");
+
             }
             setIsLoading(false);
             router.refresh();
         } catch (error) {
+          toast.error("Ошибка при обновлении пользователя")
             console.error("Failed to update user:", error);
             setIsLoading(false);
+        } finally {
+            setIsLoading(false);
         }
-            
-            
-            
     }
     return (
         <Form {...form}>

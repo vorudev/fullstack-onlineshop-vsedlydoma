@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 interface  NewsProps {
      telegramChatId? : TelegramChatId
         
@@ -41,15 +42,18 @@ export function AddTelegramChatId({ telegramChatId }: NewsProps) {
                     ...values,
                     id: telegramChatId.id,
                 });
+                toast.success("Информация обновлена")
             } else {
                 await createTelegramChatId({
                     ...values,
                 });
+                toast.success("Информация обновлена")
             }
             form.reset();
             setIsLoading(false);
             router.refresh();
         } catch (error) {
+            toast.error("Произошла ошибка")
             console.error("Error submitting form:", error);
             throw new Error("Failed to submit form");
         }

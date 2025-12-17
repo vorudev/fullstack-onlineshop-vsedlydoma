@@ -13,6 +13,7 @@ import {
 import { deleteProduct } from "@/lib/actions/product";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface DeleteProductButtonProps {
   productId: string;
@@ -27,9 +28,11 @@ try {
     setIsLoading(true);
     await deleteProduct(productId);
     setIsOpen(false);
+    toast.success("Товар успешно удален")
     router.refresh();
   } catch (error) { 
     console.error("Error deleting product:", error);
+    toast.error("Произошла ошибка при удалении товара")
   } finally {
     setIsLoading(false);
    } 

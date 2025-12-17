@@ -47,7 +47,6 @@ interface CategoryFormProps {
 }
 export const formSchema = z.object({
   name: z.string().min(1, "Название обязательно"),
-    description: z.string(),
     parentId: z.string().nullable(),
 })
 
@@ -107,7 +106,6 @@ export function CategoryForm({category, categories: initialCategories}: Category
             toast.success("Категория успешно создана")
             form.reset({
             name: "",
-            description: "",
             parentId: values.parentId, // Сохраняем текущее значение категории
         });
         }

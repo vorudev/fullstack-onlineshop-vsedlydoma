@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { or } from "drizzle-orm";
+import { toast } from "sonner";
 
 interface CreateImagesToProductFormProps {
   news: News
@@ -64,8 +65,8 @@ export function CreateImagesToNewsForm({ news, images }: CreateImagesToProductFo
       imageUrl: "",
       newsId: news.id,
       order: null,
-      isFeatured: false,
-      isArticle: false,
+      isFeatured: true,
+      isArticle: true,
       mode: "upload",
     },
   })
@@ -130,8 +131,10 @@ export function CreateImagesToNewsForm({ news, images }: CreateImagesToProductFo
       setSelectedFile(null)
       setPreviewUrl(null)
       router.refresh()
+      toast.success("Фото успешно добавлено")
     } catch (error) {
       console.error(error)
+      toast.error("Произошла ошибка")
     } finally {
       setIsLoading(false)
     }
@@ -237,48 +240,7 @@ export function CreateImagesToNewsForm({ news, images }: CreateImagesToProductFo
 
    
 
-        <FormField
-          control={form.control}
-          name="isFeatured"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-              <FormControl>
-                <Checkbox
-                  checked={field.value ?? false}
-                  onCheckedChange={field.onChange}
-                  disabled={isLoading}
-                />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel>Картинка на карточке новости</FormLabel>
-                <FormDescription>
-                  Сделайте картинку главной на карточке новости
-                </FormDescription>
-              </div>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="isArticle"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-              <FormControl>
-                <Checkbox
-                  checked={field.value ?? false}
-                  onCheckedChange={field.onChange}
-                  disabled={isLoading}
-                />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel>Картинка в статье</FormLabel>
-                <FormDescription>
-                  Сделайте эту картинку главной в статье
-                </FormDescription>
-              </div>
-            </FormItem>
-          )}
-        />
+       
 
         <Button type="submit" disabled={isLoading || (mode === "upload" && !selectedFile)}>
           {isLoading ? "Добавление..." : "Добавить"}

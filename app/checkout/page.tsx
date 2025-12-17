@@ -18,7 +18,7 @@ export default function Checkout() {
         validateCart();
       }, [cart]);
         const outOfStockItems = updatedCart?.filter(
-        item => item.product.inStock === "Нет в наличии" || item.product.inStock === "Уточнить на наличие"
+        item => item.product.inStock === "Нет в наличии" || item.product.inStock === "Наличие уточняйте"
     ) || [];
     
     const hasOutOfStockItems = outOfStockItems.length > 0;

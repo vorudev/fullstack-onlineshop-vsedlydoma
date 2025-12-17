@@ -11,6 +11,7 @@ import { createContactTelephone, updateContactTelephone } from "@/lib/actions/co
 import { ContactTelephone } from "@/db/schema";
 import { Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 interface AboutFormProps {
     contactTelephone?: ContactTelephone | null
     contactUsId: string | null 
@@ -105,6 +106,7 @@ export function AddContactUsTelephone({ contactTelephone, contactUsId }: AboutFo
                     contactUsId: contactUsId,
                      id: contactTelephone.id,
                 });
+                toast.success("Информация успешно добавлена")
             } else {
             createContactTelephone(
                 {
@@ -112,11 +114,13 @@ export function AddContactUsTelephone({ contactTelephone, contactUsId }: AboutFo
                     contactUsId: contactUsId,
                 }
             );
+            toast.success("Информация успешно добавлена")
             }
             form.reset();
             setIsLoading(false);
             router.refresh();
         } catch (error) {
+          toast.error("Произошла ошибка")
             console.error("Error submitting form:", error);
             throw new Error("Failed to submit form");
         }

@@ -268,12 +268,12 @@ export function ProductForm({product, categories: initialCategories, manufacture
   <CommandGroup>
    <CommandItem 
    onSelect={() => {
-    field.onChange("Уточнить на наличие") 
+    field.onChange("Наличие уточняйте") 
     setInStockOpen(false)
    }}
    
    >
-    Уточнить на наличие
+   Наличие уточняйте
    </CommandItem>
    <CommandItem onSelect={() => {
     field.onChange("В наличии") 

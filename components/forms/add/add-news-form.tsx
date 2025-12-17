@@ -11,6 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { updateNews, createNews } from "@/lib/actions/news";
 import { News } from "@/db/schema";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 interface  NewsProps {
     news? : {
         title: string;
@@ -50,16 +51,19 @@ export function AddNews({ news }: NewsProps) {
                     id: news.id,
                     slug: slugify(values.title),
                 });
+                toast.success("Информация обновлена")
             } else {
                 await createNews({
                     ...values,
                     slug: slugify(values.title),
                 });
+                toast.success("Новость успешно создана")
             }
             form.reset();
             setIsLoading(false);
             router.refresh();
         } catch (error) {
+            toast.error("Произошла ошибка")
             console.error("Error submitting form:", error);
             throw new Error("Failed to submit form");
         }

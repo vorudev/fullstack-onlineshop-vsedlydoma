@@ -13,6 +13,7 @@ import {
 import { deleteAdminEmail } from "@/lib/actions/admin";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export function DeleteAdminEmailButton({ id }: { id: string }) {
     const [loading, setLoading] = useState(false);
@@ -25,7 +26,9 @@ export function DeleteAdminEmailButton({ id }: { id: string }) {
             await deleteAdminEmail(id);
             setLoading(false);
             router.refresh();
+            toast.success("Почта успешно удалена")
         } catch (error) {
+            toast.error("Произошла ошибка")
             console.error("Error deleting admin email:", error);
         } finally {
             setLoading(false);

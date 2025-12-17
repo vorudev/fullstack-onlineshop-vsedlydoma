@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 interface DeleteFilterCategoryButtonProps {
     categoryId: string;
 }
@@ -16,9 +17,11 @@ export function DeleteFilterCategoryButton({ categoryId }: DeleteFilterCategoryB
             await deleteFilterCategory(categoryId);
             setIsLoading(false);
             router.refresh();
+            toast.success("Категория фильтра успешно удалена")
         } catch (error) {
             console.error("Error deleting filter category:", error);
             setIsLoading(false);
+            toast.error("Произошла неизвестная ошибка")
         }
     }
     return (

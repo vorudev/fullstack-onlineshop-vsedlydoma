@@ -6,6 +6,7 @@ import { Loader2, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { deleteContactPhone } from "@/lib/actions/contact-us-phones";
+import { toast } from "sonner";
 
 export function DeleteTelephoneButton({ id }: { id: string }) {
     const [isLoading, setIsLoading] = useState(false);
@@ -17,9 +18,11 @@ export function DeleteTelephoneButton({ id }: { id: string }) {
             setIsLoading(true);
             await deleteContactTelephone(id);
             setIsOpen(false);
+            toast.success("Телефон успешно удален")
             router.refresh();
         } catch (error) {
             console.error("Error deleting telephone:", error);
+            toast.error("Произошла неизвестная ошибка")
         } finally {
             setIsLoading(false);
         }

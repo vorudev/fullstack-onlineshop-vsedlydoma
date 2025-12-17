@@ -5,6 +5,7 @@ import { addItemsToOrder } from '@/lib/actions/orders';
 import type { CreateOrderItemData } from '@/lib/actions/orders';
 import SearchBar from '@/components/searchbar';
 import Pagination  from "@/components/pagination";
+import { toast } from 'sonner';
 interface AddOrderItemFormProps {
   orderId: string | undefined; 
 Products: Array<{
@@ -53,20 +54,19 @@ export default function AddOrderItemForm({
     const result = await addItemsToOrder(orderId?? '', newItems);
     
     if (result) {
-      setMessage('Item added successfully!');
+      toast.success("Товар успешно добавлен в заказ")
       setSelectedProduct('');
       setQuantity(1);
       setSearchQuery('');
     } else {
-      setMessage('Failed to add item');
+      toast.error("Произошла неизвестная ошибка")
     }
     
     setIsLoading(false);
   };
 
   return (
-    <div className="border rounded-lg p-6 max-w-md">
-      <h2 className="text-xl font-semibold mb-4">Добавить позицию к заказу</h2>
+    <div className="w-full">
       
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -89,7 +89,7 @@ export default function AddOrderItemForm({
             {filteredProducts.length > 0 ? (
               filteredProducts.map((product) => (
                 <option key={product.id} value={product.id}>
-                  {product.title} - ${product.price}
+                  {product.title} - {product.price.toFixed(2)} руб
                 </option>
               ))
             ) : (
@@ -103,7 +103,7 @@ export default function AddOrderItemForm({
 
         <div>
           <label htmlFor="quantity" className="block text-sm font-medium mb-1">
-            Quantity
+            Количество
           </label>
           <input
             type="number"
@@ -127,7 +127,7 @@ export default function AddOrderItemForm({
           <div className=" p-3 rounded">
             <p className="text-sm">
               <span className="font-medium">Сумма:</span>
-              ${(selectedProductData.price * quantity).toFixed(2)}
+             {""} {(selectedProductData.price * quantity).toFixed(2)} руб
             </p>
           </div>
         )}
@@ -135,7 +135,7 @@ export default function AddOrderItemForm({
         <button
           type="submit"
           disabled={isLoading || !selectedProduct}
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          className="w-full bg-blue-600  text-white py-2 px-4 rounded-xl hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
           {isLoading ? 'Добавление...' : 'Добавить позицию'}
         </button>

@@ -19,12 +19,17 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     return <div>News not found</div>;
   }
 
-   const sortedImages = newDesc.images.sort((a, b) => {
+// Фильтруем: оставляем только картинки со статей, если есть хотя бы одна articleImage
+const hasArticleImage = newDesc.images.some(img => img.isArticle);
+
+const sortedImages = newDesc.images
+  .filter(img => !hasArticleImage || img.isArticle) // Если есть articleImage, берем только их
+  .sort((a, b) => {
+    // Сначала featured, потом article, потом остальные
+    if (a.isFeatured && !b.isFeatured) return -1;
+    if (!a.isFeatured && b.isFeatured) return 1;
     if (a.isArticle && !b.isArticle) return -1;
     if (!a.isArticle && b.isArticle) return 1;
-    if (a.order === null && b.order !== null) return 1;
-    if (a.order !== null && b.order === null) return -1;
-    if (a.order !== null && b.order !== null) return a.order - b.order;
     return 0;
   });
   return (
@@ -33,8 +38,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
     <div className=" lg:p-0 bg-white rounded-xl lg:border-none justify-items-center grid grid-cols-1 gap-[20px]  border border-gray-200">
  <div className="flex flex-col gap-2 w-full">
-<div className="relative min-w-[270px]  rounded-tl-md rounded-tr-md aspect-[617/217] w-full h-auto overflow-hidden">
-{sortedImages.length > 0 ? <Image src={sortedImages[0]?.imageUrl || "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM="} alt="" fill 
+<div className="relative min-w-[270px] flex justify-center  rounded-tl-md rounded-tr-md aspect-[617/217] w-full h-auto overflow-hidden">
+{sortedImages.length > 0 ? <img src={sortedImages[0]?.imageUrl || "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM="} alt="" 
 className="object-contain aspect-[617/217]"/> : null}
 {sortedImages.length === 0 ? <div className="flex bg-gray-300 w-full h-full justify-center items-center">
     <Dialog>

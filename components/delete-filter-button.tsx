@@ -4,6 +4,7 @@ import { deleteFilter } from "@/lib/actions/filters";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface DeleteFilterButtonProps {
     filterId: string;
@@ -17,9 +18,11 @@ export function DeleteFilterButton({ filterId }: DeleteFilterButtonProps) {
         try {
             await deleteFilter(filterId);
             setIsLoading(false);
+            toast.success("Фильтр успешно удален")
             router.refresh()
         } catch (error) {
             console.error("Error deleting filter:", error);
+            toast.error("Произошла неизвестная ошибка")
             setIsLoading(false);
         }
     }
