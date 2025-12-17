@@ -58,13 +58,6 @@ export default function OrderHistoryTable({ orders, pagination }: Order) {
     return value ? value : null;
   };
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('ru-RU', { 
-      style: 'currency', 
-      currency: 'RUB',
-      minimumFractionDigits: 0
-    }).format(price);
-  };
 
   const toggleExpand = (orderId: string) => {
     if (expandedOrder === orderId) {
@@ -138,7 +131,7 @@ export default function OrderHistoryTable({ orders, pagination }: Order) {
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
                         <div className="text-sm font-semibold ">
-                          {formatPrice(order.total)}
+                          {order.total.toFixed(2)} руб
                         </div>
                       </td>
                       <td className="px-4 hidden lg:table-cell py-4 whitespace-nowrap">
@@ -178,10 +171,10 @@ export default function OrderHistoryTable({ orders, pagination }: Order) {
                                 </div>
                                 <div className="text-right">
                                   <div className="text-sm ">
-                                    {item.quantity} шт × {formatPrice(item.price)}
+                                    {item.quantity} шт × {item.price.toFixed(2)} руб
                                   </div>
                                   <div className="font-semibold text-[16px] ">
-                                    {formatPrice(item.quantity * item.price)}
+                                    {(item.quantity * item.price).toFixed(2)} руб
                                   </div>
                                 </div>
                               </div>
@@ -190,7 +183,7 @@ export default function OrderHistoryTable({ orders, pagination }: Order) {
                             <div className="flex justify-between items-center pt-3 border-t">
                              
                               <span className="text-lg font-bold text-[16px]">
-                                Итого: {formatPrice(order.total)}
+                                Итого: {order.total.toFixed(2)} руб
                               </span>
                             </div>
                           </div>

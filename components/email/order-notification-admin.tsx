@@ -40,7 +40,13 @@ export const OrderConfirmationEmail = ({
     <Preview>Новый заказ  номер: {sku}</Preview>
     <Body style={main}>
       <Container style={container}>
+      <Section className="text-center mb-8">
+           <Text className="text-3xl text-blue-500 font-bold mb-4 mt-0">
+              Все для дома
+           </Text>
+            </Section>
         <Heading style={h1}>Новый заказ!</Heading>
+        
         
         <Text style={text}>
           Новый заказ <strong>{sku}</strong> создан.
