@@ -424,7 +424,7 @@ const AdminProductPage = ({ productDetails, reviewsLimit, categories, manufactur
                         Производитель товара
                       </p>
                     </div>
-                   <Button variant="outline" className="justify-start gap-2" onClick={() => router.push(`/dashboard/manufacturers/${productDetails.manufacturer?.slug}`)}>
+                   <Button variant="outline" className="justify-start gap-2" onClick={() => router.push(`/dashboard/manufacturers/${productDetails.manufacturer?.id}`)}>
                     <Edit className="h-4 w-4" />
                     Редактировать производителя
                   </Button>
