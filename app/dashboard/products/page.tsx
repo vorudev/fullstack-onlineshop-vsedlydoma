@@ -13,6 +13,7 @@ import { getAllManufacturers } from "@/lib/actions/manufacturer";
 import { getAllProducts } from "@/lib/actions/product";
 import { ManufacturerFilter } from "@/components/manufacturer-filter";
 import SearchBar from "../../../components/searchbar";
+import { Metadata } from "next";
 interface PageProps {
   searchParams: Promise<{ // Добавляем Promise
     page?: string;
@@ -25,6 +26,23 @@ interface PageProps {
   }>;
 
 }
+export const metadata: Metadata = {
+  title: "Товары",
+  description: "Мы более 10 лет на рынке, проверены временем в мире сантехники и товаров для дома в Минске. Консультации специалистов, доступные цены, большой ассортимент",
+  keywords: "санхника, строительные материалы, сантехнические услуги, Минск, ремонт, консультации, товары для дома, сантехника минск, строительные материалы минск, сантехнические услуги минск, товары для дома минск",
+  robots: { 
+    index: true,
+    follow: true, 
+    nocache: false,
+    googleBot: { 
+        index: true, 
+        follow: true, 
+        "max-snippet": -1, 
+        "max-image-preview": "large",
+        "max-video-preview": "large"
+    }
+}
+};
 export default async function Home({ searchParams }: PageProps) {
   const { 
     page, 

@@ -62,6 +62,18 @@ export async function generateMetadata({ searchParams  }: PageProps): Promise<Me
       locale: 'ru_RU',
 
     },
+    robots: { 
+      index: true,
+      follow: true, 
+      nocache: false,
+      googleBot: { 
+          index: true, 
+          follow: true, 
+          "max-snippet": -1, 
+          "max-image-preview": "large",
+          "max-video-preview": "large"
+      }
+  }
   };
 }
 export default async function ProductsPage({ searchParams }: PageProps) {

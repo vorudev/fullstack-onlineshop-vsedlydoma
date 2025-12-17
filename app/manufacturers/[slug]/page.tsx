@@ -5,6 +5,7 @@ import SearchBar from "@/components/frontend/searchbar-manufacturers";
 import { getFeaturedManufacturerImage } from "@/lib/actions/image-actions";
 import ProductCard from "@/components/frontend/product-card-full";
 import Image from "next/image";
+import { Metadata } from "next";
 interface GetProductsByManufacturerIdParams {
     searchParams: Promise<{ // Добавляем Promise
         page?: string;
@@ -12,6 +13,31 @@ interface GetProductsByManufacturerIdParams {
       }>
       params: Promise<{ slug: string }>
 } 
+export async function generateMetadata({ params  }: GetProductsByManufacturerIdParams
+): Promise<Metadata> {
+  const { slug } = await params;
+    const selectedFilters: Record<string, string[]> = {};
+  const manufacturer = await getManufacturerBySlug(slug);
+  
+  const canonicalUrl = `https://fullstack-onlineshop-vsedlydoma.vercel.app/manufacturers/${manufacturer.slug}`;
+  return {
+    title: manufacturer.name, // или productDetails.title
+    description: `Товары от ${manufacturer.name} - ${ 'Купить в Минске по выгодной цене'}`,
+    keywords: `${manufacturer.name || ''}, сантехника, товары для дома минск`,
+    alternates: {
+      canonical: canonicalUrl, // ← Вот это нужно добавить
+    },
+    openGraph: {
+      type: 'website', 
+      url: canonicalUrl, // Тоже хорошо для соцсетей
+      title: manufacturer.name,
+      description: manufacturer.name || "",
+      siteName: 'Магазин Всё для дома',
+      locale: 'ru_RU',
+
+    },
+  };
+}
 export default async function ManufacturerPage({searchParams, params}: GetProductsByManufacturerIdParams) {
     const { page, search } = await searchParams;
      const { slug } = await params;

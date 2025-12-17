@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { CategoryForm } from "@/components/forms/category-form";
 import { CategoriesTable } from "@/components/categories-table-admin";
 import { getAllCategories } from "@/lib/actions/product-categories";
+import { Metadata } from "next";
 
 interface PageProps {
   searchParams: Promise<{ // Добавляем Promise
@@ -18,6 +19,23 @@ interface PageProps {
   }>;
 
 }
+export const metadata: Metadata = {
+  title: "Категории",
+  description: "Мы более 10 лет на рынке, проверены временем в мире сантехники и товаров для дома в Минске. Консультации специалистов, доступные цены, большой ассортимент",
+  keywords: "санхника, строительные материалы, сантехнические услуги, Минск, ремонт, консультации, товары для дома, сантехника минск, строительные материалы минск, сантехнические услуги минск, товары для дома минск",
+  robots: { 
+    index: true,
+    follow: true, 
+    nocache: false,
+    googleBot: { 
+        index: true, 
+        follow: true, 
+        "max-snippet": -1, 
+        "max-image-preview": "large",
+        "max-video-preview": "large"
+    }
+}
+};
 export default async function Home( { searchParams }: PageProps) {
   const { page, search, limit } = await searchParams;
   const currentPage = Number(page) || 1;

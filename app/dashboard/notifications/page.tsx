@@ -7,6 +7,24 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from "@/components/ui/button";
 import { DialogDescription } from "@/components/ui/dialog";
 import { Bell, Mail, MessageCircle, Plus, Trash2, Pencil } from "lucide-react";
+import { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Уведомления",
+  description: "Мы более 10 лет на рынке, проверены временем в мире сантехники и товаров для дома в Минске. Консультации специалистов, доступные цены, большой ассортимент",
+  keywords: "санхника, строительные материалы, сантехнические услуги, Минск, ремонт, консультации, товары для дома, сантехника минск, строительные материалы минск, сантехнические услуги минск, товары для дома минск",
+  robots: { 
+    index: true,
+    follow: true, 
+    nocache: false,
+    googleBot: { 
+        index: true, 
+        follow: true, 
+        "max-snippet": -1, 
+        "max-image-preview": "large",
+        "max-video-preview": "large"
+    }
+}
+};
 export default async function Notifications() {
 const [ adminEmails, telegramChatIds ] = await Promise.all([
     getAdminEmails(),

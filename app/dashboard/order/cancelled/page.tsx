@@ -7,6 +7,7 @@ import ExportToExcel from "@/components/exceljs-download";
 import { getProducts } from "@/lib/actions/product";
 import { OrdersTable } from "@/components/archive-orders-table";
 import { get } from "http";
+import { Metadata } from "next";
 
 interface PageProps {
   searchParams: Promise<{ // Добавляем Promise
@@ -19,6 +20,12 @@ interface PageProps {
     timeRange?: 'all' | 'today' | 'week' | 'month' | 'year';
   }>;
 }
+export const metadata: Metadata = {
+  title: "Отмененные заказы",
+  description: "Мы более 10 лет на рынке, проверены временем в мире сантехники и товаров для дома в Минске. Консультации специалистов, доступные цены, большой ассортимент",
+  keywords: "санхника, строительные материалы, сантехнические услуги, Минск, ремонт, консультации, товары для дома, сантехника минск, строительные материалы минск, сантехнические услуги минск, товары для дома минск",
+ 
+};
 export default async function OrderPage({searchParams} : PageProps) {
   const { page, search, limit, sortBy, sortOrder, userType, timeRange} = await searchParams;
   const currentPage = Number(page) || 1;
