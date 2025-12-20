@@ -325,7 +325,7 @@ export default function FilterSidebar({ filterCategories, page, totalPages, tota
           </div>
           
           {/* Футер с кнопками */}
-         <div className="flex flex-row  gap-2 px-3 py-2 border-t border-gray-200">
+         <div className="flex flex-row pb-15 gap-2 px-3 py-2 border-t border-gray-200">
             <button 
               onClick={() => {
                 applyFilters();
