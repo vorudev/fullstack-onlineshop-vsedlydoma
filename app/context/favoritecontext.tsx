@@ -38,9 +38,9 @@ interface ProductUnited {
 }
 }
 export interface FavoriteItem {
-   product: ProductUnited['product'];
-}
-
+  id: string;
+ 
+ }
 export interface ValidatedFavoriteItem {
   product: ProductUnited['product'];
    quantity: number;
@@ -49,7 +49,7 @@ export interface ValidatedFavoriteItem {
   
 export interface FavoriteContextType {
   favorite: FavoriteItem[];
-  addToFavorite: (product: ProductUnited['product']) => void;
+  addToFavorite: (id: string) => void;
   removeFromFavorite: (productId: string) => void;
   clearFavorite: () => void;
   updatedFavorite?: ValidatedFavoriteItem[];
@@ -85,22 +85,14 @@ const loadFavorite = (): FavoriteItem[] => {
     }
     
     // Фильтруем и преобразуем валидные элементы
+    // Фильтруем и преобразуем валидные элементы
     const validItems = parsed
       .filter(isValidFavoriteItem)
       .map((item: FavoriteItem) => ({
         ...item,
-        product: {
-          ...item.product,
-          createdAt: item.product.createdAt ? new Date(item.product.createdAt) : null,
-          updatedAt: item.product.updatedAt ? new Date(item.product.updatedAt) : null,
-          images: Array.isArray(item.product.images) 
-            ? item.product.images.map(img => ({
-                ...img,
-                createdAt: img.createdAt ? new Date(img.createdAt) : null,
-              }))
-            : []
-        }
+        id: item.id,
       }));
+    
     
     // Если были отфильтрованы некорректные элементы, сохраняем чистую версию
     if (validItems.length !== parsed.length) {
@@ -131,7 +123,7 @@ const [isValidating, setIsValidating] = useState(false);
   }, [favorite]);
 
   const removeFromFavorite = useCallback((productId: string) => {
-    setFavorite(prev => prev.filter(item => item.product.id !== productId));
+    setFavorite(prev => prev.filter(item => item.id !== productId));
   }, []);
 
   const updateQuantity = useCallback(
@@ -141,7 +133,7 @@ const [isValidating, setIsValidating] = useState(false);
       } else {
         setFavorite(prev =>
           prev.map(item =>
-            item.product.id === productId ? { ...item, quantity } : item
+            item.id === productId ? { ...item, quantity } : item
           )
         );
       }
@@ -149,30 +141,30 @@ const [isValidating, setIsValidating] = useState(false);
     [removeFromFavorite]
   );
 
-  const addToFavorite = useCallback((product: ProductUnited['product'], quantityToAdd: number = 1) => {
+  const addToFavorite = useCallback((id: string , quantityToAdd: number = 1) => {
     setFavorite(prev => {
-      const exist = prev.find(item => item.product.id === product.id);
+      const exist = prev.find(item => item.id === id);
       
       if (exist) {
         return prev.map(item =>
-          item.product.id === product.id 
+          item.id === id 
             ? { ...item, quantity: quantityToAdd } 
             : item
         );
       }
       
-      return [...prev, { product, quantity: quantityToAdd }];
+      return [...prev, { id, quantity: quantityToAdd }];
     });
   }, []);
 
   const clearFavorite = useCallback(() => setFavorite([]), []);
 
   const isInFavorite = useCallback((productId: string) => {
-    return favorite.some(item => item.product.id === productId);
+    return favorite.some(item => item.id === productId);
   }, [favorite]);
 
   const getItemQuantity = useCallback((productId: string) => {
-    const item = favorite.find(item => item.product.id === productId);
+    const item = favorite.find(item => item.id === productId);
     return item ? 1 : 0;
   }, [favorite]);
 

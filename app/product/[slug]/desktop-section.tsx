@@ -4,115 +4,122 @@ import Image from "next/image";
 import { useState } from "react";
 import {Heart} from "lucide-react";
 import { Star } from "lucide-react";
-interface ProductUnited {
-   
-  productDetails: {
+interface  Product{
+  product: {
     id: string;
+    categoryId: string | null;
+    inStock: string | null;
+    price: number;
+    isActive: boolean | null;
+    slug: string;
     title: string;
     description: string;
-    price: number;
-    sku: string | null;
-    slug: string;
-    inStock: string | null;
-    categoryId: string | null;
+    keywords: string | null;
     manufacturerId: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;
-    images: {
-        id: string;
-        productId: string;
-        imageUrl: string;
-        storageType: string;
-        storageKey: string | null;
-        order: number | null;
-        isFeatured: boolean | null;
-        createdAt: Date | null;
-    }[];
-    reviews: {
-        id: string;
-        product_id: string;
-        user_id: string | null;
-        rating: number;
-        comment: string | null;
-        status: string;
-        author_name: string | null;
-        createdAt: Date | null;
-        updatedAt: Date | null;
-    }[];
-    averageRating: number;
-    reviewCount: number;
- attributes: {
-            id: string | null;
-            name: string | null;
-            value: string | null;
-            order: number | null;
-            slug: string | null;
-        }[];
- manufacturer: {
-    images: never[] | {
-        id: string;
-        manufacturerId: string;
-        imageUrl: string;
-        storageType: string;
-        storageKey: string | null;
-        order: number | null;
-        isFeatured: boolean | null;
-        createdAt: Date | null;
-    }[];
-    id: string;
-    name: string;
-    slug: string;
-    description: string | null;
-    createdAt: Date | null;
-    updatedAt: Date | null;
-} | null
+    sku: string | null;
 } 
-
-
+  productImages: {
+    id: string;
+    productId: string;
+    imageUrl: string;
+    storageType: string;
+    storageKey: string | null;
+    order: number | null;
+    isFeatured: boolean | null;
+    createdAt: Date | null;
+}[]
+reviews: {
+  id: string;
+  product_id: string;
+  user_id: string;
+  rating: number;
+  comment: string | null;
+  status: string;
+  author_name: string | null;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+}[]
+attributes: {
+  id: string;
+  productId: string;
+  name: string;
+  value: string;
+  order: number | null;
+  slug: string;
+  createdAt: Date | null;
+}[]
+manufacturer: {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  createdAt: Date | null;
+  updatedAt: Date | null;
 }
-export default function DesktopSection({productDetails}: ProductUnited) {
+manufacturerImages: {
+  id: string;
+  manufacturerId: string;
+  imageUrl: string;
+  storageType: string;
+  storageKey: string | null;
+  order: number | null;
+  isFeatured: boolean | null;
+  createdAt: Date | null;
+}[]
+internals: { 
+  slug: string;
+  currentLimit: number;
+}
+stats: {
+  averageRating: number;
+  totalCount: number;
+  ratingDistribution: any;
+}
+}
+
+export default function DesktopSection({product, manufacturer, manufacturerImages, reviews, attributes, stats }: Product) {
     const {addToCart, cart, removeFromCart} = useCart();
     const {addToFavorite, favorite, removeFromFavorite} = useFavorite();
     const [maxVisible] = useState(8);
-   const isInCart = cart.some((item) => item.product.id === productDetails.id);
-      const isInFavorite = favorite.some((item) => item.product.id === productDetails.id);
+   const isInCart = cart.some((item) => item.id === product.id);
+      const isInFavorite = favorite.some((item) => item.id === product.id);
   
-    const visibleAttributes = productDetails?.attributes.slice(0, maxVisible) || [];
-  const hasMore = productDetails?.attributes.length > maxVisible;
+    const visibleAttributes = attributes.slice(0, maxVisible) || [];
+  const hasMore = attributes.length > maxVisible;
     const scrollToComponent = () => {
     const element = document.getElementById('target-component');
     element?.scrollIntoView({ behavior: 'smooth' });
   };
-  const toggleFavorite = (productDetails: ProductUnited['productDetails']) => {
+  const toggleFavorite = (product: Product['product']) => {
     if (isInFavorite) {
-      removeFromFavorite(productDetails.id); // или product, зависит от вашей реализации
+      removeFromFavorite(product.id); // или product, зависит от вашей реализации
     } else {
-      addToFavorite(productDetails);
+      addToFavorite(product.id);
     }
   };
-
-    const toggleCart = (productDetails: ProductUnited['productDetails']) => {
-
-        if (isInCart) {
-          removeFromCart(productDetails.id);
-        } else {
-          addToCart(productDetails);
-        }
-      };
+  const toggleCart = (product: Product['product']) => {
+    if (isInCart) {
+      removeFromCart(product.id);
+    } else {
+      addToCart(product.id);
+    }
+  };
 
     return (
         <div className="lg:flex lg:flex-col  items-start hidden justify-start gap-[12px] w-full  ">
            
       <div className="flex flex-row justify-between w-full">
           <div className="flex flex-col max-w-[60%]">
-           <h1 className="text-[20px] text-gray-900  font-semibold leading-tight  ">{productDetails?.title}</h1>
-           <p className="text-[12px] text-gray-600 ">Код товара {productDetails?.sku}</p>
+           <h1 className="text-[20px] text-gray-900  font-semibold leading-tight  ">{product?.title}</h1>
+           <p className="text-[12px] text-gray-600 ">Код товара {product?.sku}</p>
            </div>
         
-           {productDetails?.manufacturer && productDetails.manufacturer.images?.length > 0 && (
+           {manufacturer && manufacturerImages?.length > 0 && (
   <div className="relative w-[90px] h-[40px]">
     <Image 
-      src={productDetails.manufacturer.images[0]?.imageUrl} 
+      src={manufacturerImages[0]?.imageUrl} 
       alt="Product" 
       fill 
       className="object-contain" 
@@ -125,33 +132,33 @@ export default function DesktopSection({productDetails}: ProductUnited) {
       
       <div className="flex flex-row gap-1  items-center ">
                   <Star className="w-[16px] h-[16px] text-yellow-300" fill="#FFD700"/>
-                  <p className="text-[16px] text-gray-900 font-semibold">{productDetails?.averageRating.toFixed(2)} </p>
-                  <p className="text-[16px] text-gray-600 pl-[6px]">{productDetails?.reviewCount} отзыва</p>
+                  <p className="text-[16px] text-gray-900 font-semibold">{stats.averageRating.toFixed(2)} </p>
+                  <p className="text-[16px] text-gray-600 pl-[6px]">{stats.totalCount} отзыва</p> 
        </div>
        <div className="flex flex-col gap-3 xl:hidden  items-start">
         <div className="flex flex-col items-start  gap-2">
           
-         {productDetails?.inStock === 'В наличии' ?  <div className="flex flex-col "> 
+         {product?.inStock === 'В наличии' ?  <div className="flex flex-col "> 
 
-        <div className={`${productDetails?.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-1 rounded-md self-start`}>
-    <p className={`text-[12px] text-gray-600 ${productDetails?.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>{productDetails?.inStock}</p>
+        <div className={`${product?.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-1 rounded-md self-start`}>
+    <p className={`text-[12px] text-gray-600 ${product?.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>{product?.inStock}</p>
     </div>
       <h2 className="text-[28px] text-gray-900 font-semibold">
-{productDetails?.price} руб
+{product?.price} руб
         </h2>
-        </div> :  <div className={`${productDetails?.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-2 rounded-md self-start`}>
-    <p className={`text-[16px] text-gray-600  font-semibold ${productDetails?.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>Уточните наличие</p>
+        </div> :  <div className={`${product?.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-2 rounded-md self-start`}>
+    <p className={`text-[16px] text-gray-600  font-semibold ${product?.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>Уточните наличие</p>
     </div>}
         </div>
        <div className="flex flex-col gap-2 items-center w-full">
           
           <button className={isInCart ? 'border border-blue-600  w-full text-blue-600 cursor-pointer px-6 py-3 rounded-[8px] font-semibold flex-1 justify-center' : 'bg-blue-600 border w-full text-white cursor-pointer px-6 py-3 rounded-[8px] font-semibold flex-1 justify-center'}
-          onClick={() => toggleCart(productDetails)}
+ onClick={() =>  toggleCart(product)}
           >
            {isInCart ? 'В корзине' : 'В корзину'}
           </button>
           <button className="bg-white border-2 border-gray-200 cursor-pointer flex items-center gap-2 text-gray-700 p-3 rounded-[8px]"
-          onClick={() => toggleFavorite(productDetails)}
+ onClick={() =>  toggleFavorite(product)}
           >
             <Heart className={isInFavorite ? 'w-[20px] h-[20px] text-red-600 fill-red-600' : 'w-[20px] h-[20px]'} /> {isInFavorite ? 'В избранном' : 'В избранное'}
           </button>
@@ -162,7 +169,7 @@ export default function DesktopSection({productDetails}: ProductUnited) {
       <h2 className="text-sm text-gray-900 font-semibold mb-3">
         Характеристики:
       </h2>
-      {productDetails?.attributes.length > 0 ? (
+      {attributes.length > 0 ? (
       <div className="max-w-[150px]">
         <div className="">
            {visibleAttributes.map((attr, index) => (
@@ -197,28 +204,28 @@ export default function DesktopSection({productDetails}: ProductUnited) {
       <div className="xl:flex hidden  flex-col gap-3 items-end">
         <div className="flex flex-col items-end gap-2">
           
-          {productDetails?.inStock === 'В наличии' ?  <div className="flex flex-col "> 
+          {product?.inStock === 'В наличии' ?  <div className="flex flex-col "> 
 
-        <div className={productDetails?.inStock === 'В наличии' ? 'flex items-center gap-1.5 bg-green-50 px-3 py-1.5 rounded-[6px]' : 'flex items-center gap-1.5 bg-red-50 px-3 py-1.5 rounded-[6px]'}>
-            <div className={productDetails?.inStock === 'В наличии' ? 'w-2 h-2 bg-green-500 rounded-full' : 'w-2 h-2 bg-red-500 rounded-full'}></div>
-            <span className={productDetails?.inStock === 'В наличии' ? 'text-green-700' : 'text-red-700'}>{productDetails?.inStock}</span>
+        <div className={product?.inStock === 'В наличии' ? 'flex items-center gap-1.5 bg-green-50 px-3 py-1.5 rounded-[6px]' : 'flex items-center gap-1.5 bg-red-50 px-3 py-1.5 rounded-[6px]'}>
+            <div className={product?.inStock === 'В наличии' ? 'w-2 h-2 bg-green-500 rounded-full' : 'w-2 h-2 bg-red-500 rounded-full'}></div>
+            <span className={product?.inStock === 'В наличии' ? 'text-green-700' : 'text-red-700'}>{product?.inStock}</span>
           </div>
       <h2 className="text-[28px] text-gray-900 font-semibold">
-{productDetails?.price} руб
+{product?.price} руб
         </h2>
-        </div> :  <div className={`${productDetails?.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-2 rounded-md self-start`}>
-    <p className={`text-[16px] text-gray-600  font-semibold ${productDetails?.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>Уточните наличие</p>
+        </div> :  <div className={`${product?.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-2 rounded-md self-start`}>
+    <p className={`text-[16px] text-gray-600  font-semibold ${product?.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>Уточните наличие</p>
     </div>}
         </div>
         <div className="flex flex-col gap-2 items-center w-full">
           
           <button 
-          onClick={() => toggleCart(productDetails)}
+ onClick={() =>  toggleCart(product)}
           className={` w-full px-6 py-3 cursor-pointer rounded-[8px] font-semibold flex-1 justify-center ${isInCart ? 'bg-white text-blue-600 border border-blue-600' : 'bg-blue-600 text-white border border-blue-600'}`}>
            { isInCart ? 'В корзине' : 'В корзину' }
           </button>
           <button
-          onClick={() => toggleFavorite(productDetails)}
+          onClick={() =>  toggleFavorite(product)}
           className={`bg-white  border-2 w-full cursor-pointer hover:bg-gray-100 transition  border-gray-200 flex items-center justify-center gap-2 text-gray-700 p-3 rounded-[8px]`}>
             <Heart className={`w-[20px] h-[20px] ${isInFavorite ? 'fill-red-500 text-red-500' : '' }`} />  { isInFavorite ? 'В избранном' : 'В избранное' }
           </button>

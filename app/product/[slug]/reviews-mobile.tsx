@@ -6,81 +6,84 @@ import { Star } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from "next/link";
-interface ProductUnited {
-  
-  productDetails: {
+import { productImages } from "@/db/schema";
+interface  Product{
+  product: {
     id: string;
+    categoryId: string | null;
+    inStock: string | null;
+    price: number;
+    isActive: boolean | null;
+    slug: string;
     title: string;
     description: string;
-    price: number;
-    sku: string | null;
-    slug: string;
-    inStock: string | null;
-    categoryId: string | null;
+    keywords: string | null;
     manufacturerId: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;
-    images: {
-        id: string;
-        productId: string;
-        imageUrl: string;
-        storageType: string;
-        storageKey: string | null;
-        order: number | null;
-        isFeatured: boolean | null;
-        createdAt: Date | null;
-    }[];
-    reviews: {
-        id: string;
-        product_id: string;
-        user_id: string | null;
-        rating: number;
-        comment: string | null;
-        status: string;
-        author_name: string | null;
-        createdAt: Date | null;
-        updatedAt: Date | null;
-    }[];
-    averageRating: number;
-    reviewCount: number;
- attributes: {
-            id: string | null;
-            name: string | null;
-            value: string | null;
-            order: number | null;
-            slug: string | null;
-        }[];
- manufacturer: {
-    images: never[] | {
-        id: string;
-        manufacturerId: string;
-        imageUrl: string;
-        storageType: string;
-        storageKey: string | null;
-        order: number | null;
-        isFeatured: boolean | null;
-        createdAt: Date | null;
-    }[];
-    id: string;
-    name: string;
-    slug: string;
-    description: string | null;
-    createdAt: Date | null;
-    updatedAt: Date | null;
-} | null
+    sku: string | null;
 } 
-
-
-}
-interface Params { 
-  currentLimit: number;
+  productImages: {
+    id: string;
+    productId: string;
+    imageUrl: string;
+    storageType: string;
+    storageKey: string | null;
+    order: number | null;
+    isFeatured: boolean | null;
+    createdAt: Date | null;
+}[]
+reviews: {
+  id: string;
+  product_id: string;
+  user_id: string;
+  rating: number;
+  comment: string | null;
+  status: string;
+  author_name: string | null;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+}[]
+attributes: {
+  id: string;
+  productId: string;
+  name: string;
+  value: string;
+  order: number | null;
   slug: string;
+  createdAt: Date | null;
+}[]
+manufacturer: {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  createdAt: Date | null;
+  updatedAt: Date | null;
 }
-interface United { 
-  internals: Params;
-  productDetails: ProductUnited['productDetails'];
+manufacturerImages: {
+  id: string;
+  manufacturerId: string;
+  imageUrl: string;
+  storageType: string;
+  storageKey: string | null;
+  order: number | null;
+  isFeatured: boolean | null;
+  createdAt: Date | null;
+}[]
+internals: { 
+  slug: string;
+  currentLimit: number;
 }
-const RatingChart = ({productDetails}: ProductUnited) => {
+stats: {
+  averageRating: number;
+  totalCount: number;
+  ratingDistribution: any;
+}
+}
+
+
+const RatingChart = ({product, reviews, stats}: Product) => {
   const {data: session} = useSession();
   // Подсчитываем количество отзывов для каждой оценки
   const ratingCounts = {
@@ -91,14 +94,14 @@ const RatingChart = ({productDetails}: ProductUnited) => {
     1: 0
   };
 
-  const reviews = productDetails.reviews?.forEach((review: any) => {
+  const reviewsRating = reviews?.forEach((review: any) => {
     if (review.rating >= 1 && review.rating <= 5) {
       ratingCounts[review.rating as keyof typeof ratingCounts]++;
     }
   });
 
-  const totalReviews =  productDetails.reviews?.length || 0;
-  const averageRating =  productDetails.reviews?.reduce((sum: number, r: any) => sum + r.rating, 0) / totalReviews || 0;
+  const totalReviews =  stats.totalCount || 0;
+  const averageRating =  stats.averageRating || 0;
 const getReviewWord = (count: number) => {
   const lastDigit = count % 10;
   const lastTwoDigits = count % 100;
@@ -121,17 +124,17 @@ const getReviewWord = (count: number) => {
     <div className="flex flex-col w-full md:max-w-[400px]  rounded-lg ">
       {/* Общий рейтинг */}
       <div className="flex items-center gap-3">
-        <span className="text-5xl font-bold">{averageRating.toFixed(1)}</span>
+        <span className="text-5xl font-bold">{stats.averageRating.toFixed(1)}</span>
         <div className="flex items-center gap-2">
           {[1, 2, 3, 4, 5].map((star) => (
             <Star
               key={star}
               className="w-6 h-6 text-yellow-300"
-              fill={star <= Math.round(averageRating) ? "#FFD700" : "none"}
+              fill={star <= Math.round(stats.averageRating) ? "#FFD700" : "none"}
             />
           ))}
         </div>
-       <span className="text-gray-500 text-sm whitespace-nowrap">{totalReviews} {getReviewWord(totalReviews)}</span>
+       <span className="text-gray-500 text-sm whitespace-nowrap">{stats.totalCount} {getReviewWord(stats.totalCount)}</span>
       </div>
 
       {/* График распределения */}
@@ -153,14 +156,14 @@ const getReviewWord = (count: number) => {
         <DialogHeader>
           <DialogTitle>Оставить отзыв</DialogTitle>
         </DialogHeader>
-        <ReviewForm product_id={productDetails.id} />
+        <ReviewForm product_id={product.id} />
       </DialogContent>}
     </Dialog>
    
     </div>
   );
 };
-export default function MobileReviews({productDetails, internals}: United) {
+export default function MobileReviews({product, internals, reviews, stats, productImages, manufacturer, manufacturerImages, attributes}: Product) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
@@ -223,14 +226,16 @@ export default function MobileReviews({productDetails, internals}: United) {
          <div className="flex flex-row  gap-3 items-end pb-3">
         <h3 className="text-[24px] text-gray-900 font-semibold leading-tight">Отзывы </h3>
             </div>
-        <RatingChart productDetails={productDetails} />
+        <RatingChart product={product} stats={stats} reviews={reviews} productImages={productImages} attributes={attributes} 
+        manufacturer={manufacturer}
+         manufacturerImages={manufacturerImages} internals={internals} />
         <div className="flex w-full flex-col">
          
           <div className="flex flex-col  border-t  w-full border-gray-200  overflow-y-auto">
-            {productDetails?.reviews?.length === 0 ? (
+            {reviews?.length === 0 ? (
             <p className="text-gray-500 text-center py-8 w-full">Отзывов пока нет</p>
           ) : (
-            productDetails?.reviews?.map((review) => (
+            reviews?.map((review) => (
               <div className="flex flex-col gap-2 border-b border-gray-200 py-6 " key={review.id}>
             <h3 className="text-[16px]  text-gray-900 font-semibold">{review.author_name}</h3>
 <div className="flex flex-row gap-1 items-center">
@@ -252,7 +257,7 @@ export default function MobileReviews({productDetails, internals}: United) {
         )}
           
  
-{productDetails?.reviews?.length >= internals?.currentLimit && (
+{reviews?.length >= internals?.currentLimit && (
   <button
     onClick={handleLoadMore}
     className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"

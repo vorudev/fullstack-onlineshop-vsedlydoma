@@ -35,10 +35,10 @@ export const AddToFavorite: React.FC<ProductUnited> = ({ product }) => {
         if (isInFavorite) {
           removeFromFavorite(product.id);
         } else {
-          addToFavorite(product);
+          addToFavorite(product.id);
         }
       };
-    const isInFavorite = favorite.some((item) => item.product.id === product.id)
+    const isInFavorite = favorite.some((item) => item.id === product.id)
     return (
         <button
             className={` lg:w-full bg-gray-100 p-1 cursor-pointer rounded-md lg:bg-white `}

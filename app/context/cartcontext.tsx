@@ -37,8 +37,11 @@ interface ProductUnited {
     }[]
 }
 }
+interface ProductId { 
+  id: string;
+}
 export interface CartItem {
- product: ProductUnited['product'];
+ id: string;
  quantity: number;
 
 }
@@ -50,7 +53,7 @@ product: ProductUnited['product'];
 
 export interface CartContextType {
   cart: CartItem[];
-  addToCart: (product: ProductUnited['product'], quantity?: number) => void;
+  addToCart: (id: string, quantity?: number) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
@@ -102,28 +105,12 @@ const loadCart = (): CartItem[] => {
       .filter(isValidCartItem)
       .map((item: CartItem) => ({
         ...item,
-        product: {
-          ...item.product,
-          createdAt: item.product.createdAt ? new Date(item.product.createdAt) : null,
-          updatedAt: item.product.updatedAt ? new Date(item.product.updatedAt) : null,
-          images: Array.isArray(item.product.images) 
-            ? item.product.images.map(img => ({
-                ...img,
-                createdAt: img.createdAt ? new Date(img.createdAt) : null,
-              }))
-            : []
-        }
+        id: item.id,
       }));
-    
-    // Если были отфильтрованы некорректные элементы, сохраняем чистую версию
-    if (validItems.length !== parsed.length) {
-      console.warn(`Filtered out ${parsed.length - validItems.length} invalid cart items`);
-    }
     
     return validItems;
   } catch (error) {
     console.error('Failed to load cart from localStorage', error);
-    // Очищаем поврежденные данные
     localStorage.removeItem('cart');
     return [];
   }
@@ -145,7 +132,7 @@ const [isValidating, setIsValidating] = useState(false);
   }, [cart]);
 
   const removeFromCart = useCallback((productId: string) => {
-    setCart(prev => prev.filter(item => item.product.id !== productId));
+    setCart(prev => prev.filter(item => item.id !== productId));
   }, []);
 
   const updateQuantity = useCallback(
@@ -155,7 +142,7 @@ const [isValidating, setIsValidating] = useState(false);
       } else {
         setCart(prev =>
           prev.map(item =>
-            item.product.id === productId ? { ...item, quantity } : item
+            item.id === productId ? { ...item, quantity } : item
           )
         );
       }
@@ -163,30 +150,30 @@ const [isValidating, setIsValidating] = useState(false);
     [removeFromCart]
   );
 
-  const addToCart = useCallback((product: ProductUnited['product'], quantityToAdd: number = 1) => {
+  const addToCart = useCallback((id: string, quantityToAdd: number = 1) => {
     setCart(prev => {
-      const exist = prev.find(item => item.product.id === product.id);
+      const exist = prev.find(item => item.id === id);
       
       if (exist) {
         return prev.map(item =>
-          item.product.id === product.id 
+          item.id === id 
             ? { ...item, quantity: item.quantity + quantityToAdd } 
             : item
         );
       }
       
-      return [...prev, { product, quantity: quantityToAdd }];
+      return [...prev, { id, quantity: quantityToAdd }];
     });
   }, []);
 
   const clearCart = useCallback(() => setCart([]), []);
 
   const isInCart = useCallback((productId: string) => {
-    return cart.some(item => item.product.id === productId);
+    return cart.some(item => item.id === productId);
   }, [cart]);
 
   const getItemQuantity = useCallback((productId: string) => {
-    const item = cart.find(item => item.product.id === productId);
+    const item = cart.find(item => item.id === productId);
     return item ? item.quantity : 0;
   }, [cart]);
 

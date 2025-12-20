@@ -38,9 +38,9 @@ interface ProductUnited {
 }
 export default function ProductCard( { product}: ProductUnited) {
   const {addToCart, cart, removeFromCart, updateQuantity} = useCart();
-  const quantity = cart.find(item => item.product.id === product.id)?.quantity || 0;
+  const quantity = cart.find(item => item.id === product.id)?.quantity || 0;
     const rounded = Math.round(product.averageRating);
-  const isInCart = cart.some(item => item.product.id === product.id);
+  const isInCart = cart.some(item => item.id === product.id);
  const getRatingColor = (rating: number) => {
   if (rating >= 4.5) return 'text-green-600';
   if (rating >= 4.0) return 'text-emerald-600';
@@ -81,7 +81,7 @@ function getReviewText(count: number): string {
     if (isInCart) {
         updateQuantity(product.id, quantity + 1);
     } else {
-        addToCart(product);
+        addToCart(product.id);
     }
 };
 
@@ -96,7 +96,7 @@ const handleDecrement = (e: React.MouseEvent) => {
 
 const handleMainClick = () => {
     if (!isInCart) {
-        addToCart(product);
+        addToCart(product.id);
     }
 };
     return ( 

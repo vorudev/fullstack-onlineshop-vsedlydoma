@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 import { db } from "@/db/drizzle";
 import { Product, products, productAttributes, orderItems, orders, categories, productImages, reviews, Manufacturer, manufacturers, manufacturerImages } from "@/db/schema";
-import { desc, eq, gte, inArray, lte, notInArray, asc, getTableColumns  } from "drizzle-orm";
+import { desc, eq, gte, inArray, lte, notInArray, asc, getTableColumns, placeholder  } from "drizzle-orm";
 import { unstable_cache } from 'next/cache';
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
@@ -956,3 +956,7 @@ export async function buildCategoryUrl(
   const path = await buildCategoryPath(breadcrumbs);
   return `/categories/${currentSlug}`;
 }
+
+
+
+

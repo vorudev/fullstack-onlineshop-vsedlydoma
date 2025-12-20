@@ -4,101 +4,93 @@ import { ReviewForm } from "@/components/forms/review-form";
 import { useState } from "react";
 import { Star } from "lucide-react";
 import { useRouter, useSearchParams } from 'next/navigation';
-interface ProductUnited {
-  
-  productDetails: {
+interface  Product{
+  product: {
     id: string;
+    categoryId: string | null;
+    inStock: string | null;
+    price: number;
+    isActive: boolean | null;
+    slug: string;
     title: string;
     description: string;
-    price: number;
-    sku: string | null;
-    slug: string;
-    inStock: string | null;
-    categoryId: string | null;
+    keywords: string | null;
     manufacturerId: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;
-    images: {
-        id: string;
-        productId: string;
-        imageUrl: string;
-        storageType: string;
-        storageKey: string | null;
-        order: number | null;
-        isFeatured: boolean | null;
-        createdAt: Date | null;
-    }[];
-    reviews: {
-        id: string;
-        product_id: string;
-        user_id: string | null;
-        rating: number;
-        comment: string | null;
-        status: string;
-        author_name: string | null;
-        createdAt: Date | null;
-        updatedAt: Date | null;
-    }[];
-    averageRating: number;
-    reviewCount: number;
- attributes: {
-            id: string | null;
-            name: string | null;
-            value: string | null;
-            order: number | null;
-            slug: string | null;
-        }[];
- manufacturer: {
-    images: never[] | {
-        id: string;
-        manufacturerId: string;
-        imageUrl: string;
-        storageType: string;
-        storageKey: string | null;
-        order: number | null;
-        isFeatured: boolean | null;
-        createdAt: Date | null;
-    }[];
-    id: string;
-    name: string;
-    slug: string;
-    description: string | null;
-    createdAt: Date | null;
-    updatedAt: Date | null;
-} | null
+    sku: string | null;
 } 
-
-
+  productImages: {
+    id: string;
+    productId: string;
+    imageUrl: string;
+    storageType: string;
+    storageKey: string | null;
+    order: number | null;
+    isFeatured: boolean | null;
+    createdAt: Date | null;
+}[]
+reviews: {
+  id: string;
+  product_id: string;
+  user_id: string;
+  rating: number;
+  comment: string | null;
+  status: string;
+  author_name: string | null;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+}[]
+attributes: {
+  id: string;
+  productId: string;
+  name: string;
+  value: string;
+  order: number | null;
+  slug: string;
+  createdAt: Date | null;
+}[]
+manufacturer: {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  createdAt: Date | null;
+  updatedAt: Date | null;
 }
+manufacturerImages: {
+  id: string;
+  manufacturerId: string;
+  imageUrl: string;
+  storageType: string;
+  storageKey: string | null;
+  order: number | null;
+  isFeatured: boolean | null;
+  createdAt: Date | null;
+}[]
+internals: { 
+  slug: string;
+  currentLimit: number;
+}
+stats: {
+  averageRating: number;
+  totalCount: number;
+  ratingDistribution: any;
+}
+}
+
 interface Params { 
   currentLimit: number;
   slug: string;
 }
-interface United { 
-  internals: Params;
-  productDetails: ProductUnited['productDetails'];
-}
-const RatingChart = ({productDetails}: ProductUnited) => {
-  // Подсчитываем количество отзывов для каждой оценки
-  const ratingCounts = {
-    5: 0,
-    4: 0,
-    3: 0,
-    2: 0,
-    1: 0
-  };
 
-  const reviews = productDetails.reviews?.forEach((review: any) => {
-    if (review.rating >= 1 && review.rating <= 5) {
-      ratingCounts[review.rating as keyof typeof ratingCounts]++;
-    }
-  });
-
-  const totalReviews =  productDetails.reviews?.length || 0;
-  const averageRating =  productDetails.reviews?.reduce((sum: number, r: any) => sum + r.rating, 0) / totalReviews || 0;
+const RatingChart = ({ product, stats }: Product) => {
+  const totalReviews = stats.totalCount || 0;
+  const averageRating = stats.averageRating || 0;
+  const distribution = stats.ratingDistribution || { '5': 0, '4': 0, '3': 0, '2': 0, '1': 0 };
 
   return (
-    <div className="flex flex-col gap-4  rounded-lg p-6">
+    <div className="flex flex-col gap-4 rounded-lg p-6">
       {/* Общий рейтинг */}
       <div className="flex items-center gap-3">
         <span className="text-5xl font-bold">{averageRating.toFixed(1)}</span>
@@ -111,13 +103,15 @@ const RatingChart = ({productDetails}: ProductUnited) => {
             />
           ))}
         </div>
-       <span className="text-gray-500 text-sm whitespace-nowrap">{totalReviews} отзывов</span>
+        <span className="text-gray-500 text-sm whitespace-nowrap">
+          {totalReviews} отзывов
+        </span>
       </div>
 
       {/* График распределения */}
       <div className="flex flex-col gap-2">
         {[5, 4, 3, 2, 1].map((rating) => {
-          const count = ratingCounts[rating as keyof typeof ratingCounts];
+          const count = distribution[rating.toString() as keyof typeof distribution] || 0;
           const percentage = totalReviews > 0 ? (count / totalReviews) * 100 : 0;
 
           return (
@@ -137,25 +131,23 @@ const RatingChart = ({productDetails}: ProductUnited) => {
         })}
       </div>
 
-
       <Dialog>
-      <DialogTrigger asChild >
-        <button className="mt-4 cursor-pointer px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-          Оставить отзыв
-        </button>
-      </DialogTrigger>
-      <DialogContent className="bg-white max-w-lg text-black">
-        <DialogHeader>
-          <DialogTitle>Оставить отзыв</DialogTitle>
-        </DialogHeader>
-        <ReviewForm product_id={productDetails.id} />
-      </DialogContent>
-    </Dialog>
-   
+        <DialogTrigger asChild>
+          <button className="mt-4 cursor-pointer px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            Оставить отзыв
+          </button>
+        </DialogTrigger>
+        <DialogContent className="bg-white max-w-lg text-black">
+          <DialogHeader>
+            <DialogTitle>Оставить отзыв</DialogTitle>
+          </DialogHeader>
+          <ReviewForm product_id={product.id} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
-export default function DesktopReviews({productDetails, internals}: United) {
+export default function DesktopReviews({product, reviews, internals, attributes, productImages, stats, manufacturer, manufacturerImages}: Product) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
@@ -223,10 +215,10 @@ export default function DesktopReviews({productDetails, internals}: United) {
 
             </div>
           <div className="flex flex-col w-full border-t  border-gray-200  overflow-y-auto">
-          {productDetails?.reviews?.length === 0 ? (
+          {reviews?.length === 0 ? (
             <p className="text-gray-500 text-center w-full py-8">Отзывов пока нет</p>
           ) : (
-            productDetails?.reviews?.map((review) => (
+            reviews?.map((review) => (
               <div className="flex flex-col gap-2 border-b border-gray-200 py-6 " key={review.id}>
             <h3 className="text-[16px]  text-gray-900 font-semibold">{review.author_name}</h3>
 <div className="flex flex-row gap-1 items-center">
@@ -247,7 +239,7 @@ export default function DesktopReviews({productDetails, internals}: United) {
           ))
           )}
  
-{productDetails?.reviews?.length >= internals?.currentLimit && (
+{reviews?.length >= internals?.currentLimit && (
   <button
     onClick={handleLoadMore}
     className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -261,7 +253,10 @@ export default function DesktopReviews({productDetails, internals}: United) {
          
         </div>
         <div >
-          <RatingChart productDetails={productDetails} />
+          <RatingChart  
+          stats={stats}
+          attributes={attributes}
+          product={product} manufacturer={manufacturer} reviews={reviews} internals={internals}  manufacturerImages={manufacturerImages} productImages={productImages}/>
         </div>
         
         </div>

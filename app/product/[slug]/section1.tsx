@@ -26,7 +26,83 @@ interface Internals {
 }
 interface United { 
     internals: Internals;
-    productDetails: ProductUnited['productDetails'];
+    product: Product;
+}
+
+interface  Product{
+  product: {
+    id: string;
+    categoryId: string | null;
+    inStock: string | null;
+    price: number;
+    isActive: boolean | null;
+    slug: string;
+    title: string;
+    description: string;
+    keywords: string | null;
+    manufacturerId: string | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+    sku: string | null;
+} 
+  productImages: {
+    id: string;
+    productId: string;
+    imageUrl: string;
+    storageType: string;
+    storageKey: string | null;
+    order: number | null;
+    isFeatured: boolean | null;
+    createdAt: Date | null;
+}[]
+reviews: {
+  id: string;
+  product_id: string;
+  user_id: string;
+  rating: number;
+  comment: string | null;
+  status: string;
+  author_name: string | null;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+}[]
+attributes: {
+  id: string;
+  productId: string;
+  name: string;
+  value: string;
+  order: number | null;
+  slug: string;
+  createdAt: Date | null;
+}[]
+manufacturer: {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+}
+manufacturerImages: {
+  id: string;
+  manufacturerId: string;
+  imageUrl: string;
+  storageType: string;
+  storageKey: string | null;
+  order: number | null;
+  isFeatured: boolean | null;
+  createdAt: Date | null;
+}[]
+internals: { 
+  slug: string;
+  currentLimit: number;
+}
+stats: {
+  averageRating: number;
+  totalCount: number;
+  ratingDistribution: any;
+}
+ 
 }
 
 interface ProductUnited {
@@ -95,24 +171,23 @@ interface ProductUnited {
 
 
 }
-export default function ProductPage({productDetails, internals}: United) {
-    const [isExpanded, setIsExpanded] = useState(false);
+export default function ProductPage({product, productImages, manufacturerImages, manufacturer,  reviews, attributes,  internals,stats}: Product) {
     const {addToCart, cart, removeFromCart} = useCart();
     const {addToFavorite, favorite, removeFromFavorite} = useFavorite();
-   const isInCart = cart.some((item) => item.product.id === productDetails.id);
-      const isInFavorite = favorite.some((item) => item.product.id === productDetails.id);
-      const toggleFavorite = (productDetails: ProductUnited['productDetails']) => {
+   const isInCart = cart.some((item) => item.id === product.id);
+      const isInFavorite = favorite.some((item) => item.id === product.id);
+      const toggleFavorite = (product: Product['product']) => {
         if (isInFavorite) {
-          removeFromFavorite(productDetails.id); // или product, зависит от вашей реализации
+          removeFromFavorite(product.id); 
         } else {
-          addToFavorite(productDetails);
+          addToFavorite(product.id);
         }
       };
-      const toggleCart = (productDetails: ProductUnited['productDetails']) => {
+      const toggleCart = (product: Product['product']) => {
         if (isInCart) {
-          removeFromCart(productDetails.id);
+          removeFromCart(product.id);
         } else {
-          addToCart(productDetails);
+          addToCart(product.id);
         }
       };
  return ( 
@@ -125,18 +200,20 @@ export default function ProductPage({productDetails, internals}: United) {
         
         </div>
          <div className="flex flex-col lg:hidden gap-1">
-            <h2 className="text-[20px] text-gray-900 font-semibold  leading-tight lg:text-[32px]">{productDetails?.title}</h2>
-            <p className="text-[12px] text-gray-600 ">Код товара   { productDetails?.sku}</p>
+            <h2 className="text-[20px] text-gray-900 font-semibold  leading-tight lg:text-[32px]">{product.title}</h2>
+            <p className="text-[12px] text-gray-600 ">Код товара   { product.sku}</p>
             </div>
             <div className="flex flex-row gap-1 items-center lg:hidden">
             <Star className="w-[16px] h-[16px] text-yellow-300" fill="#FFD700"/>
-            <p className="text-[14px] text-gray-900 font-semibold">{productDetails?.averageRating} </p>
-            <p className="text-[14px] text-gray-600 ">{productDetails?.reviewCount} отзыва</p>
+            <p className="text-[14px] text-gray-900 font-semibold">{stats.averageRating.toFixed(1)} </p>
+            <p className="text-[14px] text-gray-600 ">{stats.totalCount} отзыва</p>
             </div>
             <div className="flex flex-col lg:bg-white lg:p-[30px] lg:rounded-xl gap-10">
         <div className="flex flex-col border-b-2 border-gray-100  lg:flex-row lg:justify-start lg:items-start gap-[12px] lg:gap-[80px] ">
-            <ImagesSliderProductPage images={productDetails?.images} />
- <DesktopSection productDetails={productDetails} /> 
+            <ImagesSliderProductPage images={productImages} />
+ <DesktopSection
+stats={stats}
+  reviews={reviews} productImages={productImages} internals={internals} product={product} manufacturer={manufacturer} manufacturerImages={manufacturerImages} attributes={attributes}/> 
 
         
 
@@ -147,7 +224,7 @@ export default function ProductPage({productDetails, internals}: United) {
             <h3 className="text-[24px] text-gray-900 font-semibold pb-4">О товаре</h3>
             <p className="text-[14px] text-gray-900 max-w-[600px]">
 
-					{productDetails?.description}
+					{product.description}
             </p>
         </div>
         <div className="hidden lg:block">
@@ -156,7 +233,7 @@ export default function ProductPage({productDetails, internals}: United) {
             </h3>
             <p className="text-[14px] text-gray-900 max-w-[600px]">
 {
-(productDetails?.manufacturer !== null) ? productDetails?.manufacturer.description : 'Производитель не указан'
+(manufacturer !== null) ? manufacturer?.description : 'Производитель не указан'
 }
 						
             </p>
@@ -168,73 +245,51 @@ export default function ProductPage({productDetails, internals}: United) {
         
         {/* характеристики */}
 
-         <DesktopAtributes productDetails={productDetails} />
+         <DesktopAtributes reviews={reviews} productImages={productImages} internals={internals} product={product} manufacturer={manufacturer} manufacturerImages={manufacturerImages} attributes={attributes}  />
       </div>
-         <DesktopReviews productDetails={productDetails} internals={internals}/>
+         <DesktopReviews 
+         reviews={reviews} 
+         productImages={productImages} 
+         internals={internals} 
+         product={product} 
+         stats={stats}
+         manufacturer={manufacturer} 
+         manufacturerImages={manufacturerImages} 
+         attributes={attributes} />
         </div>
 
     <div className="flex items-center lg:hidden justify-between pt-5">
-  {productDetails?.inStock === 'В наличии' ?  <div className="flex flex-col "> 
+  {product.inStock === 'В наличии' ?  <div className="flex flex-col "> 
    
-        <div className={`${productDetails?.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-1 rounded-md self-start`}>
-    <p className={`text-[12px] text-gray-600 ${productDetails?.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>{productDetails?.inStock}</p>
+        <div className={`${product.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-1 rounded-md self-start`}>
+    <p className={`text-[12px] text-gray-600 ${product.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>{product?.inStock}</p>
     </div>
       <h2 className="text-[24px] text-gray-900 font-semibold">
-{productDetails?.price} руб
+{product?.price} руб
         </h2>
-        </div> :  <div className={`${productDetails?.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-2 rounded-md self-start`}>
-    <p className={`text-[16px] text-gray-600  font-semibold ${productDetails?.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>Уточните наличие</p>
+        </div> :  <div className={`${product?.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-2 rounded-md self-start`}>
+    <p className={`text-[16px] text-gray-600  font-semibold ${product?.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>Уточните наличие</p>
     </div>}
         <div className="flex items-center flex-row gap-3">
             <button 
-            onClick={() =>  toggleFavorite(productDetails)}
+            onClick={() =>  toggleFavorite(product)}
             className={isInFavorite ? 'text-red-500' : 'text-gray-900'}>
           <Heart className={`w-5 h-5 ${isInFavorite ? 'text-red-500 fill-red-500' : 'text-gray-900'}`}/>
             </button>
             <button 
-            onClick={() => toggleCart(productDetails)}
+ onClick={() =>  toggleCart(product)}
             className={`px-[16px] py-2 border rounded-[8px] font-semibold ${isInCart ? 'border-blue-600 text-blue-600 cursor-not-allowed' : 'text-white  bg-blue-600'}`}
             >
            {isInCart ? 'В корзине' : 'В корзину'}
         </button></div>
         </div>
-        <MobileAtributes productDetails={productDetails} />
-     {/*    <div className="flex flex-col gap-[12px] items block lg:hidden">
-      <h3 className="text-[14px] text-gray-900 font-semibold">
-        Характеристики:
-      </h3>
-      
-      <div className="grid grid-cols-[minmax(80px,_max-content)_1fr] gap-x-10 gap-y-3 text-[14px]">
-        {displayedAttributes?.map((attribute, index) => (
-          <React.Fragment key={attribute.id || `attr-${index}`}>
-            <p className="text-gray-600 max-w-[170px]">
-              {attribute.name}
-            </p>
-            <p className="text-gray-900">
-              {attribute.value}
-            </p>
-          </React.Fragment>
-        ))}
-      </div>
-
-      {hasMore && (
-        <div className="flex items-center pt-[12px] justify-start">
-          <button 
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="text-[14px] text-blue-600 font-semibold"
-          >
-            {isExpanded ? 'Скрыть' : 'Показать все Характеристики'}
-          </button>
-        </div>
-      )}
-    </div>
-    */}
+        <MobileAtributes reviews={reviews} productImages={productImages} internals={internals} product={product} manufacturer={manufacturer} manufacturerImages={manufacturerImages} attributes={attributes} />
         <div className="flex flex-col gap-[12px] lg:hidden items-start pt-5">
             <h3 className="text-[24px] text-gray-900 font-semibold">О товаре</h3>
             <p className="text-[14px] text-gray-900 max-w-[600px]">
 
 					
-                    {productDetails?.description}
+                    {product?.description}
             </p>
             
         </div>
@@ -245,12 +300,20 @@ export default function ProductPage({productDetails, internals}: United) {
             <p className="text-[14px] text-gray-900 max-w-[600px]">
 
 							{
-(productDetails?.manufacturer !== null) ? productDetails?.manufacturer.description : 'Производитель не указан'
+(manufacturer !== null) ? manufacturer.description : 'Производитель не указан'
 }
             </p>
         </div>
     
- <MobileReviews productDetails={productDetails} internals={internals}/>
+ <MobileReviews 
+ reviews={reviews} 
+ productImages={productImages} 
+ internals={internals} 
+ product={product} 
+ manufacturer={manufacturer} 
+ manufacturerImages={manufacturerImages} 
+ attributes={attributes} 
+ stats={stats}/>
     </div>
  )
 }

@@ -1,79 +1,84 @@
 import { useState } from "react";
 
-interface ProductUnited {
-   
-  productDetails: {
+interface  Product{
+  product: {
     id: string;
+    categoryId: string | null;
+    inStock: string | null;
+    price: number;
+    isActive: boolean | null;
+    slug: string;
     title: string;
     description: string;
-    price: number;
-    sku: string | null;
-    slug: string;
-    inStock: string | null;
-    categoryId: string | null;
+    keywords: string | null;
     manufacturerId: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;
-    images: {
-        id: string;
-        productId: string;
-        imageUrl: string;
-        storageType: string;
-        storageKey: string | null;
-        order: number | null;
-        isFeatured: boolean | null;
-        createdAt: Date | null;
-    }[];
-    reviews: {
-        id: string;
-        product_id: string;
-        user_id: string | null;
-        rating: number;
-        comment: string | null;
-        status: string;
-        author_name: string | null;
-        createdAt: Date | null;
-        updatedAt: Date | null;
-    }[];
-    averageRating: number;
-    reviewCount: number;
- attributes: {
-            id: string | null;
-            name: string | null;
-            value: string | null;
-            order: number | null;
-            slug: string | null;
-        }[];
- manufacturer: {
-    images: never[] | {
-        id: string;
-        manufacturerId: string;
-        imageUrl: string;
-        storageType: string;
-        storageKey: string | null;
-        order: number | null;
-        isFeatured: boolean | null;
-        createdAt: Date | null;
-    }[];
-    id: string;
-    name: string;
-    slug: string;
-    description: string | null;
-    createdAt: Date | null;
-    updatedAt: Date | null;
-} | null
+    sku: string | null;
 } 
-
-
+  productImages: {
+    id: string;
+    productId: string;
+    imageUrl: string;
+    storageType: string;
+    storageKey: string | null;
+    order: number | null;
+    isFeatured: boolean | null;
+    createdAt: Date | null;
+}[]
+reviews: {
+  id: string;
+  product_id: string;
+  user_id: string;
+  rating: number;
+  comment: string | null;
+  status: string;
+  author_name: string | null;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+}[]
+attributes: {
+  id: string;
+  productId: string;
+  name: string;
+  value: string;
+  order: number | null;
+  slug: string;
+  createdAt: Date | null;
+}[]
+manufacturer: {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  createdAt: Date | null;
+  updatedAt: Date | null;
 }
-export default function MobileAtributes({productDetails}: ProductUnited) {
+manufacturerImages: {
+  id: string;
+  manufacturerId: string;
+  imageUrl: string;
+  storageType: string;
+  storageKey: string | null;
+  order: number | null;
+  isFeatured: boolean | null;
+  createdAt: Date | null;
+}[]
+internals: { 
+  slug: string;
+  currentLimit: number;
+}
+}
+
+
+export default function MobileAtributes({attributes}: Product) {
   const [maxVisible, setMaxVisible] = useState(8);
   
-  const visibleAttributes = productDetails?.attributes.slice(0, maxVisible) || [];
-  const hasMore = productDetails?.attributes.length > maxVisible;
+  const visibleAttributes = attributes.slice(0, maxVisible) || [];
+  const hasMore = attributes.length > maxVisible;
   
   const showAll = () => {
-    setMaxVisible(productDetails?.attributes.length || 1);
+    setMaxVisible(attributes.length || 1);
   };
   
   return (

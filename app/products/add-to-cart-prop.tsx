@@ -35,7 +35,7 @@ interface ProductUnited {
 export const AddToCart: React.FC<ProductUnited> = ({ product }) => {
     const { addToCart, cart, removeFromCart, updateQuantity } = useCart();
     
-    const cartItem = cart.find((item) => item.product.id === product.id);
+    const cartItem = cart.find((item) => item.id === product.id);
     const isInCart = cartItem !== undefined;
     const quantity = cartItem?.quantity || 0;
 
@@ -44,7 +44,7 @@ export const AddToCart: React.FC<ProductUnited> = ({ product }) => {
         if (isInCart) {
             updateQuantity(product.id, quantity + 1);
         } else {
-            addToCart(product);
+            addToCart(product.id);
         }
     };
 
@@ -59,7 +59,7 @@ export const AddToCart: React.FC<ProductUnited> = ({ product }) => {
 
     const handleMainClick = () => {
         if (!isInCart) {
-            addToCart(product);
+            addToCart(product.id);
         }
     };
 
