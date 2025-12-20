@@ -1,7 +1,7 @@
 import React from "react";
 import { useFavorite } from "../context/favoritecontext";
 import { useState, useEffect, useCallback } from "react";
-import type { FavoriteItem } from "../context/favoritecontext";
+import type { FavoriteItem, ValidatedFavoriteItem } from "../context/favoritecontext";
 import Image from "next/image";
 import { useCart } from "../context/cartcontext";
 import { Star, Trash2, Heart } from "lucide-react";
@@ -12,14 +12,10 @@ import { ProductImage } from "@/db/schema";
 import ImagesSliderCardFull from "../cart/images-slider-card-full";
 import { AddToFavorite } from "../products/add-to-favorite-prop";
 type CartItemProps = {
-  item: FavoriteItem;
+  item: ValidatedFavoriteItem;
 };
 
 export const FavoriteItemComponent = ({ item }: CartItemProps) => {
-  const { removeFromFavorite } = useFavorite();
-  const { addToCart } = useCart();
-  const [image, setImage] = useState<ProductImage | null>(null);
-
 
 
 
