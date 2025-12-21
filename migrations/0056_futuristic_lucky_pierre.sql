@@ -1,0 +1,1 @@
+ALTER TABLE "manufacturers" ADD COLUMN "isActive" boolean;

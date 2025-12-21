@@ -10,7 +10,7 @@ interface ManufacturerParams {
 page?: number;
 pageSize?: number;
 search?: string;
-
+status?: boolean
 }
 interface GetProductsByManufacturerIdParams {
     manufacturerId?: string;
@@ -204,21 +204,27 @@ const productsWithDetails = getAllProductsByManufacturerIdResult.map(product => 
 export const getAllManufacturers = async ({
     page = 1,
     pageSize = 20,
-    search = ''
+    search = '', 
+    status = true
 }: ManufacturerParams = {}) => {
     try {
         const offset = (page - 1) * pageSize;
-        const conditions = [];
-        
+        const conditions = [
+          eq(manufacturers.isActive, status)
+        ];
+      
         if (search) {
-            conditions.push(
-                or(
-                    ilike(manufacturers.name, `%${search}%`),
-                    ilike(manufacturers.description, `%${search}%`),
-                    ilike(manufacturers.slug, `%${search}%`)
-                )
-            );
+          const searchCondition = or(
+            ilike(manufacturers.name, `%${search}%`),
+            ilike(manufacturers.description, `%${search}%`),
+            ilike(manufacturers.slug, `%${search}%`)
+          );
+          
+          if (searchCondition) {
+            conditions.push(searchCondition);
+          }
         }
+      
         
         let query = db
             .select({
@@ -227,6 +233,7 @@ export const getAllManufacturers = async ({
                 slug: manufacturers.slug,
                 description: manufacturers.description,
                 createdAt: manufacturers.createdAt,
+                isActive: manufacturers.isActive,
                 updatedAt: manufacturers.updatedAt
             })
             .from(manufacturers)

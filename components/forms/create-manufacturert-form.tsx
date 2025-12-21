@@ -20,14 +20,16 @@ import { useForm } from "react-hook-form"
 import { createManufacturer, updateManufacturer } from "@/lib/actions/manufacturer";
 import { Manufacturer } from "@/db/schema";
 import { toast } from "sonner";
+import { Switch } from "../ui/switch";
 
 interface ManufacturerFormProps {
     manufacturer?: Manufacturer
 }
 
 const manufacturerFormSchema = z.object({
-    name: z.string().min(1, "Name is required"),
-    description: z.string().min(1, "Description is required"),
+    name: z.string().min(1, "Название обязательно"),
+    description: z.string().min(1, "Опимание обязательно"),
+    isActive: z.boolean(),
 });
 
 export function ManufacturerForm({ manufacturer }: ManufacturerFormProps) {
@@ -39,6 +41,8 @@ export function ManufacturerForm({ manufacturer }: ManufacturerFormProps) {
         defaultValues: {
             name: manufacturer?.name || "",
             description: manufacturer?.description || "",
+            isActive: manufacturer?.isActive || false,
+
         },
     });
 
@@ -93,7 +97,28 @@ export function ManufacturerForm({ manufacturer }: ManufacturerFormProps) {
                         </FormItem>
                     )}
                 />
-             
+             <FormField
+              control={form.control}
+              name="isActive"
+              render={({ field = {} }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Статус активности</FormLabel>
+                  <div className="flex items-center space-x-3 mt-5">
+                    <FormControl>
+                      <Switch
+                      className="scale-125"
+                        checked={field.value || false}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <span className="text-sm text-muted-foreground">
+                      {field.value ? 'Активен' : 'Неактивен'}
+                    </span>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
                 <Button type="submit" disabled={loading}>
                     {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     {manufacturer ? "Обновить производителя" : "Создать производителя"}

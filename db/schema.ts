@@ -201,6 +201,7 @@ export const manufacturers = pgTable("manufacturers", {
   name: varchar("name", { length: 255 }).notNull().unique(),
   slug: varchar("slug", { length: 255 }).notNull().unique(),
   description: text("description"),
+  isActive: boolean("isActive"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 }, (table) => ({

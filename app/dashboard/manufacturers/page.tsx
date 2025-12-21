@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { PlusIcon, UserPlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { StatusFilter } from "@/components/status-filter";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ManufacturerForm} from "@/components/forms/create-manufacturert-form";
 import { getCategories } from "@/lib/actions/product-categories";
@@ -18,19 +19,22 @@ interface PageProps {
     search?: string;
     category?: string;
     limit: number;
+    status?: string;
   }>;
 
 }
 
 export default async function Home({ searchParams }: PageProps) {
-  const { page, search, category, limit } = await searchParams;
+  const { page, search, category, limit, status} = await searchParams;
   const limitNumber = Number(limit) || 20;
   const currentPage = Number(page) || 1;
+  const statusFilter = status !== undefined ? false : undefined;
   const searchQuery = search || '';
   const { manufacturers, pagination } = await getAllManufacturers({
     page: currentPage,
     pageSize: limitNumber,
     search: searchQuery,
+    status: statusFilter,
 
   });
   return (
@@ -51,8 +55,9 @@ export default async function Home({ searchParams }: PageProps) {
  
     </div>
    
-    <SearchBar />
-      
+ <div className="flex flex-row items-center gap-5">   <SearchBar />
+      <StatusFilter selectedStatus={statusFilter}/>
+      </div>
       {/* Показываем что ищем */}
       {searchQuery && (
         <p className="mb-4 text-gray-600">

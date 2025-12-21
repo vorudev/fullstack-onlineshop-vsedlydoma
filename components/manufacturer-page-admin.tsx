@@ -67,6 +67,7 @@ interface Manufacturer {
     slug: string;
     description: string | null;
     createdAt: Date | null;
+    isActive: boolean| null;
     updatedAt: Date | null;
 }
 images: {

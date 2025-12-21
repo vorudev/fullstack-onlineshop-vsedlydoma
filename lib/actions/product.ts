@@ -585,7 +585,12 @@ export const getAllProducts = async ({
         reviewCount: sql<number>`COUNT(${reviews.id})`,
       })
       .from(reviews)
-      .where(inArray(reviews.product_id, productIds))
+      .where(
+        and(
+          inArray(reviews.product_id, productIds),
+          eq(reviews.status, 'approved')
+        )
+      )
       .groupBy(reviews.product_id) // ← ВОТ ЭТО КЛЮЧЕВОЕ!
     ]);
     const ratingsMap = new Map(

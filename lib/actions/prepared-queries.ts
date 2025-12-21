@@ -1,7 +1,7 @@
 // ОПТИМИЗИРОВАЛ В СВОБОДНОЕ ВРЕМЯ 
 import { db } from "@/db/drizzle"
 import { schema, productImages, products, productAttributes, reviews, manufacturerImages, manufacturers, categories} from "@/db/schema"
-import { eq, sql } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 
 // получаем страницу продукта
 export const productPageQueries = ({ 
@@ -16,7 +16,17 @@ export const productPageQueries = ({
     getAttributes: db.select().from(productAttributes).where(eq(productAttributes.productId, sql.placeholder('id'))).prepare('attributes'),
 
 // отзывы продукта
-    getReviews: db.select().from(reviews).where(eq(reviews.product_id, sql.placeholder('id'))).limit(sql.placeholder('limit')).prepare('reviews'), 
+    getReviews: db
+    .select()
+    .from(reviews)
+    .where(
+        and(
+          eq(reviews.product_id, sql.placeholder('id')),  // ← Запятая!
+          eq(reviews.status, 'approved')
+        )
+      )
+      .limit(sql.placeholder('limit'))
+      .prepare('reviews'), 
 
 //средние показатели 
 getReviewsStats: db
@@ -34,7 +44,12 @@ getReviewsStats: db
   `
 })
 .from(reviews)
-.where(eq(reviews.product_id, sql.placeholder('id')))
+.where(
+    and(
+      eq(reviews.product_id, sql.placeholder('id')),  // ← Запятая!
+      eq(reviews.status, 'approved')
+    )
+  )
 .prepare('reviewsStats'),
 
 // производитель 
