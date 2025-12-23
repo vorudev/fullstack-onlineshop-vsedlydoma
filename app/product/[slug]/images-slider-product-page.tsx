@@ -68,6 +68,7 @@ export default function ProductGallery({images}: ProductUnited) {
                     src={img.imageUrl} 
                     alt={`Product ${idx + 1}`}
                     className="w-full h-full object-contain"
+                    loading="lazy"
                   />
                 </div>
               </SwiperSlide>
@@ -132,6 +133,7 @@ export default function ProductGallery({images}: ProductUnited) {
                   src={img.imageUrl} 
                   alt={`Product ${idx + 1}`}
                   className="max-w-full max-h-full object-contain"
+                  loading="lazy"
                 />
               </div>
             </SwiperSlide>

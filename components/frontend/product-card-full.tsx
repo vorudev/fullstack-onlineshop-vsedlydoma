@@ -7,6 +7,7 @@ import Link from "next/link";
 import { AddToFavorite } from "@/app/products/add-to-favorite-prop";
 import { ProductImage } from "@/db/schema";
 import ImagesSliderCardFull from "./images-slider-card-full";
+import Image from "next/image";
 interface ProductUnited {
    
   product: {
@@ -16,6 +17,7 @@ interface ProductUnited {
     categoryId: string | null;
     inStock: string | null;
     price: number;
+    priceRegional: number | null;
     slug: string;
     title: string;
     description: string;
@@ -75,7 +77,7 @@ function getReviewText(count: number): string {
         <div className="bg-white rounded-2xl lg:max-w-[450px]  transition-all duration-300 overflow-hidden  group lg:p-[12px] min-w-[300px]" key={product.id}> 
         <div className="hidden lg:block flex flex-col  px-2 py-2">
         <Link className="relative overflow-hidden flex justify-center" href={`/product/${product.slug}`}>
-          <img src={sortedImages[0]?.imageUrl} alt={product.title} className="w-[156px]  h-[156px] object-contain transition-transform duration-300 " />
+          <Image src={sortedImages[0]?.imageUrl || "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM="} loading="lazy" alt={product.title} width={156} height={156} className="w-[156px]  h-[156px] object-contain transition-transform duration-300 " />
           </Link>
           <Link href={`/product/${product.slug}`}>
           <h3 className="text-black min-h-[70px] text-[15px] line-clamp-3">
@@ -100,7 +102,7 @@ function getReviewText(count: number): string {
           </div>
           <div className="flex flex-row gap-2 pt-3 text-sm items-center justify-between">
           {product.inStock === 'В наличии' ? (
-  <h3 className="text-gray-900 font-semibold text-[16px]">{product.price} руб</h3>
+  <h3 className="text-gray-900 font-semibold text-[16px]">{product.price.toFixed(2)} руб</h3>
 ) : product.inStock === 'Наличие уточняйте' ? (
   <h3 className="text-gray-900 font-semibold text-[16px]">Наличие уточняйте</h3>
 ) : (
@@ -145,7 +147,7 @@ function getReviewText(count: number): string {
                  <div className="text-[16px]
                  font-semibold text-gray-900 w-1/2">
                   {product.inStock === 'В наличии' ? (
-  <h3 className="text-gray-900 font-semibold text-[16px]">{product.price} руб</h3>
+  <h3 className="text-gray-900 font-semibold text-[16px]">{product.price.toFixed(2)} руб</h3>
 ) : product.inStock === 'Наличие уточняйте' ? (
   <h3 className="text-gray-900 font-semibold text-[16px]">Наличие уточняйте</h3>
 ) : (

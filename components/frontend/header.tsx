@@ -41,7 +41,7 @@ export default function Header({ contacts }: Props) {
       <header className="bg-white lg:hidden flex flex-col text-black mx-auto gap-3 py-2 px-3">
         <div className="flex flex-row gap-2 items-center justify-between">
           <Link href="/">
-            <Image src="/logo.webp" alt="logo" width={95} height={35} />
+            <Image src="/logo.webp" alt="logo" width={95} height={35} loading="lazy" />
           </Link>
           <div className="flex flex-row gap-2 items-center">
             <MapPin className="w-3 h-3" /> <p className="text-sm">Минск, Аэродромная улица, 3</p>

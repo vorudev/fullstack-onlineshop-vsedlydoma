@@ -52,7 +52,8 @@ export default function ImagesSlider({ images, title }: Images) {
           className={`flex-shrink-0 snap-start lg:snap-center xl:snap-none w-[180px] h-[150px] xl:w-[160px] xl:h-[160px] aspect-[1/1.15] lg:aspect-[1/1] relative rounded-lg overflow-hidden ${index > 0 ? 'xl:hidden' : ''}`}
         >
           <Image
-            src={image.imageUrl}
+            src={image.imageUrl || "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM="}
+            loading="lazy"
             fill
             alt={``}
             className="w-full h-full object-contain"

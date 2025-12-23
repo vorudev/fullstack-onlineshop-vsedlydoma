@@ -47,7 +47,7 @@ export default function Footer({ contacts }: Props) {
       {(contacts?.clientInfo?.length ?? 0) > 0 ? (
   contacts?.clientInfo!.map((client) => (
     <Link key={client.id} href={client.link} target="_blank" className="relative w-[24px] h-[24px]">
-      <Image src={client.src} alt={client.phone} width={24} height={24} />
+      <Image loading="lazy" src={client.src} alt={client.phone} width={24} height={24} />
     </Link>
   ))
 ) : (

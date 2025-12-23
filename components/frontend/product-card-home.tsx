@@ -8,6 +8,7 @@ import Link from "next/link";
 import { AddToFavorite } from "@/app/products/add-to-favorite-prop";
 import { ProductImage } from "@/db/schema";
 import ImagesSliderCardFull from "./images-slider-card-full";
+import Image from "next/image";
 interface ProductUnited {
    
   product: {
@@ -15,6 +16,7 @@ interface ProductUnited {
     reviewCount: number;
     id: string;
     categoryId: string | null;
+    priceRegional: number | null;
     inStock: string | null;
     price: number;
     slug: string;
@@ -103,7 +105,7 @@ const handleMainClick = () => {
         <div className="bg-white border-gray-100 border-2 rounded-2xl lg:max-w-[450px]  transition-all duration-300 overflow-hidden  group p-1 lg:p-[12px] lg:min-w-[280px] xl-min-w-[300px]" key={product.id}> 
         <div className="hidden lg:block flex flex-col  px-2 py-2">
           <Link className="relative overflow-hidden flex justify-center" href={`/product/${product.slug}`}>
-          <img src={sortedImages[0]?.imageUrl} alt={product.title} className="w-[156px]  h-[156px] object-contain transition-transform duration-300 " />
+          <Image src={sortedImages[0]?.imageUrl || "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM="}  loading="lazy" alt={product.title} width={156} height={156} className="w-[156px]  h-[156px] object-contain transition-transform duration-300 " />
           </Link>
           <Link href={`/product/${product.slug}`} className=" ">
           <h3 className="text-black min-h-[45px] text-[15px] line-clamp-2">
@@ -129,7 +131,7 @@ const handleMainClick = () => {
           </div>
           <div className="flex flex-row gap-2 min-h-[57px] pt-3 text-sm items-center justify-between">
           {product.inStock === 'В наличии' ? (
-  <h3 className="text-gray-900 font-semibold text-[16px]">{product.price} руб</h3>
+  <h3 className="text-gray-900 font-semibold text-[16px]">{product.price.toFixed(2)} руб</h3>
 ) : product.inStock === 'Наличие уточняйте' ? (
   <h3 className="text-gray-900 font-semibold text-[16px]">Наличие уточняйте</h3>
 ) : (
@@ -145,13 +147,13 @@ const handleMainClick = () => {
         </div>
            <div className="lg:hidden">
             <Link className="relative overflow-hidden flex items-center justify-center" href={`/product/${product.slug}`}>
-            <img src={sortedImages[0]?.imageUrl} alt={product.title} className="w-[156px] h-[156px] object-contain transition-transform duration-300" />
+            <Image src={sortedImages[0]?.imageUrl || "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM="} loading="lazy" alt={product.title} width={156} height={156} className="w-[156px] h-[156px] object-contain transition-transform duration-300" />
             </Link>
             
             <div className=" p-1 flex flex-col lg:flex-row gap-2 lg:gap-1 lg:p-0">
               <Link href={`/product/${product.slug}`}>
               {product.inStock === 'В наличии' ? (
-  <h3 className="text-gray-900 font-semibold text-[16px]">{product.price} руб</h3>
+  <h3 className="text-gray-900 font-semibold text-[16px]">{product.price.toFixed(2)} руб</h3>
 ) : product.inStock === 'Наличие уточняйте' ? (
   <h3 className="text-gray-900 font-semibold text-[16px]">Наличие уточняйте</h3>
 ) : (
