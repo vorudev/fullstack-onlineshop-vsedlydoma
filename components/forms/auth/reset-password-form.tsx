@@ -165,7 +165,7 @@ token,
       </Card>
       <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
         Нажимая на кнопку "Подтвердить", вы соглашаетесь с {" "}
-        <a href="#" className="underline text-blue-500 underline-offset-4">Политика конфиденциальности</a>.
+        <a href="/privacy-policy" className="underline text-blue-500 underline-offset-4">Политика конфиденциальности</a>.
       </div>
     </div>
   )

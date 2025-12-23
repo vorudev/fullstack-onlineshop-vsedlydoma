@@ -180,7 +180,7 @@ export function SignupForm({
       </Card>
       <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
         Нажимая на кнопку "Зарегистрироваться", вы соглашаетесь с {" "}
-        <a href="#" className="underline underline-offset-4 text-blue-500">Политикой конфиденциальности</a>.
+        <a href="/privacy-policy" className="underline underline-offset-4 text-blue-500">Политикой конфиденциальности</a>.
       </div>
     </div>
     </TabsContent>

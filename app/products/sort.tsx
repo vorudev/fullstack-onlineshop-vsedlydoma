@@ -48,8 +48,16 @@ export default function ProductList({products}: {products: ProductUnited[]}) {
     }
   }, [products]);
   // Сортируем продукты на основе выбранной опции
-
-
+ if (products && products.length === 0) {
+  return (
+    <div className="w-full">
+      <div className="flex items-center justify-center h-full">
+        <p className="text-gray-500">Товаров в этой категории пока нет, но мы работаем над этим</p>
+      </div>
+    </div>
+  );
+ }
+ else {
   return (
     <div className="w-full">
       {/* Список продуктов */}
@@ -89,4 +97,5 @@ export default function ProductList({products}: {products: ProductUnited[]}) {
     )}
     </div>
   );
+}
 }
