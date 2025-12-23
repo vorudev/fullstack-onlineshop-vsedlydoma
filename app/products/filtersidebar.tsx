@@ -65,6 +65,7 @@ productsWithDetails: {
     }[];
     averageRating: number;
     reviewCount: number;
+    priceRegional: number | null;
     id: string;
     categoryId: string | null;
     inStock: string | null;
