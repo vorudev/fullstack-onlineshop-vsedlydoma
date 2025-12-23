@@ -77,7 +77,7 @@ const windowWidth = useInitialWindowWidth();
   const maxIndex = Math.max(0, Math.ceil(products.length / 1) - slidesPerView);
     // const maxIndex = Math.max(0, Math.ceil(products.length / slidesPerView) - 3);
   return (
-    <div className="w-full max-w-7xl mx-auto group ">
+    <div className="w-full max-w-7xl px-4 md:px-0 mx-auto group ">
 
       <div className="relative ">
         {/* Кастомная кнопка назад */}
