@@ -88,7 +88,15 @@ return (
             setHoveredCategory(category.id);
             setHoveredSubcategory(null);
           }}
-          
+          onMouseLeave={(e) => {
+            // Проверяем, куда движется курсор
+            const rect = e.currentTarget.getBoundingClientRect();
+            if (e.clientX < rect.left || e.clientY < rect.top || e.clientY > rect.bottom) {
+              // Курсор ушел влево - закрываем все
+              setHoveredCategory(null);
+              setHoveredSubcategory(null);
+            }
+          }}
         >
           <Link href={`/categories/${category.slug}`} className="flex items-center justify-between">
   <h3 className={`font-semibold text-lg transition duration-300 ${hoveredCategory === category.id ? 'text-blue-600' : 'text-gray-800'}`}>
@@ -105,10 +113,20 @@ return (
       <div 
         className="w-80  bg-white border-r  shadow-xl rounded-xl overflow-y-auto"
         onMouseLeave={(e) => {
-          // Проверяем, куда движется курсор
           const rect = e.currentTarget.getBoundingClientRect();
-          if (e.clientX < rect.left || e.clientY < rect.top || e.clientY > rect.bottom) {
-            // Курсор ушел влево - закрываем все
+          
+          // Если курсор ушёл влево
+          if (e.clientX < rect.left) {
+            setHoveredCategory(null);
+            setHoveredSubcategory(null);
+          } 
+          // Если курсор ушёл вправо и НЕТ правой панели (внуков)
+          else if (e.clientX > rect.right && (!hoveredSubcategory || !hasChildren(hoveredSubcategory))) {
+            setHoveredCategory(null);
+            setHoveredSubcategory(null);
+          }
+          // Если курсор ушёл вверх или вниз
+          else if (e.clientY < rect.top || e.clientY > rect.bottom) {
             setHoveredCategory(null);
             setHoveredSubcategory(null);
           }
