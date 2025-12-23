@@ -91,6 +91,7 @@ export async function getProductsWithDetailsAdmin(id: string, limit: number) {
       price: product.products.price,
       sku: product.products.sku,
       slug: product.products.slug,
+      priceRegional: product.products.priceRegional,
       inStock: product.products.inStock,
       keywords: product.products.keywords,
       categoryId: product.products.categoryId,
