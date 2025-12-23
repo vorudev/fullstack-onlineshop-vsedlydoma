@@ -26,6 +26,7 @@ interface ProductUnited {
     reviewCount: number;
     id: string;
     categoryId: string | null;
+    priceRegional: number | null;
     inStock: string | null;
     price: number;
     slug: string;
