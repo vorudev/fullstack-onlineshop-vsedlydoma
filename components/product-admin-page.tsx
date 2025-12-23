@@ -155,6 +155,7 @@ interface ProductUnited {
       createdAt: Date | null;
       isActive: boolean | null;
       keywords: string | null;
+      priceRegional: number | null;
       updatedAt: Date | null;
       images: {
           id: string;
