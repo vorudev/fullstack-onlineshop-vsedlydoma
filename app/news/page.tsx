@@ -19,7 +19,15 @@ interface PageProps {
         pageSize: Number(limit) || 20,
         search: searchQuery,
     });
-
+ if (allNews.length === 0) {
+  return (
+    <main className="min-h-screen mx-auto bg-gray-100 lg:bg-white flex-col flex gap-5 xl:max-w-[1400px] lg:max-w-[1000px] text-black pt-[16px] lg:pt-[24px] pr-[16px] pl-[16px] pb-30">
+      <div className="flex items-center justify-center h-full">
+        <p className="text-gray-500">Новостей пока нет</p>
+      </div>
+    </main>
+  );
+ }
     return (
         <main  className="min-h-screen mx-auto bg-gray-100 lg:bg-white flex-col flex gap-5 xl:max-w-[1400px] lg:max-w-[1000px] text-black pt-[16px] lg:pt-[24px] pr-[16px] pl-[16px] pb-30">
 <div className=" flex-col flex gap-[10px]">
