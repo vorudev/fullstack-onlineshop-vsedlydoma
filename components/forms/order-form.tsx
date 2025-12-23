@@ -202,13 +202,13 @@ export default function OrderForm( {items}: OrderFormProps) {
     return (
         <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full flex flex-col gap-4 ">
-        <div className="grid md:grid-cols-2 gap-4 ">
+        <div className="grid md:grid-cols-2 items-start  gap-4 ">
         <FormField
           control={form.control}
             name="customerName"
           render={({ field }) => (
             <FormItem >
-              <FormLabel>Имя</FormLabel>
+              <FormLabel>Имя *</FormLabel>
               <FormControl className=" border border-gray-300 rounded-md h-12 py-0   ">
            
                 <input placeholder="Иван Иванов" className="bg-white border border-gray-200 py-3 focus:outline-none focus:ring-blue-500 transition duration-200 focus:ring-2 px-3 rounded-md text-gray-600" {...field}  />
@@ -223,7 +223,7 @@ export default function OrderForm( {items}: OrderFormProps) {
             name="customerEmail"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Почта</FormLabel>
+              <FormLabel>Почта *</FormLabel>
               <FormControl className=" border border-gray-300 rounded-md h-12 py-0   ">
                 <input placeholder="example@gmail.com" className="bg-white border border-gray-200 py-3 focus:outline-none focus:ring-blue-500 transition duration-200 focus:ring-2 px-3 rounded-md text-gray-600" type="email" {...field} />
               </FormControl>
@@ -236,7 +236,7 @@ export default function OrderForm( {items}: OrderFormProps) {
             name="customerPhone"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Номер телефона</FormLabel>
+              <FormLabel>Номер телефона *</FormLabel>
               <FormControl className=" border border-gray-300 rounded-md h-12 py-0   ">
                         <input {...field } onChange={(e) => field.onChange(formatPhoneInput(e.target.value))} value={formatPhoneInput(field.value)} onFocus={(e) => {
             // Если поле пустое при фокусе, устанавливаем 375
@@ -250,7 +250,6 @@ export default function OrderForm( {items}: OrderFormProps) {
             </FormItem>
           )}
         />
-        
 <FormField
   control={form.control}
   name="notes"
@@ -261,14 +260,17 @@ export default function OrderForm( {items}: OrderFormProps) {
         <textarea
           {...field}
           value={field.value ?? ""}
-          placeholder="Например: позвоните перед доставкой"
-          className="bg-white border border-gray-300 rounded-md w-full min-h-[100px] p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          placeholder="Заметки к заказу"
+          rows={1}
+          className="bg-white border border-gray-300 rounded-md w-full p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+          // ↑ resize-y позволяет пользователю растягивать вертикально
         />
       </FormControl>
       <FormMessage />
     </FormItem>
   )}
 />
+
 
          </div>
         

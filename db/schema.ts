@@ -109,6 +109,7 @@ id: uuid("id").primaryKey().defaultRandom(),
 categoryId: uuid("category_id").references(() => categories.id),
 inStock: text("inStock"),
 price: real("price").notNull(),
+priceRegional: real("price_regional"),
 isActive: boolean("isActive"),
 slug: varchar("slug", { length: 255 }).notNull().unique(),
 title: text("title").notNull(),
@@ -377,6 +378,13 @@ export const termsOfService = pgTable("terms_of_service", {
 }, (table) => ({
     titleIdx: index("terms_of_service_title_idx").on(table.title),
 }));
+export const currentDollarPrice = pgTable("current_dollar_price", { 
+  id: uuid("id").primaryKey().defaultRandom(),
+  value: real("value"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+})
+
 export const schema = {
                 
                     products, 
@@ -406,6 +414,7 @@ export const schema = {
                     newsImages,
                     telegramChatIds,
                     adminEmails,
+                    currentDollarPrice
                 }
 
 export type Product = typeof products.$inferSelect 
@@ -413,6 +422,7 @@ export type Category = typeof categories.$inferSelect
 export type User = typeof user.$inferSelect
 export type Order = typeof orders.$inferSelect
 export type OrderItem = typeof orderItems.$inferSelect
+export type DollarRate = typeof currentDollarPrice.$inferSelect
 export type ProductAttribute = typeof productAttributes.$inferSelect
 export type Manufacturer = typeof manufacturers.$inferSelect
 export type Filter = typeof filters.$inferSelect

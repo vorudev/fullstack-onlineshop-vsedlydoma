@@ -2,6 +2,7 @@
 import { z } from 'zod';
 
 import { db } from "@/db/drizzle";
+import { getCurrentDollarPrice } from './currency';
 import { Product, products, productAttributes, orderItems, orders, categories, productImages, reviews, Manufacturer, manufacturers, manufacturerImages } from "@/db/schema";
 import { desc, eq, gte, inArray, lte, notInArray, asc, getTableColumns, placeholder  } from "drizzle-orm";
 import { unstable_cache } from 'next/cache';
@@ -735,7 +736,7 @@ export const getAllProductsForOrders = async ({
   }
 };
 
-export async function createProduct(product: Omit<Product, "id" | "createdAt" | "updatedAt" | "sku">) {
+export async function createProduct(product: Omit<Product, "id" | "createdAt" | "updatedAt" | "sku" | "priceRegional">) {
   try {
     const session = await auth.api.getSession({
           headers: await headers()
@@ -743,14 +744,31 @@ export async function createProduct(product: Omit<Product, "id" | "createdAt" | 
         if (!session || session.user.role !== 'admin') {
           return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
-   await db.insert(products).values(product).returning();
+  const currentDollar = await getCurrentDollarPrice()
+  if (!currentDollar || currentDollar.value === null) { 
+    throw new Error("Не указан курс доллара");
+  }
+  const regionalPrice = (product.price * currentDollar.value)
+  
+   await db.insert(products).values({
+price: product.price,
+title: product.title,
+description: product.description,
+manufacturerId: product.manufacturerId,
+isActive: product.isActive,
+categoryId: product.categoryId,
+inStock: product.inStock,
+slug: product.slug,
+keywords: product.keywords,
+priceRegional: regionalPrice,
+  }).returning();
   } catch (error) {
     console.error("Error creating product:", error);
     throw new Error("Failed to create product");
   }
     
 }
-export async function updateProduct( product: Omit<Product, "createdAt" | "updatedAt" | "sku">) {
+export async function updateProduct( product: Omit<Product, "createdAt" | "updatedAt" | "sku" | "priceRegional">) {
  try { 
   const session = await auth.api.getSession({
         headers: await headers()

@@ -160,7 +160,7 @@ export default function ProfilePage({ orders, pagination, session }: Props) {
                 <div className="px-4 "> {/* поправить padding */}
                     <ActiveStatusDisplay />
                 </div>
-                <div className="px-[32px] "><LogoutButton /></div>
+                <div className="px-[32px]"><LogoutButton /></div>
             </div>
             
         </div>

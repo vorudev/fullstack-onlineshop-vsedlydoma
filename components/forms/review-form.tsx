@@ -102,7 +102,7 @@ const [success, setSuccess] = useState(false);
         defaultValues: {
             rating: 5,
             comment: "",
-            author_name: "", // Используем username из сессии
+            author_name: session.data?.user.name, // Используем username из сессии
             status: "pending",
         },
     });
@@ -172,7 +172,8 @@ const [success, setSuccess] = useState(false);
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <input  {...field}  className="bg-gray-100 border border-gray-200 py-3 focus:outline-none focus:ring-blue-500 transition duration-200 focus:ring-2 px-3 rounded-md text-gray-600" placeholder="Имя"/> 
+                
+                <input  {...field} disabled className="bg-gray-100 disabled:text-gray-500 border border-gray-200 py-3 focus:outline-none focus:ring-blue-500 transition duration-200 focus:ring-2 px-3 rounded-md text-gray-600" placeholder="Имя"/> 
               </FormControl>
               <FormMessage />
             </FormItem>

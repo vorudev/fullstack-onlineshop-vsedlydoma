@@ -1,5 +1,6 @@
 import { AddContactUsPhones } from "@/components/forms/add/add-contact-us-phones";
 import {getContactUs} from "@/lib/actions/contact-us";
+import { getCurrentDollarPrice } from "@/lib/actions/currency";
 import AdminContactsPage from "@/app/dashboard/contact-us/client-contacts";
 import { AddContactUsTelephone } from "@/components/forms/add/add-contact-us-telephones";
 import { Pencil, Plus, User, MapPin } from "lucide-react";
@@ -39,11 +40,12 @@ export const metadata: Metadata = {
     }
   };
 export default async function ContactUsPage() {
-    const[contactUs, about, privacyPolicy, termsOfService] = await Promise.all([
+    const[contactUs, about, privacyPolicy, termsOfService, dollarRate] = await Promise.all([
         getContactUs(),
         getAboutInfo(),
         getPrivacyPolicy(),
         getTermsOfService(),
+        getCurrentDollarPrice()
     ]);
 
  
@@ -52,7 +54,12 @@ export default async function ContactUsPage() {
            <div className="p-[16px] 
  ">
             
-            <AdminContactsPage contactUs={contactUs} about={about} privacyPolicy={privacyPolicy} termsOfService={termsOfService} />
+            <AdminContactsPage
+             contactUs={contactUs}
+              about={about} 
+             privacyPolicy={privacyPolicy} 
+             dollarRate={dollarRate}
+             termsOfService={termsOfService} />
            </div>
 
     );

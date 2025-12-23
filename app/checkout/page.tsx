@@ -31,7 +31,7 @@ export default function Checkout() {
             </Link>
             <div className="h-12 w-px bg-gray-300 mx-2"></div>
             
-          <div className="relative border-l "> <button 
+            <div className="relative border-l "> <button 
             onClick={() => setOpen(!open)}
             className=" text-black  text-[14px] rounded-xl flex flex-row items-center gap-2">
               Оформляем  {updatedCart?.length} товара <br />  на сумму {updatedCart?.reduce((acc, item) => acc + item.product.price * item.quantity, 0).toFixed(2)} руб
@@ -150,12 +150,15 @@ export default function Checkout() {
     <h2 className="text-[16px] font-semibold">Заполните данные</h2>
     <p className="text-[14px] text-gray-600"></p>
 </div>
+  
 
+
+                
                 </div>
                 <div className="flex flex-row gap-6">   
                 <div className=" w-px bg-gray-300 ml-3 lg:block hidden"></div>
                 <div className="flex py-4 px-2 flex-col  lg:w-2/3 w-full gap-5">
-<div className=" py-2 flex flex-row rounded-md w-full h-[200px]">
+<div className=" py-2 flex flex-row rounded-md w-full ">
 
  {updatedCart && <OrderForm items={updatedCart} />}
 </div>

@@ -96,7 +96,7 @@ export default function SearchBar() {
               value={searchValue}
               onChange={handleInputChange}
               placeholder="Поиск по сайту"
-              className={`w-full px-4 py-2 border ${
+              className={`w-full px-4 py-2 h-[37px] border ${
                 error ? 'border-red-500 bg-red-50' : 'bg-gray-100 border-gray-200'
               } rounded-lg focus:outline-none hover:border-gray-300 hover:shadow-md transition duration-300 ease-in-out`}
               aria-invalid={!!error}
@@ -116,7 +116,7 @@ export default function SearchBar() {
          <Button
 type="submit"
 disabled={isPending || !!error}
-className="px-6 py- disabled:opacity-50 items-center gap-2 hidden md:flex"
+className="px-6 py- h-[37px] disabled:opacity-50 items-center gap-2 hidden md:flex"
 >
 {isPending ? (
 <>

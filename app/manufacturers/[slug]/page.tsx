@@ -79,7 +79,7 @@ export default async function ManufacturerPage({searchParams, params}: GetProduc
    
   </div>
    <SearchBar />
-  <div className="grid grid-cols-1 pt-2 md:grid-cols-1 lg:grid-cols-4 xl:grid-cols-4 lg:gap-6 gap-2">
+  <div className="grid grid-cols-1 pt-2 md:grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 lg:gap-6 gap-2">
               {productsWithDetailAndImages?.map(product => (
                 <ProductCard
                   key={product.id}

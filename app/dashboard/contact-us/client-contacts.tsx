@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { DeleteTelephoneButton, DeleteSocialsButton } from "@/components/delete-socials";
+import { SyncCurrencyButton } from '@/components/sync-price-button';
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -10,7 +11,7 @@ import {
   BreadcrumbPage,
 } from '@/components/ui/breadcrumb';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-
+import { AddDollarRate } from '@/components/forms/add/add-currency-rate';
 import { AddContactUsTelephone } from "@/components/forms/add/add-contact-us-telephones";
 import { AddContactUsInfo } from "@/components/forms/add/add-contact-us-info";
 import { Button } from '@/components/ui/button';
@@ -120,6 +121,14 @@ interface PrivacyPolicy {
     updatedAt: Date | null;
   } | null
 }
+interface DollarRate { 
+  dollarRate:  { 
+    id: string;
+    value: number | null, 
+    createdAt: Date | null;
+    updatedAt: Date | null;
+  } | null
+}
 interface TermsOfService {
   termsOfService: {
     id: string;
@@ -199,7 +208,7 @@ const SOCIAL_ICONS = [
   { name: 'LinkedIn', icon: 'linkedin', color: '#0A66C2' },
 ];
 
-const AdminContactsPage = ({ contactUs, about, privacyPolicy, termsOfService }: ContactUs & About & PrivacyPolicy & TermsOfService) => {
+const AdminContactsPage = ({ contactUs, about, privacyPolicy, termsOfService, dollarRate }: ContactUs & About & PrivacyPolicy & TermsOfService & DollarRate) => {
   // Основное состояние
   const [contactInfo, setContactInfo] = useState<ContactInfo>({
     title: 'Свяжитесь с нами и получите консультацию',
@@ -463,7 +472,30 @@ const AdminContactsPage = ({ contactUs, about, privacyPolicy, termsOfService }: 
                     
                   </CardContent>
                 </Card>
-
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Курс USD</CardTitle>
+                    <CardDescription>
+  Этот курс будет использовать для генерации цены в руб.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-x-4">
+                  <AddDollarRate dollarRate={dollarRate} />
+                     
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Синхронизация курса</CardTitle>
+                    <CardDescription>
+  Этот синхронизирует заданный курс ко всем товарам
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-x-4">
+                 <SyncCurrencyButton />
+                     
+                </CardContent>
+                </Card>
                 
             
               </div>

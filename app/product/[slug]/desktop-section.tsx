@@ -2,7 +2,7 @@ import { useCart } from "@/app/context/cartcontext";
 import {useFavorite} from "@/app/context/favoritecontext";
 import Image from "next/image";
 import { useState } from "react";
-import {Heart} from "lucide-react";
+import {Heart, Minus, Plus, ShoppingCart} from "lucide-react";
 import { Star } from "lucide-react";
 interface  Product{
   product: {
@@ -80,12 +80,12 @@ stats: {
 }
 
 export default function DesktopSection({product, manufacturer, manufacturerImages, reviews, attributes, stats }: Product) {
-    const {addToCart, cart, removeFromCart} = useCart();
+    const {addToCart, cart, removeFromCart, updateQuantity} = useCart();
     const {addToFavorite, favorite, removeFromFavorite} = useFavorite();
     const [maxVisible] = useState(8);
    const isInCart = cart.some((item) => item.id === product.id);
       const isInFavorite = favorite.some((item) => item.id === product.id);
-  
+      const cartItem = cart.find((item) => item.id === product.id);
     const visibleAttributes = attributes.slice(0, maxVisible) || [];
   const hasMore = attributes.length > maxVisible;
     const scrollToComponent = () => {
@@ -105,6 +105,31 @@ export default function DesktopSection({product, manufacturer, manufacturerImage
     } else {
       addToCart(product.id);
     }
+  };
+  const quantity = cartItem?.quantity || 0;
+
+  const handleIncrement = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (isInCart) {
+          updateQuantity(product.id, quantity + 1);
+      } else {
+          addToCart(product.id);
+      }
+  };
+
+  const handleDecrement = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (quantity > 1) {
+          updateQuantity(product.id, quantity - 1);
+      } else if (quantity === 1) {
+          removeFromCart(product.id);
+      }
+  };
+
+  const handleMainClick = () => {
+      if (!isInCart) {
+          addToCart(product.id);
+      }
   };
 
     return (
@@ -152,11 +177,41 @@ export default function DesktopSection({product, manufacturer, manufacturerImage
         </div>
        <div className="flex flex-col gap-2 items-center w-full">
           
-          <button className={isInCart ? 'border border-blue-600  w-full text-blue-600 cursor-pointer px-6 py-3 rounded-[8px] font-semibold flex-1 justify-center' : 'bg-blue-600 border w-full text-white cursor-pointer px-6 py-3 rounded-[8px] font-semibold flex-1 justify-center'}
- onClick={() =>  toggleCart(product)}
-          >
-           {isInCart ? 'В корзине' : 'В корзину'}
-          </button>
+       <div className="flex items-center w-full xl:min-w-[140px] min-w-[100px] ">
+            {isInCart ? (
+                // Состояние: товар в корзине
+                <div className="flex items-center w-full rounded-md border border-blue-600 overflow-hidden bg-white">
+                    <button
+                        onClick={handleDecrement}
+                        className="flex-shrink-0 w-8 h-10 flex items-center justify-center hover:bg-blue-50 text-blue-600 transition-colors"
+                        aria-label="Уменьшить количество"
+                    >
+                        <Minus className="w-4 h-4" />
+                    </button>
+                    
+                    <div className="flex-1 flex items-center justify-center px-2 py-3.5 text-blue-600">
+                        <span className="text-sm font-medium">{quantity}</span>
+                    </div>
+                    
+                    <button
+                        onClick={handleIncrement}
+                        className="flex-shrink-0 w-8 h-10 flex items-center justify-center hover:bg-blue-50 text-blue-600 transition-colors"
+                        aria-label="Увеличить количество"
+                    >
+                        <Plus className="w-4 h-4" />
+                    </button>
+                </div>
+            ) : (
+                // Состояние: товар не в корзине
+                <button
+                    onClick={handleMainClick}
+                    className="flex items-center justify-center gap-2 w-full xl:px-4 py-3 px-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white border border-blue-600 transition-colors"
+                >
+                    <ShoppingCart className="w-4 h-4 hidden xl:block" />
+                    <span>В корзину</span>
+                </button>
+            )}
+        </div>
           <button className="bg-white border-2 border-gray-200 cursor-pointer flex items-center gap-2 text-gray-700 p-3 rounded-[8px]"
  onClick={() =>  toggleFavorite(product)}
           >
@@ -219,11 +274,41 @@ export default function DesktopSection({product, manufacturer, manufacturerImage
         </div>
         <div className="flex flex-col gap-2 items-center w-full">
           
-          <button 
- onClick={() =>  toggleCart(product)}
-          className={` w-full px-6 py-3 cursor-pointer rounded-[8px] font-semibold flex-1 justify-center ${isInCart ? 'bg-white text-blue-600 border border-blue-600' : 'bg-blue-600 text-white border border-blue-600'}`}>
-           { isInCart ? 'В корзине' : 'В корзину' }
-          </button>
+        <div className="flex items-center w-full xl:min-w-[140px] min-w-[100px] ">
+            {isInCart ? (
+                // Состояние: товар в корзине
+                <div className="flex items-center w-full rounded-md border border-blue-600 overflow-hidden bg-white">
+                    <button
+                        onClick={handleDecrement}
+                        className="flex-shrink-0 w-8 h-10 flex items-center justify-center hover:bg-blue-50 text-blue-600 transition-colors"
+                        aria-label="Уменьшить количество"
+                    >
+                        <Minus className="w-4 h-4" />
+                    </button>
+                    
+                    <div className="flex-1 flex items-center justify-center px-2 py-3.5 text-blue-600">
+                        <span className="text-sm font-medium">{quantity}</span>
+                    </div>
+                    
+                    <button
+                        onClick={handleIncrement}
+                        className="flex-shrink-0 w-8 h-10 flex items-center justify-center hover:bg-blue-50 text-blue-600 transition-colors"
+                        aria-label="Увеличить количество"
+                    >
+                        <Plus className="w-4 h-4" />
+                    </button>
+                </div>
+            ) : (
+                // Состояние: товар не в корзине
+                <button
+                    onClick={handleMainClick}
+                    className="flex items-center justify-center gap-2 w-full xl:px-4 py-3 px-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white border border-blue-600 transition-colors"
+                >
+                    <ShoppingCart className="w-4 h-4 hidden xl:block" />
+                    <span>В корзину</span>
+                </button>
+            )}
+        </div>
           <button
           onClick={() =>  toggleFavorite(product)}
           className={`bg-white  border-2 w-full cursor-pointer hover:bg-gray-100 transition  border-gray-200 flex items-center justify-center gap-2 text-gray-700 p-3 rounded-[8px]`}>

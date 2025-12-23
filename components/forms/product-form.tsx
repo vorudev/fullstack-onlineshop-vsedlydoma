@@ -86,7 +86,9 @@ export function ProductForm({product, categories: initialCategories, manufacture
     const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
       defaultValues: {
-        price: product?.price ? Number(product.price) : 0, 
+        price: product?.price ? Number(product.price) : 0,
+        
+         
         categoryId: product?.categoryId || "",
         title: product?.title || "",
         keywords: product?.keywords || "",
@@ -219,7 +221,7 @@ export function ProductForm({product, categories: initialCategories, manufacture
   name="price"
   render={({ field }) => (
     <FormItem>
-      <FormLabel>Цена (руб)</FormLabel>
+      <FormLabel>Цена (USD)</FormLabel>
       <FormControl>
         <Input
           type="number"

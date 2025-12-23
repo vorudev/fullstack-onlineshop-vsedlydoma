@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react';
-import { Star, Heart, ShoppingCart, Check, ChevronLeft, ChevronRight, Link } from 'lucide-react';
+import { Star, Heart, ShoppingCart, Check, ChevronLeft, ChevronRight, Link, Minus, Plus } from 'lucide-react';
 import { ReviewForm } from '@/components/forms/review-form';
 import DesktopSection from './desktop-section';
 import DesktopAtributes from './desktop-attributes';
@@ -172,9 +172,10 @@ interface ProductUnited {
 
 }
 export default function ProductPage({product, productImages, manufacturerImages, manufacturer,  reviews, attributes,  internals,stats}: Product) {
-    const {addToCart, cart, removeFromCart} = useCart();
+    const {addToCart, cart, removeFromCart, updateQuantity} = useCart();
     const {addToFavorite, favorite, removeFromFavorite} = useFavorite();
-   const isInCart = cart.some((item) => item.id === product.id);
+   const isInCart = cart.find((item) => item.id === product.id);
+   const quantity = isInCart?.quantity || 0;
       const isInFavorite = favorite.some((item) => item.id === product.id);
       const toggleFavorite = (product: Product['product']) => {
         if (isInFavorite) {
@@ -190,6 +191,29 @@ export default function ProductPage({product, productImages, manufacturerImages,
           addToCart(product.id);
         }
       };
+      const handleIncrement = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (isInCart) {
+            updateQuantity(product.id, quantity + 1);
+        } else {
+            addToCart(product.id);
+        }
+    };
+
+    const handleDecrement = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (quantity > 1) {
+            updateQuantity(product.id, quantity - 1);
+        } else if (quantity === 1) {
+            removeFromCart(product.id);
+        }
+    };
+
+    const handleMainClick = () => {
+        if (!isInCart) {
+            addToCart(product.id);
+        }
+    };
  return ( 
     <div className=" px-[16px] overflow-hidden flex w-full flex-col gap-3">
   <div className="flex overflow-x-auto gap-2 items-center px-4 md:px-0 snap-x snap-mandatory text-gray-600 text-[14px]" style={{ 
@@ -276,12 +300,42 @@ stats={stats}
             className={isInFavorite ? 'text-red-500' : 'text-gray-900'}>
           <Heart className={`w-5 h-5 ${isInFavorite ? 'text-red-500 fill-red-500' : 'text-gray-900'}`}/>
             </button>
-            <button 
- onClick={() =>  toggleCart(product)}
-            className={`px-[16px] py-2 border rounded-[8px] font-semibold ${isInCart ? 'border-blue-600 text-blue-600 cursor-not-allowed' : 'text-white  bg-blue-600'}`}
-            >
-           {isInCart ? 'В корзине' : 'В корзину'}
-        </button></div>
+            <div className="flex items-center w-full xl:min-w-[140px] min-w-[100px] max-w-[140px]">
+            {isInCart ? (
+                // Состояние: товар в корзине
+                <div className="flex items-center w-full rounded-md border border-blue-600 overflow-hidden bg-white">
+                    <button
+                        onClick={handleDecrement}
+                        className="flex-shrink-0 w-8 h-9 flex items-center justify-center hover:bg-blue-50 text-blue-600 transition-colors"
+                        aria-label="Уменьшить количество"
+                    >
+                        <Minus className="w-4 h-4" />
+                    </button>
+                    
+                    <div className="flex-1 flex items-center justify-center px-2 py-2 text-blue-600">
+                        <span className="text-sm font-medium">{quantity}</span>
+                    </div>
+                    
+                    <button
+                        onClick={handleIncrement}
+                        className="flex-shrink-0 w-8 h-9 flex items-center justify-center hover:bg-blue-50 text-blue-600 transition-colors"
+                        aria-label="Увеличить количество"
+                    >
+                        <Plus className="w-4 h-4" />
+                    </button>
+                </div>
+            ) : (
+                // Состояние: товар не в корзине
+                <button
+                    onClick={handleMainClick}
+                    className="flex items-center justify-center gap-2 w-full xl:px-4 py-2 px-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white border border-blue-600 transition-colors"
+                >
+                    <ShoppingCart className="w-4 h-4 hidden xl:block" />
+                    <span>В корзину</span>
+                </button>
+            )}
+        </div>
+            </div>
         </div>
         <MobileAtributes reviews={reviews} productImages={productImages} internals={internals} product={product} manufacturer={manufacturer} manufacturerImages={manufacturerImages} attributes={attributes} />
         <div className="flex flex-col gap-[12px] lg:hidden items-start pt-5">

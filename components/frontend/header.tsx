@@ -59,8 +59,8 @@ export default function Header({ contacts }: Props) {
             />
             
           </div>
-         <Button
-className="px-6 py- disabled:opacity-50 items-center gap-2 hidden md:flex"
+          <Button
+className="px-6 disabled:opacity-50 items-center gap-2 hidden md:flex"
 >
               Поиск
 
@@ -127,7 +127,7 @@ className="px-6 py- disabled:opacity-50 items-center gap-2 hidden md:flex"
             
           </div>
          <Button
-className="px-6 py- disabled:opacity-50 items-center gap-2 hidden md:flex"
+className="px-6 h-[37px] disabled:opacity-50 items-center gap-2 hidden md:flex"
 >
               Поиск
 

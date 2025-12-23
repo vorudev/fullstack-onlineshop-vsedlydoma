@@ -115,7 +115,7 @@ export const CartItemComponent = ({ item }: CartItemProps) => {
             <Link className="relative overflow-hidden lg:max-w-[180px] lg:max-h-[150px]" href={`/product/${item?.product?.slug}`}>
               <ImagesSliderCardFull images={item?.product?.images} title={item?.product?.title} />
             </Link>
-            <p className="text-gray-400 text-[12px] text-center">{item?.product?.sku}</p>
+
           </div>
 
           {/* Content Section */}
@@ -128,6 +128,7 @@ export const CartItemComponent = ({ item }: CartItemProps) => {
                 <div className={`${item.product.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-1 rounded-md self-start`}>
                   <p className={`text-[12px] text-gray-600 ${item.product.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>{item.product.inStock}</p>
                 </div>
+                <p className="text-gray-400 text-[12px] text-left">{item?.product?.sku}</p>
               </div>
               <div className="flex items-center gap-2">
                 <button 
@@ -151,15 +152,15 @@ export const CartItemComponent = ({ item }: CartItemProps) => {
                     <Minus className="w-3 h-3" />
                   </button>
                   <input
-                    type="number"
-                    min={1}
-                    max={100}
-                    value={inputValue}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    onKeyDown={handleKeyDown}
-                    className="w-12 border-x border-gray-300 text-black px-2 py-1.5 text-sm text-center focus:outline-none focus:ring-0 focus:border-gray-300"
-                  />
+  type="number"
+  min={1}
+  max={100}
+  value={inputValue}
+  onChange={handleChange}
+  onBlur={handleBlur}
+  onKeyDown={handleKeyDown}
+  className="w-12 border-x border-gray-300 text-black px-2 py-1.5 text-sm text-center focus:outline-none focus:ring-0 focus:border-gray-300 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+/>
                   <button
                     onClick={incrementQuantity}
                     className="w-8 h-8 flex items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors text-gray-600"
