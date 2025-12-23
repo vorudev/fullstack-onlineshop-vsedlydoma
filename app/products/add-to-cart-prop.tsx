@@ -11,7 +11,6 @@ interface ProductUnited {
     categoryId: string | null;
     inStock: string | null;
     price: number;
-    priceRegional: number | null;
     slug: string;
     title: string;
     description: string;
