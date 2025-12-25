@@ -183,8 +183,8 @@ export const CartItemComponent = ({ item }: CartItemProps) => {
               </div>
               
               <div className="flex flex-col items-end gap-0.5">
-<p className="text-xs text-gray-500">{item.product.price.toFixed(2)} × {item.quantity}</p>
-<p className="text-lg font-semibold text-gray-900">{(item.product.price * item.quantity).toFixed(2)} руб</p>
+<p className="text-xs text-gray-500">{item.product.priceRegional ? `${item.product.priceRegional.toFixed(2)} руб` : "Цена не указана"} × {item.quantity}</p>
+<p className="text-lg font-semibold text-gray-900">{((item.product.priceRegional ? item.product.priceRegional : item.product.price) * item.quantity).toFixed(2)} руб</p>
 </div>
             </div> 
           </div>
@@ -240,8 +240,8 @@ export const CartItemComponent = ({ item }: CartItemProps) => {
             <span className="text-sm text-gray-500">шт</span>
           </div>
           <div className="flex flex-col items-end gap-0.5">
-<p className="text-xs text-gray-500">{item.product.price.toFixed(2)} × {item.quantity}</p>
-<p className="text-lg font-semibold text-gray-900">{(item.product.price * item.quantity).toFixed(2)} руб</p>
+<p className="text-xs text-gray-500">{item.product.priceRegional ? `${item.product.priceRegional.toFixed(2)} руб` : "Цена не указана"} × {item.quantity}</p>
+<p className="text-lg font-semibold text-gray-900">{((item.product.priceRegional ? item.product.priceRegional : item.product.price) * item.quantity).toFixed(2)} руб</p>
 </div>
         </div>   
       </div>
