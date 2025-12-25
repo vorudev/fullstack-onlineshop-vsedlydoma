@@ -65,7 +65,7 @@ interface ProductWithImages {
     createdAt: Date | null;
     updatedAt: Date | null;
     sku: string | null;
-
+    priceRegional: number | null;
 } 
 export default function ProductsTable({ products, categories, manufacturers }: { products: ProductWithImages[]; categories: any, manufacturers: Manufacturer[] }) {
   return (
@@ -81,7 +81,8 @@ export default function ProductsTable({ products, categories, manufacturers }: {
               <TableHead className="w-[80px]">Фото</TableHead>
               <TableHead className="w-[120px]">Артикул</TableHead>
               <TableHead>Название</TableHead>
-              <TableHead className="w-[120px]">Цена</TableHead>
+              <TableHead className="w-[120px]">Цена (Руб)</TableHead>
+              <TableHead className="w-[120px]">Цена (USD)</TableHead>
               <TableHead className="w-[120px]">Статус</TableHead>
               <TableHead className="w-[120px] text-right">Действия</TableHead>
             </TableRow>
@@ -121,7 +122,10 @@ export default function ProductsTable({ products, categories, manufacturers }: {
 
                   {/* Price */}
                   <TableCell className="font-semibold">
-                    {product.price} руб
+                    {product.priceRegional ? `${product.priceRegional} руб` : "Синхронизируйте цену"}
+                  </TableCell>
+                  <TableCell className="font-semibold">
+                    {product.price} USD
                   </TableCell>
 
 

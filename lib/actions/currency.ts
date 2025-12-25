@@ -47,56 +47,49 @@ export const deleteDollarRate = async (id: string) => {
    }
 };
 export const createDollarRate = async (dollarRate: Omit<DollarRate, "id" | "createdAt" | "updatedAt">) => {
-   try{
-    const session = await auth.api.getSession({
-          headers: await headers()
-        })
-        if (!session || session.user.role !== 'admin') {
-          return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-    const createdDollarRate = await db.insert(currentDollarPrice).values(dollarRate).returning();
-    
-    
-   } catch (error) {
-    console.log(error);
-    return null;
-   }
+  try{
+     const session = await auth.api.getSession({
+        headers: await headers()
+     })
+     if (!session || session.user.role !== 'admin') {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+     }
+     const createdDollarRate = await db.insert(currentDollarPrice).values(dollarRate).returning();
+  } catch (error) {
+     console.log(error);
+     return null;
+  }
 };
 
 export const synchronizeCurrency = async () => { 
-try { 
-  const session = await auth.api.getSession({
-    headers: await headers()
-  });
-  
-  if (!session || session.user.role !== 'admin') {
-    return { success: false, error: 'Unauthorized' };
+  try { 
+     const session = await auth.api.getSession({
+        headers: await headers()
+     });
+     if (!session || session.user.role !== 'admin') {
+        return { success: false, error: 'Unauthorized' };
+     }
+     const currentDollar = await getCurrentDollarPrice()
+     if (!currentDollar || currentDollar.value === null) { 
+        throw new Error("Не указан курс доллара");
+     }
+     const result = await db
+        .update(products)
+        .set({
+           priceRegional: sql`ROUND(${products.price} * ${currentDollar.value}, 2)`,
+           updatedAt: new Date(),
+        })
+        .returning({ id: products.id })
+     return {
+        success: true,
+        count: result.length,
+        message: `Обновлено ${result.length} товаров`
+     };
+  } catch (error) {
+     console.error('Error updating prices:', error);
+     return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Ошибка обновления цен'
+     };
   }
-
-  const currentDollar = await getCurrentDollarPrice()
-  if (!currentDollar || currentDollar.value === null) { 
-    throw new Error("Не указан курс доллара");
-  }
-  
-  
-  const result = await db
-  .update(products)
-  .set({
-    priceRegional: sql`${products.price} * ${currentDollar.value}`,
-    updatedAt: new Date(),
-  })
-  .returning({ id: products.id })
-  return {
-    success: true,
-    count: result.length,
-    message: `Обновлено ${result.length} товаров`
-  };
-} catch (error) {
-  console.error('Error updating prices:', error);
-  return {
-    success: false,
-    error: error instanceof Error ? error.message : 'Ошибка обновления цен'
-  };
-
-}
 }

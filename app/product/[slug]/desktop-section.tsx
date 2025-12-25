@@ -13,6 +13,7 @@ interface  Product{
     isActive: boolean | null;
     slug: string;
     title: string;
+    priceRegional: number | null;
     description: string;
     keywords: string | null;
     manufacturerId: string | null;
@@ -169,7 +170,7 @@ export default function DesktopSection({product, manufacturer, manufacturerImage
     <p className={`text-[12px] text-gray-600 ${product?.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>{product?.inStock}</p>
     </div>
       <h2 className="text-[28px] text-gray-900 font-semibold">
-{product?.price} руб
+{product?.priceRegional ? `${product?.priceRegional.toFixed(2)} руб` : "Цена не указана"}
         </h2>
         </div> :  <div className={`${product?.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-2 rounded-md self-start`}>
     <p className={`text-[16px] text-gray-600  font-semibold ${product?.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>Уточните наличие</p>
@@ -266,7 +267,7 @@ export default function DesktopSection({product, manufacturer, manufacturerImage
             <span className={product?.inStock === 'В наличии' ? 'text-green-700' : 'text-red-700'}>{product?.inStock}</span>
           </div>
       <h2 className="text-[28px] text-gray-900 font-semibold">
-{product?.price} руб
+{product?.priceRegional ? `${product?.priceRegional.toFixed(2)} руб` : "Цена не указана"}
         </h2>
         </div> :  <div className={`${product?.inStock === 'В наличии' ? 'bg-green-600/20' : 'bg-red-600/20'} text-white px-2 py-2 rounded-md self-start`}>
     <p className={`text-[16px] text-gray-600  font-semibold ${product?.inStock === 'В наличии' ? 'text-green-600' : 'text-red-600'}`}>Уточните наличие</p>

@@ -18,6 +18,7 @@ interface ProductUnited {
     categoryId: string | null;
     inStock: string | null;
     price: number;
+    priceRegional: number | null;
     slug: string;
     title: string;
     description: string;
@@ -183,7 +184,7 @@ const [isValidating, setIsValidating] = useState(false);
   );
 
   const totalPrice = useMemo(
-    () => updatedCart?.reduce((sum, { product, quantity }) => sum + product.price * quantity, 0),
+    () => updatedCart?.reduce((sum, { product, quantity }) => sum + (product.priceRegional ? product.priceRegional : product.price) * quantity, 0),
     [updatedCart]
   );
 

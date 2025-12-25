@@ -338,7 +338,12 @@ const AdminProductPage = ({ productDetails, reviewsLimit, categories, manufactur
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
-              
+                <Badge variant="secondary" className="gap-1">
+                  {productDetails.priceRegional ? `${productDetails.priceRegional.toFixed(2)} руб` : "Синхронизируйте цену"}
+                </Badge>
+                <Badge variant="secondary" className="gap-1">
+                  {productDetails.price} USD
+                </Badge>
               </div>
             </div>
           </div>

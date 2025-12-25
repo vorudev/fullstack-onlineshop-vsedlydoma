@@ -34,7 +34,7 @@ export default function Checkout() {
             <div className="relative border-l "> <button 
             onClick={() => setOpen(!open)}
             className=" text-black  text-[14px] rounded-xl flex flex-row items-center gap-2">
-              Оформляем  {updatedCart?.length} товара <br />  на сумму {updatedCart?.reduce((acc, item) => acc + item.product.price * item.quantity, 0).toFixed(2)} руб
+              Оформляем  {updatedCart?.length} товара <br />  на сумму {updatedCart?.reduce((acc, item) => acc + (item.product?.priceRegional ? item.product.priceRegional * item.quantity : item.product.price * item.quantity), 0).toFixed(2)} руб
              <div className="flex flex-row ml-2 items-center gap-2 text-gray-300 rounded bg-white ">   {open ? <ChevronUp /> : <ChevronDown />}</div>
                 </button>
                 {open && (
@@ -44,7 +44,7 @@ export default function Checkout() {
                             
               
                                     <p className="text-[14px] max-w-[300px]">{item.product.title} ({item.quantity} шт)</p>
-                                    <p className="text-[14px] ">{item.product.price} руб</p>
+                                    <p className="text-[14px] ">{item.product.priceRegional ? item.product.priceRegional.toFixed(2) : item.product.price.toFixed(2)} руб</p>
                                 
                             </Link>
                         ))}

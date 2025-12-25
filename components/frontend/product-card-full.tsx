@@ -102,7 +102,7 @@ function getReviewText(count: number): string {
           </div>
           <div className="flex flex-row gap-2 pt-3 text-sm items-center justify-between">
           {product.inStock === 'В наличии' ? (
-  <h3 className="text-gray-900 font-semibold text-[16px]">{product.price.toFixed(2)} руб</h3>
+  <h3 className="text-gray-900 font-semibold text-[16px]">{product.priceRegional ? product.priceRegional.toFixed(2) : "Цена не установлена"} руб</h3>
 ) : product.inStock === 'Наличие уточняйте' ? (
   <h3 className="text-gray-900 font-semibold text-[16px]">Наличие уточняйте</h3>
 ) : (
@@ -147,7 +147,7 @@ function getReviewText(count: number): string {
                  <div className="text-[16px]
                  font-semibold text-gray-900 w-1/2">
                   {product.inStock === 'В наличии' ? (
-  <h3 className="text-gray-900 font-semibold text-[16px]">{product.price.toFixed(2)} руб</h3>
+  <h3 className="text-gray-900 font-semibold text-[16px]">{product.priceRegional ? product.priceRegional.toFixed(2) : "Цена не установлена"} руб</h3>
 ) : product.inStock === 'Наличие уточняйте' ? (
   <h3 className="text-gray-900 font-semibold text-[16px]">Наличие уточняйте</h3>
 ) : (

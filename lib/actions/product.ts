@@ -740,34 +740,33 @@ export const getAllProductsForOrders = async ({
 export async function createProduct(product: Omit<Product, "id" | "createdAt" | "updatedAt" | "sku" | "priceRegional">) {
   try {
     const session = await auth.api.getSession({
-          headers: await headers()
-        })
-        if (!session || session.user.role !== 'admin') {
-          return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-  const currentDollar = await getCurrentDollarPrice()
-  if (!currentDollar || currentDollar.value === null) { 
-    throw new Error("Не указан курс доллара");
-  }
-  const regionalPrice = (product.price * currentDollar.value)
-  
-   await db.insert(products).values({
-price: product.price,
-title: product.title,
-description: product.description,
-manufacturerId: product.manufacturerId,
-isActive: product.isActive,
-categoryId: product.categoryId,
-inStock: product.inStock,
-slug: product.slug,
-keywords: product.keywords,
-priceRegional: regionalPrice,
-  }).returning();
+      headers: await headers()
+    })
+    if (!session || session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const currentDollar = await getCurrentDollarPrice()
+    if (!currentDollar || currentDollar.value === null) { 
+      throw new Error("Не указан курс доллара");
+    }
+    const regionalPrice = Math.round((product.price * currentDollar.value) * 100) / 100;
+    
+    await db.insert(products).values({
+      price: product.price,
+      title: product.title,
+      description: product.description,
+      manufacturerId: product.manufacturerId,
+      isActive: product.isActive,
+      categoryId: product.categoryId,
+      inStock: product.inStock,
+      slug: product.slug,
+      keywords: product.keywords,
+      priceRegional: regionalPrice,
+    }).returning();
   } catch (error) {
     console.error("Error creating product:", error);
     throw new Error("Failed to create product");
   }
-    
 }
 export async function updateProduct( product: Omit<Product, "createdAt" | "updatedAt" | "sku" | "priceRegional">) {
  try { 

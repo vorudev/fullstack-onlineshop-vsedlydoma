@@ -131,7 +131,7 @@ const handleMainClick = () => {
           </div>
           <div className="flex flex-row gap-2 min-h-[57px] pt-3 text-sm items-center justify-between">
           {product.inStock === 'В наличии' ? (
-  <h3 className="text-gray-900 font-semibold text-[16px]">{product.price.toFixed(2)} руб</h3>
+  <h3 className="text-gray-900 font-semibold text-[16px]">{product.priceRegional ? product.priceRegional.toFixed(2) : "Цена не установлена"} руб</h3>
 ) : product.inStock === 'Наличие уточняйте' ? (
   <h3 className="text-gray-900 font-semibold text-[16px]">Наличие уточняйте</h3>
 ) : (
@@ -153,7 +153,7 @@ const handleMainClick = () => {
             <div className=" p-1 flex flex-col lg:flex-row gap-2 lg:gap-1 lg:p-0">
               <Link href={`/product/${product.slug}`}>
               {product.inStock === 'В наличии' ? (
-  <h3 className="text-gray-900 font-semibold text-[16px]">{product.price.toFixed(2)} руб</h3>
+  <h3 className="text-gray-900 font-semibold text-[16px]">{product.priceRegional ? product.priceRegional.toFixed(2) : "Цена не установлена"} руб</h3>
 ) : product.inStock === 'Наличие уточняйте' ? (
   <h3 className="text-gray-900 font-semibold text-[16px]">Наличие уточняйте</h3>
 ) : (

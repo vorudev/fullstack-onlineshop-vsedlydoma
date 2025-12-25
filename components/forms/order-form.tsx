@@ -34,6 +34,7 @@ interface ProductUnited {
     reviewCount: number;
     id: string;
     categoryId: string | null;
+    priceRegional: number | null;
     inStock: string | null;
     price: number;
     slug: string;
@@ -149,7 +150,7 @@ export default function OrderForm( {items}: OrderFormProps) {
         const testDataItems = items.map((item) => ({
             productId: item.product.id,
             title: item.product.title,
-            price: item.product.price,
+            price: item.product.priceRegional ? item.product.priceRegional : item.product.price,
             productSku: item.product.sku,
             quantity: item.quantity, 
             
