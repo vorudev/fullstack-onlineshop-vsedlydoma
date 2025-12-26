@@ -16,7 +16,7 @@ export default function NavbarCart() {
 </div>
 
    <div>
-    <Link href="/cart" className="bg-blue-500 text-white text-[13px] p-[15px] font-bold w-full h-[44px] flex items-center justify-center rounded-md hover:bg-blue-600">
+    <Link href="/checkout" className="bg-blue-500 text-white text-[13px] p-[15px] font-bold w-full h-[44px] flex items-center justify-center rounded-md hover:bg-blue-600">
                         К оформлению
                     </Link>
 </div>
