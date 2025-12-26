@@ -40,17 +40,6 @@ interface SliderHomeProps {
 }
 const ProductsSlider = ({ products }: SliderHomeProps = { products: [] }) => {
     const [currentSlide, setCurrentSlide] = useState(0);
-    const [loading, setLoading] = useState(true);
-   // const [slidesPerView, setSlidesPerView] = useState(1);
-    useEffect(() => {
-    // Имитация небольшой задержки для показа скелетона
-    // Или просто сразу показываем данные
-    if (products && products.length > 0) {
-
-   setLoading(false);
-
-    }
-  }, [products]);
 
     function useInitialWindowWidth() {
   const [width, setWidth] = useState<number | null>(null);
@@ -108,19 +97,13 @@ onSlideChange={(swiper) => setCurrentSlide(swiper.activeIndex)}
     1400: { slidesPerView: 3 },
   }}
 >
-    {loading ? (
-        Array(8).fill(0).map((_, index) => (
-              <SwiperSlide key={index}>
-           <ProductCardSkeleton  />
-               </SwiperSlide>
-        ))
-      ) : (
-        products.map((product) => (
+   
+        {products.map((product) => (
     <SwiperSlide key={product.id}>
       <ProductCard product={product} />
     </SwiperSlide>
   ))
-)}
+}
 </Swiper>
 
         {/* Кастомная кнопка вперед */}

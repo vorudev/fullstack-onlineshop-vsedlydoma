@@ -54,14 +54,14 @@ const productsWithDetailAndImages = productsWithDetails?.map(product => {
     <p className="text-gray-600 text-sm xl:text-base ">Информация о нашем магазине</p>
     </div> 
     <div className="flex">
-      <Link href="/about" className="bg-white rounded-lg   text-sm border border-gray-300 py-2 px-3 xl:text-base">Показать на карте</Link>
+      <Link href="/about" prefetch={true} className="bg-white rounded-lg   text-sm border border-gray-300 py-2 px-3 xl:text-base">Показать на карте</Link>
       </div>
     
     <div className="absolute -bottom-4 -right-5 text-blue-500/50">
     <MapPinned className="w-30 h-30" />
     </div>
   </div>
-    <Link href="/categories" className="w-[20%] xl:flex hidden bg-green-100/50 rounded-xl shadow py-4  px-3 flex-col gap-6 relative overflow-hidden">
+    <Link href="/categories" prefetch={true} className="w-[20%] xl:flex hidden bg-green-100/50 rounded-xl shadow py-4  px-3 flex-col gap-6 relative overflow-hidden">
     <div className="flex flex-col">
       <h3 className="text-base font-semibold xl:text-xl">Каталог</h3>
       <p className="text-gray-600 text-sm xl:text-base">Все товары</p>
@@ -75,7 +75,7 @@ const productsWithDetailAndImages = productsWithDetails?.map(product => {
       <h3 className="text-base font-semibold xl:text-xl">Производители</h3>
       <p className="text-gray-600 text-sm xl:text-base">Популярные бренды</p>
     </div>
-    <Link href="/manufacturers" className="bg-white hover:bg-gray-100 transition-colors rounded-lg text-sm border border-gray-300 py-2 px-3 w-fit xl:text-base">
+    <Link href="/manufacturers" prefetch={true} className="bg-white hover:bg-gray-100 transition-colors rounded-lg text-sm border border-gray-300 py-2 px-3 w-fit xl:text-base">
       Смотреть все
     </Link>
     <div className="absolute -bottom-4 -right-4 text-purple-500/50">
@@ -103,7 +103,7 @@ const productsWithDetailAndImages = productsWithDetails?.map(product => {
       <h3 className="md:text-lg text-base font-semibold">Производители</h3>
       <p className="text-gray-600 text-sm">Популярные бренды</p>
     </div>
-    <Link href="/manufacturers" className="bg-white rounded-lg text-sm border border-gray-300 py-2 px-3 w-fit">
+    <Link href="/manufacturers" prefetch={true} className="bg-white rounded-lg text-sm border border-gray-300 py-2 px-3 w-fit">
       Смотреть все
     </Link>
     <div className="absolute -bottom-4 -right-4 text-purple-500/50">
@@ -130,7 +130,7 @@ const productsWithDetailAndImages = productsWithDetails?.map(product => {
     <p className="text-gray-600 text-sm xl:text-base ">Наши специалисты всегда готовы помочь и разобраться в вашем вопросе</p>
     </div> 
     <div className="flex">
-      <Link href="/contact-us" className="bg-white rounded-lg   text-sm border border-gray-300 py-2 px-3 xl:text-base">Показать телефон</Link>
+      <Link href="/contact-us" prefetch={true} className="bg-white rounded-lg   text-sm border border-gray-300 py-2 px-3 xl:text-base">Показать телефон</Link>
       </div>
     
     <div className="absolute -bottom-4 -right-5 text-orange-500/50">
@@ -139,6 +139,7 @@ const productsWithDetailAndImages = productsWithDetails?.map(product => {
   </div>
   <Link
   href="/news"
+  prefetch={true}
    className="min-w-[50vw] md:min-w-[40vw] lg:min-w-[20vw] md:w-full xl:w-[40%] xl:min-w-0 bg-green-100 rounded-xl shadow py-4 pl-4 snap-center flex-col flex  justify-between  gap-10 relative  overflow-hidden">
    <div className="flex flex-col">
     <h3 className="text-lg xl:text-xl font-semibold ">

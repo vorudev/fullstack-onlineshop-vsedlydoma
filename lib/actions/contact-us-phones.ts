@@ -6,6 +6,7 @@ import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 export const createContactPhone = async (values: Omit<ContactPhone, "id" | "createdAt" | "updatedAt">) => {
    try{
     const session = await auth.api.getSession({
@@ -15,6 +16,7 @@ export const createContactPhone = async (values: Omit<ContactPhone, "id" | "crea
           return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
     const createdContactPhone = await db.insert(contactPhones).values(values).returning();
+    revalidateTag('contact-us', 'layout');
    } catch (error) {
     console.log(error);
     return null;
@@ -29,6 +31,7 @@ export const updateContactPhone = async (values: Omit<ContactPhone, "createdAt" 
           return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
     const updatedContactPhone = await db.update(contactPhones).set(values).where(eq(contactPhones.id, values.id));
+    revalidateTag('contact-us', 'layout');
    } catch (error) {
     console.log(error);
     return null;
@@ -41,23 +44,13 @@ export const deleteContactPhone = async (id: string) => {
     })
     
     if (!session || session.user.role !== 'admin') {
-      // ❌ Неправильно: NextResponse нельзя возвращать из Server Action
-      // return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-      
-      // ✅ Правильно: возвращаем plain object
       return { 
         success: false, 
         error: 'Unauthorized' 
       };
     }
-    
-    // ❌ Неправильно: возвращаем результат Drizzle напрямую
-    // const deletedContactPhone = await db.delete(contactPhones).where(eq(contactPhones.id, id));
-    // return deletedContactPhone;
-    
-    // ✅ Правильно: выполняем удаление и возвращаем plain object
     await db.delete(contactPhones).where(eq(contactPhones.id, id));
-    
+    revalidateTag('contact-us', 'layout');
     return { 
       success: true,
       message: 'Contact phone deleted successfully' 

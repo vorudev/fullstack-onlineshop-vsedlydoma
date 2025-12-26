@@ -1,0 +1,156 @@
+// app/page.tsx
+import { Suspense } from 'react';
+import CategoriesTable from '@/components/categories-table-user-2';
+import UserGreetingHome from '@/components/frontend/user-greeting-home';
+import SliderHome from '@/components/frontend/slider-home';
+import MapHome from '@/components/map-home';
+import HomePageSkeleton from '@/components/frontend/skeletons/home-page-skeleton';
+import Link from 'next/link';
+import { MapPinned, TextSelect, Building2, PhoneCall, Newspaper } from 'lucide-react';
+import { getCategories } from '@/lib/actions/product-categories';
+import { getRandomProductsFast } from '@/lib/actions/product';
+import { getAboutInfo } from '@/lib/actions/about-info';
+
+export default function HomePage() {
+  return (
+    <div className="min-h-screen bg-white mx-auto xl:max-w-[1400px] lg:max-w-[1000px] text-black">
+      <Suspense fallback={<HomePageSkeleton />}>
+        <HomePageContent />
+      </Suspense>
+    </div>
+  );
+}
+
+async function HomePageContent() {
+  const [categories, { productsWithDetails, images }, about] = await Promise.all([
+    getCategories(),
+    getRandomProductsFast(),
+    getAboutInfo()
+  ]);
+
+  const productsWithDetailAndImages = productsWithDetails?.map(product => {
+    const productImages = images?.filter(img => img.productId === product.id) || [];
+    return {
+      ...product,
+      images: productImages,
+    };
+  });
+
+  return (
+    <>
+      <div className="absolute  z-10 border-2 border-gray-100 rounded-xl hidden lg:flex">
+        <CategoriesTable categories={categories} />
+      </div>
+      
+      <div className="lg:ml-81 ml-0  overflow-hidden md:pt-10 lg:pt-5 pt-4 flex flex-col gap-7 md:px-10">
+        <div className="flex overflow-x-auto gap-4 px-4 md:px-0 snap-x snap-mandatory" style={{ 
+          scrollbarWidth: 'none',
+          scrollbarColor: 'transparent transparent',
+          msOverflowStyle: 'none',
+        }}>
+          <UserGreetingHome />
+          
+          <div className="min-w-[80vw] md:min-w-[40vw] lg:min-w-[20vw] md:w-full xl:w-[30%] xl:min-w-0 bg-blue-100 rounded-xl shadow py-4 pl-4 snap-center flex-col flex justify-between lg:hidden gap-10 relative overflow-hidden">
+            <div className="flex flex-col">
+              <h3 className="text-lg xl:text-xl font-semibold">Как нас найти?</h3>
+              <p className="text-gray-600 text-sm xl:text-base">Информация о нашем магазине</p>
+            </div> 
+            <div className="flex">
+              <Link href="/about" prefetch={true} className="bg-white rounded-lg text-sm border border-gray-300 py-2 px-3 xl:text-base">
+                Показать на карте
+              </Link>
+            </div>
+            <div className="absolute -bottom-4 -right-5 text-blue-500/50">
+              <MapPinned className="w-30 h-30" />
+            </div>
+          </div>
+          
+          <Link href="/categories" prefetch={true} className="w-[20%] xl:flex hidden bg-green-100/50 rounded-xl shadow py-4 px-3 flex-col gap-6 relative overflow-hidden">
+            <div className="flex flex-col">
+              <h3 className="text-base font-semibold xl:text-xl">Каталог</h3>
+              <p className="text-gray-600 text-sm xl:text-base">Все товары</p>
+            </div>
+            <div className="absolute -bottom-3 -right-3 text-green-500/50">
+              <TextSelect className="w-20 h-20" />
+            </div>
+          </Link>
+          
+          <div className="flex-1 bg-purple-100 hidden rounded-xl shadow py-4 pl-4 pr-2 xl:flex flex-col items-between justify-between gap-2 relative overflow-hidden">
+            <div className="flex flex-col">
+              <h3 className="text-base font-semibold xl:text-xl">Производители</h3>
+              <p className="text-gray-600 text-sm xl:text-base">Популярные бренды</p>
+            </div>
+            <Link href="/manufacturers" prefetch={true} className="bg-white hover:bg-gray-100 transition-colors rounded-lg text-sm border border-gray-300 py-2 px-3 w-fit xl:text-base">
+              Смотреть все
+            </Link>
+            <div className="absolute -bottom-4 -right-4 text-purple-500/50">
+              <Building2 className="w-24 h-24" />
+            </div>
+          </div>
+        </div>
+        
+        <div className="flex gap-4 xl:hidden px-4 md:px-0">
+          <Link href="/categories" className="w-[35%] bg-green-100/50 rounded-xl py-4 px-3 flex flex-col gap-6 relative overflow-hidden">
+            <div className="flex flex-col">
+              <h3 className="md:text-lg text-base font-semibold">Каталог</h3>
+              <p className="text-gray-600 text-sm">Все товары</p>
+            </div>
+            <div className="absolute -bottom-3 -right-3 text-green-500/50">
+              <TextSelect className="w-20 h-20" />
+            </div>
+          </Link>
+          
+          <div className="flex-1 bg-purple-100 rounded-xl py-4 pl-4 pr-2 flex flex-col gap-6 relative overflow-hidden">
+            <div className="flex flex-col">
+              <h3 className="md:text-lg text-base font-semibold">Производители</h3>
+              <p className="text-gray-600 text-sm">Популярные бренды</p>
+            </div>
+            <Link href="/manufacturers" prefetch={true} className="bg-white rounded-lg text-sm border border-gray-300 py-2 px-3 w-fit">
+              Смотреть все
+            </Link>
+            <div className="absolute -bottom-4 -right-4 text-purple-500/50">
+              <Building2 className="w-24 h-24" />
+            </div>
+          </div>
+        </div>
+        
+        <div className="w-full">
+          <SliderHome products={productsWithDetailAndImages || []} />
+        </div>
+        
+        <div className="flex overflow-x-auto gap-4 px-4 md:px-0 snap-x snap-mandatory" style={{ 
+          scrollbarWidth: 'none',
+          scrollbarColor: 'transparent transparent',
+          msOverflowStyle: 'none',
+        }}>
+          <div className="min-w-[80vw] md:min-w-[40vw] lg:min-w-[30vw] md:w-full xl:w-[60%] xl:min-w-0 bg-orange-100 rounded-xl shadow py-4 pl-4 snap-center flex-col flex justify-between gap-10 relative overflow-hidden">
+            <div className="flex flex-col pr-2">
+              <h3 className="text-lg xl:text-xl font-semibold">Есть вопрос? Свяжитесь с нами!</h3>
+              <p className="text-gray-600 text-sm xl:text-base">Наши специалисты всегда готовы помочь и разобраться в вашем вопросе</p>
+            </div> 
+            <div className="flex">
+              <Link href="/contact-us" prefetch={true} className="bg-white rounded-lg text-sm border border-gray-300 py-2 px-3 xl:text-base">
+                Показать телефон
+              </Link>
+            </div>
+            <div className="absolute -bottom-4 -right-5 text-orange-500/50">
+              <PhoneCall className="w-30 h-30" />
+            </div>
+          </div>
+          
+          <Link href="/news" prefetch={true} className="min-w-[50vw] md:min-w-[40vw] lg:min-w-[20vw] md:w-full xl:w-[40%] xl:min-w-0 bg-green-100 rounded-xl shadow py-4 pl-4 snap-center flex-col flex justify-between gap-10 relative overflow-hidden">
+            <div className="flex flex-col">
+              <h3 className="text-lg xl:text-xl font-semibold">Новости</h3>
+              <p className="text-gray-600 text-sm xl:text-base">Последние новости, статьи и новые поступления</p>
+            </div> 
+            <div className="absolute -bottom-4 -right-5 text-green-500/50">
+              <Newspaper className="w-30 h-30" />
+            </div>
+          </Link>
+        </div>
+        
+        <MapHome home={about?.home || ''} />
+      </div>
+    </>
+  );
+}

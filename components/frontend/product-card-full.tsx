@@ -2,9 +2,9 @@
  import { Heart, ShoppingCart , ChartNoAxesColumn, Star} from "lucide-react";
 import { getAverageRatingByProductId } from "@/lib/actions/reviews";
 import { getProductImages } from "@/lib/actions/image-actions";
-import { AddToCart } from "@/app/products/add-to-cart-prop";
+import { AddToCart } from "@/app/(frontend)/products/add-to-cart-prop";
 import Link from "next/link";
-import { AddToFavorite } from "@/app/products/add-to-favorite-prop";
+import { AddToFavorite } from "@/app/(frontend)/products/add-to-favorite-prop";
 import { ProductImage } from "@/db/schema";
 import ImagesSliderCardFull from "./images-slider-card-full";
 import Image from "next/image";
