@@ -980,23 +980,3 @@ export async function buildCategoryUrl(
 }
 
 
-
-
-export const getSeoCached = unstable_cache(
-  async (slug: string) => {
-    return db.product.findFirst({
-      where: { slug },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        keywords: true,
-      },
-    });
-  },
-  ['product-seo'],
-  {
-    revalidate: 300, // SEO меняется редко
-    tags: ['product-seo'],
-  }
-);
