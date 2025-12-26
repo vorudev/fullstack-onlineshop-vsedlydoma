@@ -17,11 +17,23 @@ export type CategoryWithChain = {
   subcategories: Category[];
 };
 
+
+export async function categoryMeta(slug: string) { 
+const category = await db.query.categories.findFirst({
+    where: eq(categories.slug, slug)
+  })
+
+if(category === undefined) { 
+  return 0 
+}
+  return category
+}
+ 
 // Получить категорию со всей информацией
 export async function getCategoryWithNavigation(
   categorySlug: string
 ): Promise<CategoryWithChain | null> {
-  // Получаем категорию
+
   const [currentCategory] = await db
     .select()
     .from(categories)
@@ -30,10 +42,8 @@ export async function getCategoryWithNavigation(
 
   if (!currentCategory) return null;
 
-  // Параллельно получаем breadcrumbs и подкатегории
   const [breadcrumbs, subcategoriesData] = await Promise.all([
     buildCategoryChain(currentCategory.id),
-    // Используем один запрос с JOIN вместо подзапросов
     db
       .select({
         id: categories.id,
@@ -46,7 +56,6 @@ export async function getCategoryWithNavigation(
       .groupBy(categories.id),
   ]);
 
-  // Проверяем наличие детей одним запросом
   const childrenCheck = await db
     .select({ id: categories.id })
     .from(categories)
