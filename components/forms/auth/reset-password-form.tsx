@@ -29,7 +29,7 @@ import { signIn, signUp } from "@/lib/actions/users"
 
 import { z } from "zod"
 import { toast } from "sonner";
-import { Loader2Icon } from "lucide-react";
+import { Eye, EyeClosed, Loader2Icon } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { translateError } from "@/components/toast-helper";
  
@@ -79,7 +79,7 @@ export function ResetPasswordForm({
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     if (values.password !== values.confirmPassword) {
-      setError("Пароли не совпадают");
+      toast.error("Пароли не совпадают");
       setIsLoading(false);
       return;
     }
@@ -115,34 +115,76 @@ token,
               
               <div className="grid gap-6">
                 <div className="grid gap-3">
-                  <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <input placeholder="Введите новый пароль" {...field} type="password" className="bg-gray-100 border border-gray-200 py-3 focus:outline-none focus:ring-blue-500 transition duration-200 focus:ring-2 px-3 rounded-md text-gray-600"/>
-              </FormControl>
-            
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                <FormField
+  control={form.control}
+  name="password"
+  render={({ field }) => {
+    const [showPassword, setShowPassword] = useState(false);
+
+    return (
+      <FormItem>
+        <FormControl>
+          <div className="relative">
+            <input
+              {...field}
+              type={showPassword ? "text" : "password"}
+              placeholder="Пароль"
+              className="bg-gray-100 border border-gray-200 py-3 pr-10 px-3 rounded-md
+                         text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500
+                         transition duration-200 w-full"
+            />
+
+            <button
+              type="button"
+              onClick={() => setShowPassword(prev => !prev)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+            >
+              {showPassword ?  <Eye className="w-4 h-4"/> :  <EyeClosed  className="w-4 h-4"/>}
+            </button>
+          </div>
+        </FormControl>
+
+        <FormMessage />
+      </FormItem>
+    );
+  }}
+/>
                 </div>
                 <div className="grid gap-3">
-                  <FormField
-          control={form.control}
-          name="confirmPassword"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <input placeholder="Подтвердите новый пароль" {...field} type="password" className="bg-gray-100 border border-gray-200 py-3 focus:outline-none focus:ring-blue-500 transition duration-200 focus:ring-2 px-3 rounded-md text-gray-600"/>
-              </FormControl>
-            
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                <FormField
+  control={form.control}
+  name="confirmPassword"
+  render={({ field }) => {
+    const [showPassword, setShowPassword] = useState(false);
+
+    return (
+      <FormItem>
+        <FormControl>
+          <div className="relative">
+            <input
+              {...field}
+              type={showPassword ? "text" : "password"}
+              placeholder="Подтвердите пароль"
+              className="bg-gray-100 border border-gray-200 py-3 pr-10 px-3 rounded-md
+                         text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500
+                         transition duration-200 w-full"
+            />
+
+            <button
+              type="button"
+              onClick={() => setShowPassword(prev => !prev)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+            >
+              {showPassword ?  <Eye className="w-4 h-4"/> :  <EyeClosed  className="w-4 h-4"/>}
+            </button>
+          </div>
+        </FormControl>
+
+        <FormMessage />
+      </FormItem>
+    );
+  }}
+/>
                 </div>
                
                 <Button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white w-full h-[48px] text-[12px] uppercase" disabled={isLoading} >

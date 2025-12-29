@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { translateError } from "@/components/toast-helper"
 import { useForm } from "react-hook-form"
 import { cn } from "@/lib/utils"
+import { Eye, EyeClosed } from "lucide-react";
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
@@ -53,6 +54,14 @@ export const formSchema = z.object({
     .regex(
       /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/,
       'Пароль должен содержать хотя бы одну букву и одну цифру'
+    ),
+    confirmPassword: z
+    .string()
+    .min(8, 'Пароль слишком короткий')
+    .max(50, 'Пароль слишком длинный')
+    .regex(
+      /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/,
+      'Пароль должен содержать хотя бы одну букву и одну цифру'
     )
 });
 
@@ -83,6 +92,11 @@ export function SignupForm({
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
+    if (values.password !== values.confirmPassword) {
+      toast.error("Пароли не совпадают");
+      setIsLoading(false);
+      return;
+    }
     const { success, message } = await signUp(values.email, values.password, values.username);
     if (success) {
       handleTabChange(values.email)
@@ -139,29 +153,81 @@ export function SignupForm({
                 </div>
                 <div className="grid gap-3">
                   <div className="flex flex-col gap-2">
-                    <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <input placeholder="Пароль"   className="bg-gray-100 border border-gray-200 py-3 focus:outline-none focus:ring-blue-500 transition duration-200 focus:ring-2 px-3 rounded-md text-gray-600" {...field} 
-                type="password"/>
-              </FormControl>
-             
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-                    <Link
-                      href="/forgot-password"
-                      className="ml-auto text-blue-500 text-sm underline-offset-4 hover:underline"
-                    >
-                      Забыли пароль?
-                    </Link>
+
+<FormField
+  control={form.control}
+  name="password"
+  render={({ field }) => {
+    const [showPassword, setShowPassword] = useState(false);
+
+    return (
+      <FormItem>
+        <FormControl>
+          <div className="relative">
+            <input
+              {...field}
+              type={showPassword ? "text" : "password"}
+              placeholder="Пароль"
+              className="bg-gray-100 border border-gray-200 py-3 pr-10 px-3 rounded-md
+                         text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500
+                         transition duration-200 w-full"
+            />
+
+            <button
+              type="button"
+              onClick={() => setShowPassword(prev => !prev)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+            >
+              {showPassword ?  <Eye className="w-4 h-4"/> :  <EyeClosed  className="w-4 h-4"/>}
+            </button>
+          </div>
+        </FormControl>
+
+        <FormMessage />
+      </FormItem>
+    );
+  }}
+/>
+
+        
+                   
                   </div>
                   
                 </div>
+                <FormField
+  control={form.control}
+  name="confirmPassword"
+  render={({ field }) => {
+    const [showPassword, setShowPassword] = useState(false);
+
+    return (
+      <FormItem>
+        <FormControl>
+          <div className="relative">
+            <input
+              {...field}
+              type={showPassword ? "text" : "password"}
+              placeholder="Подтвердите пароль"
+              className="bg-gray-100 border border-gray-200 py-3 pr-10 px-3 rounded-md
+                         text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500
+                         transition duration-200 w-full"
+            />
+
+            <button
+              type="button"
+              onClick={() => setShowPassword(prev => !prev)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+            >
+              {showPassword ?  <Eye className="w-4 h-4"/> :  <EyeClosed  className="w-4 h-4"/>}
+            </button>
+          </div>
+        </FormControl>
+
+        <FormMessage />
+      </FormItem>
+    );
+  }}
+/>
                 <Button type="submit" className="bg-blue-500 text-white w-full h-[48px] hover:bg-blue-600" disabled={isLoading} >
 
              {isLoading ? <Loader2Icon className="size-4 animate-spin"></Loader2Icon> : "Зарегистрироваться"}
