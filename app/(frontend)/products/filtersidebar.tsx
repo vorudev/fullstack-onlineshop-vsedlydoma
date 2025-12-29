@@ -86,7 +86,6 @@ export default function FilterSidebar({ filterCategories, page, totalPages, tota
     const pathname = usePathname();
     const [sortBy, setSortBy] = useState<SortOption>('default');
   const [expandedCategories, setExpandedCategories] = useState(['price']);
-  const [isLoading, setIsLoading] = useState(true);
   const searchParams = useSearchParams();
   const [open, setOpen] = useState(false);
   const [priceFrom, setPriceFrom] = useState<number | undefined>(undefined);
@@ -427,11 +426,7 @@ const VISIBLE_FILTERS_COUNT = 5;
       {/* Заголовок */}
     
 
-     {isLoading ?  <div className="">
-    {Array(15).fill(0).map((_, index) => (
-      <FilterCategorySkeleton key={index} />
-    ))}
-  </div> : <div className="">
+<div className="">
   {allFilterCategories.map(category => (
     <div key={category.id} className="cursor-pointer">
       {/* Заголовок категории */}
@@ -506,7 +501,7 @@ const VISIBLE_FILTERS_COUNT = 5;
     </div>
   ))}
 </div>
-}
+
 
       {/* Кнопка применения */}
       <div className="p-4 border-t border-gray-200">

@@ -39,15 +39,7 @@ interface ProductUnited {
 }
 
 export default function ProductList({products}: {products: ProductUnited[]}) {
-  const [isLoading, setIsLoading] = useState(true);
 
- useEffect(() => {
-    // Имитация небольшой задержки для показа скелетона
-    // Или просто сразу показываем данные
-    if (products && products.length > 0) {
-  setIsLoading(false);
-    }
-  }, [products]);
   // Сортируем продукты на основе выбранной опции
  if (products && products.length === 0) {
   return (
@@ -63,15 +55,12 @@ export default function ProductList({products}: {products: ProductUnited[]}) {
     <div className="w-full">
       {/* Список продуктов */}
     {products && products.length > 5 ? (
-      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 " 
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 " 
       style={{
    // gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
   }}>
-        {isLoading ? (
-          Array(12).fill(0).map((_, index) => (
-            <ProductCardSkeleton key={index} />
-          ))
-        ) : products?.map((product) => (
+
+         {products?.map((product) => (
           <ProductCardFull
             key={product.id}
             product={product}
@@ -81,13 +70,10 @@ export default function ProductList({products}: {products: ProductUnited[]}) {
       </div>
     
     ) : (
-      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 " 
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 " 
       >
-        {isLoading ? (
-          Array(12).fill(0).map((_, index) => (
-            <ProductCardSkeleton key={index} />
-          ))
-        ) : products?.map((product) => (
+
+         {products?.map((product) => (
           <ProductCardFull
             key={product.id}
             product={product}
