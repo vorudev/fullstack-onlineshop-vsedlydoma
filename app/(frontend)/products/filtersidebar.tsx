@@ -222,7 +222,7 @@ const VISIBLE_FILTERS_COUNT = 5;
     </div>
  
     {open && (
-      <div className="fixed top-0 left-0 w-full h-full bg-white z-50">
+      <div className="fixed top-0 left-0 w-full h-full bg-white z-1000">
         <div className="flex flex-col h-full">
           {/* Хедер */}
           <div className="w-full gap-2 flex items-center justify-center relative px-4 py-2">
@@ -330,7 +330,7 @@ const VISIBLE_FILTERS_COUNT = 5;
           </div>
           
           {/* Футер с кнопками */}
-         <div className="flex flex-col pb-15 mt-2 gap-2 px-3 py-2 border-t border-gray-200">
+         <div className="flex flex-col  mt-2 gap-2 px-3 py-2 border-t border-gray-200">
          <div className="flex flex-wrap gap-2">
         {Object.entries(selectedFilters).map(([slug, ids]) =>
           ids.map(id => {
