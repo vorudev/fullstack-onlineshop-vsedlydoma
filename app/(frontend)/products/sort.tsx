@@ -2,7 +2,7 @@
 'use client'
 import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import ProductCardFull from '@/components/frontend/product-card-full';
+import ProductCardFull from '@/components/frontend/product-card-home';
 import { ProductImage } from '@/db/schema'
 import { Product } from '@/db/schema';
 import { Review } from '@/db/schema';
@@ -63,9 +63,9 @@ export default function ProductList({products}: {products: ProductUnited[]}) {
     <div className="w-full">
       {/* Список продуктов */}
     {products && products.length > 5 ? (
-      <div className="grid gap-4 " 
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 " 
       style={{
-    gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+   // gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
   }}>
         {isLoading ? (
           Array(12).fill(0).map((_, index) => (
@@ -81,7 +81,7 @@ export default function ProductList({products}: {products: ProductUnited[]}) {
       </div>
     
     ) : (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 " 
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 " 
       >
         {isLoading ? (
           Array(12).fill(0).map((_, index) => (

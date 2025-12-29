@@ -98,12 +98,14 @@ export default function FilterSidebar({ filterCategories, page, totalPages, tota
  const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>(() => {
     const initial: Record<string, string[]> = {};
     searchParams.forEach((value, key) => {
-      if (key !== 'chain') {
+      if (key !== 'chain' && key !== 'category') {
         initial[key] = value.split(',');
       }
     });
     return initial;
   });
+  const [expandedCategoriesMobile, setExpandedCategoriesMobile] = useState<Record<string, boolean>>({});
+const VISIBLE_FILTERS_COUNT = 5;
   // Обработчик выбора фильтра
   const handleFilterChange = (filterSlug: string, filterId: string, checked: boolean) => {
     setSelectedFilters(prev => {
@@ -161,12 +163,8 @@ export default function FilterSidebar({ filterCategories, page, totalPages, tota
 
  const allFilterCategories = [
   {
-    id: 'price',
-    name: 'Цена',
-    filters: [], // Особый случай - рендерим кастомный контент
-  },
-  {
     id: 'manufacturer',
+    slug: 'manufacturer',
     name: 'Производители',
     filters: avaliableManufacturers.map(m => ({
       id: m.id,
@@ -202,15 +200,7 @@ export default function FilterSidebar({ filterCategories, page, totalPages, tota
         : [...prev, categoryId]
     );
   };
- useEffect(() => {
-    // Имитация небольшой задержки для показа скелетона
-    // Или просто сразу показываем данные
-    if (allFilterCategories && allFilterCategories.length > 0) {
-
-   setIsLoading(false);
-
-    }
-  }, [allFilterCategories]);
+  console.log(selectedFilters)
     
   return (
     <>
@@ -235,31 +225,49 @@ export default function FilterSidebar({ filterCategories, page, totalPages, tota
       <div className="fixed top-0 left-0 w-full h-full bg-white z-50">
         <div className="flex flex-col h-full">
           {/* Хедер */}
-          <div className="flex flex-row justify-between gap-2 px-3 py-4 border-b border-gray-200">
-            <div className="flex flex-row gap-1 items-center justify-center">
-            <button onClick={() => setOpen(false)} className="">
-              <X className="w-5 h-5 text-gray-400"/>
-            </button>
-            <h2 className="text-xl font-semibold">Фильтры</h2></div>
-            <button onClick={() => {
-                resetFilters();
-                setOpen(false);
-              }} className="text-blue-600 text-sm">
-              Сбросить Все
+          <div className="w-full gap-2 flex items-center justify-center relative px-4 py-2">
+
+           
+            <h2 className="text-[14px] font-semibold text-center">Фильтры</h2>
+            <button onClick={() => setOpen(false)} className="absolute right-4 ">
+              <X className="w-6 h-6"/>
             </button>
            
           </div>
           
+          
           {/* Основной контент */}
-          <div className="flex flex-row flex-1 overflow-hidden">
+          <div className="flex  px-[16px] flex-col flex-1 overflow-hidden">
             {/* Левая колонка - категории */}
-            <div className="w-2/5 bg-gray-100 overflow-y-auto">
+            <div className="w-full overflow-y-auto">
+            <div className="space-y-3 pt-2">
+              <p className="text-[14px] font-bold ">Цена</p>
+                  <div className="flex items-center gap-3 px-1">
+                    <input
+                      type="number"
+                      placeholder="От"
+                      value={priceFrom || ''}
+                      onChange={(e) => setPriceFrom(Number(e.target.value) || undefined)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 transition-all duration-200 focus:ring-blue-600/50 focus:border-transparent"
+                    />
+                    <span className="text-gray-400">—</span>
+                    <input
+                      type="number"
+                      placeholder="До"
+                      value={priceTo || ''}
+                      onChange={(e) => setPriceTo(Number(e.target.value) || undefined)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 transition-all duration-200 focus:ring-blue-600/50 focus:border-transparent"
+                    />
+                  </div>
+                </div>
               {allFilterCategories.map(category => (
+                <div 
+                key={category.id}>
                 <button
-                  key={category.id}
+                 
                   onClick={() => setSelectedCategory(category.id)}
                   className={`
-                    w-full text-left px-3 text-clamp-2 py-2 text-[14px] transition-colors
+                    w-full text-left font-bold text-[#39393D] text-clamp-2 py-2 text-[14px] transition-colors
                     ${selectedCategory === category.id 
                       ? 'bg-white' 
                       : 'hover:bg-gray-200'
@@ -268,75 +276,145 @@ export default function FilterSidebar({ filterCategories, page, totalPages, tota
                 >
                   {category.name}
                 </button>
+                <div className="flex flex-col ">
+                {category.filters
+  .slice(0, expandedCategoriesMobile[category.id] ? undefined : VISIBLE_FILTERS_COUNT)
+  .map(filter => (
+    <div key={filter.id}>
+      <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded transition-colors">
+        <input
+          type="checkbox"
+          checked={selectedFilters[filter.slug]?.includes(filter.id) || false}
+          onChange={(e) => handleFilterChange(filter.slug, filter.id, e.target.checked)}
+          className="sr-only peer"
+        />
+        <div className="relative w-[18px] h-[18px] bg-gray-100 rounded-[5px] peer-checked:bg-blue-500 transition-colors flex items-center justify-center">
+          {(selectedFilters[filter.slug]?.includes(filter.id) || false) && (
+            <svg className="w-4 h-4 text-white" viewBox="0 0 16 16" fill="none">
+              <path
+                d="M13 4L6 11L3 8"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          )}
+        </div>
+        <span className="text-[14px] text-gray-800">{filter.name}</span>
+      </label>
+    </div>
+  ))}
+
+{category.filters.length > VISIBLE_FILTERS_COUNT && (
+  <button
+    onClick={() => setExpandedCategoriesMobile(prev => ({
+      ...prev,
+      [category.id]: !prev[category.id]
+    }))}
+    className="text-sm text-blue-600 hover:text-blue-700 font-medium py-1 px-1 text-left transition-colors"
+  >
+    {expandedCategoriesMobile[category.id] 
+      ? '↑ Скрыть' 
+      : `↓ Показать все (${category.filters.length})`
+    }
+  </button>
+)}
+                  </div>
+                </div>
               ))}
             </div>
             
             {/* Правая колонка - значения фильтров */}
-            <div className="w-3/5 p-4 overflow-y-auto">
-              {selectedCategory && (
-                <div>
-                  {/* Специальная обработка для фильтра цены */}
-                  {selectedCategory === 'price' ? (
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Диапазон цен
-                        </label>
-                        <div className="flex items-center gap-3">
-                          <input
-                            type="number"
-                            placeholder="От"
-                            value={priceFrom || ''}
-                            onChange={(e) => setPriceFrom(Number(e.target.value) || undefined)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                          <span className="text-gray-400">—</span>
-                          <input
-                            type="number"
-                            placeholder="До"
-                            value={priceTo || ''}
-                            onChange={(e) => setPriceTo(Number(e.target.value) || undefined)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    // Обычные чекбоксы для остальных фильтров
-                    allFilterCategories
-                      .find(cat => cat.id === selectedCategory)
-                      ?.filters.map(filter => (
-                        <div key={filter.id} className="flex items-center mb-3">
-                          <input
-                            type="checkbox"
-                            id={filter.id}
-                            checked={selectedFilters[filter.slug]?.includes(filter.id) || false}
-                            onChange={(e) => handleFilterChange(filter.slug, filter.id, e.target.checked)}
-                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                          />
-                          <label htmlFor={filter.id} className="ml-2 cursor-pointer text-gray-700">
-                            {filter.name}
-                          </label>
-                        </div>
-                      ))
-                  )}
-                </div>
-              )}
-            </div>
+           
           </div>
           
           {/* Футер с кнопками */}
-         <div className="flex flex-row pb-15 gap-2 px-3 py-2 border-t border-gray-200">
-            <button 
-              onClick={() => {
-                applyFilters();
-                setOpen(false);
-              }}
-             
-              className="px-4 py-2 bg-blue-600 w-full text-white rounded-md hover:bg-blue-700"
-            >
-              Применить
-            </button>
+         <div className="flex flex-col pb-15 mt-2 gap-2 px-3 py-2 border-t border-gray-200">
+         <div className="flex flex-wrap gap-2">
+        {Object.entries(selectedFilters).map(([slug, ids]) =>
+          ids.map(id => {
+            const filterGroup = allFilterCategories.find(f => (f as any).slug === slug);
+            const filterItem = filterGroup?.filters.find(f => f.id === id);
+            
+            if (!filterItem) return null;
+            
+            return (
+              <div
+                key={`${slug}-${id}`}
+                className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm"
+              >
+                <span className="text-xs text-gray-500">{filterGroup?.name}:</span>
+                <span>{filterItem.name}</span>
+                <button
+                  onClick={() => handleFilterChange(slug, id, false)}
+                  className="hover:bg-blue-100 rounded-full p-0.5 transition-colors"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+            );
+          })
+        )}
+      </div>
+      <div className="flex flex-row gap-1">  
+  <AnimatePresence>
+    {(Object.keys(selectedFilters).length > 0 || priceFrom || priceTo) && (
+      <motion.button
+        key="reset-button"
+        initial={{ opacity: 0, scale: 0.5, width: 0 }}
+        animate={{ 
+          opacity: 1, 
+          scale: 1, 
+          width: 'auto',
+          transition: {
+            type: "spring",
+            stiffness: 400,
+            damping: 25
+          }
+        }}
+        exit={{ 
+          opacity: 0, 
+          scale: 0.5, 
+          width: 0,
+          transition: {
+            duration: 0.15
+          }
+        }}
+        onClick={() => { 
+          resetFilters(); 
+          setOpen(false);
+        }}
+        className="text-sm rounded-md min-w-1/4 px-3 py-2 bg-gray-200 text-gray-800 hover:bg-gray-300 whitespace-nowrap overflow-hidden"
+      >
+        Сбросить
+      </motion.button>
+    )}
+  </AnimatePresence>
+  
+  <motion.button
+    layout
+    onClick={() => {
+      applyFilters();
+      setOpen(false);
+    }}
+    className="px-4 py-2 bg-blue-600 w-full text-white rounded-md hover:bg-blue-700 transition-colors"
+  >
+    Применить
+  </motion.button>
+</div>
           </div>
         </div>
       </div>

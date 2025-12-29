@@ -59,10 +59,10 @@ export async function getFilteredProducts(
     // Функция для добавления условий цены
     const addPriceConditions = (conditions: any[]) => {
       if (priceFrom !== undefined && priceFrom > 0) {
-        conditions.push(gte(products.price, priceFrom));
+        conditions.push(gte(products.priceRegional, priceFrom));
       }
       if (priceTo !== undefined && priceTo > 0) {
-        conditions.push(lte(products.price, priceTo));
+        conditions.push(lte(products.priceRegional, priceTo));
       }
       return conditions;
     };

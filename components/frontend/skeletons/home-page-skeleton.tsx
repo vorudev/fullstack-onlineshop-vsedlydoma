@@ -37,7 +37,7 @@ export default function HomePageSkeleton() {
           </div>
           
           {/* Карта */}
-          <div className="w-full h-96 bg-gray-200 rounded-xl px-4 md:px-0" />
+          <div className="w-full hidden lg:flex h-96 bg-gray-200 rounded-xl px-4 md:px-0" />
         </div>
       </div>
     );
