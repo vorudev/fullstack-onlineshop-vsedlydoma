@@ -1,3 +1,4 @@
+'use client'
 import Link from "next/link";
 import Image from "next/image";
 interface Props { 
@@ -28,7 +29,7 @@ interface Props {
 export default function Footer({ contacts }: Props) {
 
   return (
-    <footer className="mt-10  bg-[#F7F7F8] border-t border-gray-200 px-4 py-6 mb-[52px] lg:mb-0">
+    <footer className="bg-[#F7F7F8] border-t border-gray-200 px-4 py-6 mb-[52px] lg:mb-0">
       {/* Верхние ссылки */}
       <div className="xl:max-w-[1400px] lg:max-w-[1000px] mx-auto">
       <div className=" grid grid-cols-2 gap-4 text-[15px]">

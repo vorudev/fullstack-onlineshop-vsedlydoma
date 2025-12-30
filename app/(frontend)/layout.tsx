@@ -13,11 +13,12 @@ export default async function FrontendLayout({
   return (
     <>
       <Header contacts={contacts} />
-      <div className="bg-gray-100">
+      <div className="bg-gray-100 min-h-screen">
         {children}
         <NavMenuMobile />
+
         <Footer contacts={contacts} />
-      </div>
+        </div>
     </>
   );
 }

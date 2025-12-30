@@ -14,7 +14,7 @@ import { getAboutInfo } from '@/lib/actions/about-info';
 export default function HomePage() {
   return (
   <div className="w-full bg-white">
-      <div className="min-h-screen bg-white mx-auto xl:max-w-[1400px] lg:max-w-[1000px] text-black">
+      <div className="min-h-screen pb-10 bg-white mx-auto xl:max-w-[1400px] lg:max-w-[1000px] text-black">
       <Suspense fallback={<HomePageSkeleton />}>
         <HomePageContent />
       </Suspense>
