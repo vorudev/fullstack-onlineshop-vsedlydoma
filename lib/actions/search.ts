@@ -124,7 +124,20 @@ interface FilterParams {
       const categoryIds = [...new Set(items.map(item => item.categoryId))];
       
       if (categoryIds.length === 1 && items.length < INITIAL_RESULT_LIMIT) {
-        return { redirect: `/category/${categoryIds[0]}?q=${query}` };
+        const categoryId = categoryIds[0];
+        
+        if (categoryId) {
+          const category = await db.query.categories.findFirst({
+            where: eq(categories.id, categoryId),
+            columns: {
+              slug: true,
+            }
+          });
+          
+          if (category) {
+            return { redirect: `/products?category=${category.slug}` };
+          }
+        }
       }
       
       return { 

@@ -42,27 +42,30 @@ export default function SearchBar() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation(); // Останавливаем всплытие события
     setError('');
 
-    // Валидация с помощью Zod
-    const result = searchSchema.safeParse(searchValue);
+    // Проверка на пустое значение (убираем пробелы)
+    const trimmedValue = searchValue.trim();
+    
+    if (!trimmedValue) {
+      setError('Введите поисковый запрос');
+      return; // Останавливаем выполнение
+    }
 
+    // Валидация с помощью Zod
+    const result = searchSchema.safeParse(trimmedValue);
     if (!result.success) {
-      // Показываем первую ошибку валидации
       setError(result.error.message);
       return;
     }
 
     // Используем валидированное значение
     const sanitizedSearch = result.data;
-
     const params = new URLSearchParams(searchParams.toString());
-    if (sanitizedSearch) {
-      params.set('search', sanitizedSearch);
-      params.set('page', '1');
-    } else {
-      params.delete('search');
-    }
+    
+    params.set('search', sanitizedSearch);
+    params.set('page', '1');
 
     startTransition(() => {
       router.push(`/search?${params.toString()}`);
@@ -75,6 +78,7 @@ export default function SearchBar() {
     const params = new URLSearchParams(searchParams.toString());
     params.delete('search');
     params.set('page', '1');
+    
     startTransition(() => {
       router.push(`?${params.toString()}`);
     });
@@ -82,9 +86,11 @@ export default function SearchBar() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
-    // Сбрасываем ошибку при изменении значения
     if (error) setError('');
   };
+
+  // Проверяем, можно ли отправить форму
+  const canSubmit = searchValue.trim().length > 0 && !isPending && !error;
 
   return (
     <form onSubmit={handleSearch} className="w-full">
@@ -113,25 +119,29 @@ export default function SearchBar() {
               </button>
             )}
           </div>
-         <Button
-type="submit"
-disabled={isPending || !!error}
-className="px-6 py- h-[37px] disabled:opacity-50 items-center gap-2 hidden md:flex"
->
-{isPending ? (
-<>
-<Search />
-              Ищем...
-</>
-          ) : (
-<>
-<Search />
-              Поиск
-</>
-          )}
-</Button>
+          <Button
+            type="submit"
+            disabled={!canSubmit}
+            className="px-6 py-2 h-[37px] disabled:opacity-50 items-center gap-2 hidden md:flex"
+          >
+            {isPending ? (
+              <>
+                <Search />
+                Ищем...
+              </>
+            ) : (
+              <>
+                <Search />
+                Поиск
+              </>
+            )}
+          </Button>
         </div>
-        
+        {error && (
+          <p id="search-error" className="text-red-500 text-sm">
+            {error}
+          </p>
+        )}
       </div>
     </form>
   );
