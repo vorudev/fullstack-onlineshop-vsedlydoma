@@ -114,13 +114,16 @@ export async function getFilters(categoryIds: string[]){
             // Добавляем фильтр, если он существует и еще не добавлен
             if (row.filter && row.filter.id) {
                 const category = categoriesMap.get(categoryKey);
-                // Проверяем по имени фильтра, чтобы избежать дубликатов
-                const filterExists = category.filters.some(f => f.name === row.filter.name);
                 
-                if (!filterExists) {
+                if (category && row.filter) {
+                  // Проверяем по имени фильтра, чтобы избежать дубликатов
+                  const filterExists = category.filters.some((f: Filter) => f.name === row.filter!.name);
+                  
+                  if (!filterExists) {
                     category.filters.push(row.filter);
+                  }
                 }
-            }
+              }
         }
 
         return Array.from(categoriesMap.values());

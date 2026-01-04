@@ -50,7 +50,7 @@ export default async function SearchPage({searchParams}: SearchPageProps) {
     return; // или другая логика
   }
   const {items, filters, categories, images, availableManufacturers, pagination} = result 
-  console.log(items)
+
 const products = items?.map(product => ({
   ...product,
   images: images?.filter(img => img.productId === product.id) || [],
