@@ -43,15 +43,14 @@ interface FilterCategoryWithFilters {
 
 
 interface FilterSidebarProps {
-filterCategories: FilterCategoryWithFilters[];
+filterCategories: FilterCategoryWithFilters[] | undefined;
 
   page: number;
   totalPages: number;
   total: number;
   limit: number;
-
-avaliableManufacturers: { id: string; name: string }[]
-categorySlug: string | undefined;
+  query: string;
+avaliableManufacturers: { id: string; name: string }[] | undefined
 productsWithDetails: {
     images: {
         id: string;
@@ -81,7 +80,7 @@ productsWithDetails: {
 }
 
 
-export default function FilterSidebar({ filterCategories, page, totalPages, total, limit, avaliableManufacturers, categorySlug, productsWithDetails }: FilterSidebarProps) {
+export default function FilterSidebar({ filterCategories, query, page, totalPages, total, limit, avaliableManufacturers, productsWithDetails }: FilterSidebarProps) {
   const router = useRouter();
     const pathname = usePathname();
     const [sortBy, setSortBy] = useState<SortOption>('default');
@@ -91,7 +90,7 @@ export default function FilterSidebar({ filterCategories, page, totalPages, tota
   const [priceFrom, setPriceFrom] = useState<number | undefined>(undefined);
   const [priceTo, setPriceTo] = useState<number | undefined>(undefined);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(
-  filterCategories[0]?.id || null
+  filterCategories?.[0]?.id || null
 );
   // Инициализируем состояние из URL
  const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>(() => {
@@ -157,22 +156,22 @@ const VISIBLE_FILTERS_COUNT = 5;
         params.delete(key);
       }
     });
-    router.push(`${pathname}?category=${categorySlug}`);
+    router.push(`${pathname}?search=${query}`);
   };
 
- const allFilterCategories = [
+  if(filterCategories !== undefined && avaliableManufacturers !== undefined) {const allFilterCategories = [
   {
     id: 'manufacturer',
     slug: 'manufacturer',
     name: 'Производители',
-    filters: avaliableManufacturers.map(m => ({
+    filters: avaliableManufacturers?.map(m => ({
       id: m.id,
       slug: 'manufacturer',
       name: m.name,
     })),
   },
   ...filterCategories, // остальные идут после
-];
+]; 
     const sortedProducts = useMemo(() => {
       if (!productsWithDetails) return [];
       
@@ -203,7 +202,7 @@ const VISIBLE_FILTERS_COUNT = 5;
     
   return (
     <>
-    <div className="flex flex-row gap-2 justify-between ">
+    <div className="flex px-2 flex-row gap-2 justify-between ">
      
           <select
           id="sort"
@@ -277,7 +276,7 @@ const VISIBLE_FILTERS_COUNT = 5;
                 </button>
                 <div className="flex flex-col ">
                 {category.filters
-  .slice(0, expandedCategoriesMobile[category.id] ? undefined : VISIBLE_FILTERS_COUNT)
+  ?.slice(0, expandedCategoriesMobile[category.id] ? undefined : VISIBLE_FILTERS_COUNT)
   .map(filter => (
     <div key={filter.id}>
       <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded transition-colors">
@@ -300,12 +299,14 @@ const VISIBLE_FILTERS_COUNT = 5;
             </svg>
           )}
         </div>
-        <span className="text-[14px] text-gray-800">{filter.name}</span>
+        <span className="text-sm text-gray-700">{filter.name}</span>
       </label>
     </div>
-  ))}
+  ))
+}
 
-{category.filters.length > VISIBLE_FILTERS_COUNT && (
+
+{category.filters && category.filters.length > VISIBLE_FILTERS_COUNT && (
   <button
     onClick={() => setExpandedCategoriesMobile(prev => ({
       ...prev,
@@ -321,7 +322,7 @@ const VISIBLE_FILTERS_COUNT = 5;
 )}
                   </div>
                 </div>
-              ))}
+              ))} 
             </div>
             
             {/* Правая колонка - значения фильтров */}
@@ -331,42 +332,40 @@ const VISIBLE_FILTERS_COUNT = 5;
           {/* Футер с кнопками */}
          <div className="flex flex-col  mt-2 gap-2 px-3 py-2 border-t border-gray-200">
          <div className="flex flex-wrap gap-2">
-        {Object.entries(selectedFilters).map(([slug, ids]) =>
-          ids.map(id => {
-            const filterGroup = allFilterCategories.find(f => (f as any).slug === slug);
-            const filterItem = filterGroup?.filters.find(f => f.id === id);
-            
-            if (!filterItem) return null;
-            
-            return (
-              <div
-                key={`${slug}-${id}`}
-                className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm"
-              >
-                <span className="text-xs text-gray-500">{filterGroup?.name}:</span>
-                <span>{filterItem.name}</span>
-                <button
-                  onClick={() => handleFilterChange(slug, id, false)}
-                  className="hover:bg-blue-100 rounded-full p-0.5 transition-colors"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </div>
-            );
-          })
-        )}
+       {Object.entries(selectedFilters).map(([slug, ids]) =>
+  ids.map(id => {
+    const filterGroup = allFilterCategories.find(f => (f as any).slug === slug);
+    const filterItem = filterGroup?.filters?.find(f => f.id === id);
+    if (!filterItem) return null;
+    return (
+      <div
+        key={`${slug}-${id}`}
+        className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm"
+      >
+        <span className="text-xs text-gray-500">{filterGroup?.name}:</span>
+        <span>{filterItem.name}</span>
+        <button
+          onClick={() => handleFilterChange(slug, id, false)}
+          className="hover:bg-blue-100 rounded-full p-0.5 transition-colors"
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+    );
+  })
+)}
       </div>
       <div className="flex flex-row gap-1">  
   <AnimatePresence>
@@ -498,20 +497,20 @@ const VISIBLE_FILTERS_COUNT = 5;
               ) : (
                 // Обычные чекбоксы
                 <div className="space-y-2 pt-2 max-h-60 overflow-y-auto">
-                  {category.filters.map(filter => (
-                    <label
-                      key={filter.id}
-                      className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded transition-colors"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={selectedFilters[filter.slug]?.includes(filter.id) || false}
-                        onChange={(e) => handleFilterChange(filter.slug, filter.id, e.target.checked)}
-                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
-                      />
-                      <span className="text-sm text-gray-700">{filter.name}</span>
-                    </label>
-                  ))}
+                  {category.filters?.map(filter => (
+  <label
+    key={filter.id}
+    className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded transition-colors"
+  >
+    <input
+      type="checkbox"
+      checked={selectedFilters[filter.slug]?.includes(filter.id) || false}
+      onChange={(e) => handleFilterChange(filter.slug, filter.id, e.target.checked)}
+      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
+    />
+    <span className="text-sm text-gray-700">{filter.name}</span>
+  </label>
+))}
                 </div>
               )}
             </div>
@@ -546,4 +545,6 @@ const VISIBLE_FILTERS_COUNT = 5;
       </div>
       </>
   );
+}
+return null
 }

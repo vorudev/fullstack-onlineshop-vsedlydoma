@@ -1,6 +1,6 @@
 import { getAllProductsByManufacturerId } from "@/lib/actions/manufacturer";
 import { getManufacturerBySlug } from "@/lib/actions/manufacturer";
-import Pagination from "@/components/pagination";
+import Pagination from "@/components/frontend/pagination-client";
 import SearchBar from "@/components/frontend/searchbar-manufacturers";
 import { getFeaturedManufacturerImage } from "@/lib/actions/image-actions";
 import ProductCard from "@/components/frontend/product-card-full";
@@ -12,6 +12,7 @@ interface GetProductsByManufacturerIdParams {
     searchParams: Promise<{ // Добавляем Promise
         page?: string;
         search?: string;
+        limit: number;
       }>
       params: Promise<{ slug: string }>
 } 
@@ -75,11 +76,13 @@ function ManufacturerPageSkeleton() {
 async function ManufacturerContent({
   slug,
   currentPage,
-  searchQuery
+  searchQuery,
+  limit
 }: {
   slug: string;
   currentPage: number;
   searchQuery: string;
+  limit: number;
 }) {
   // Получаем производителя
   const manufacturer = await getManufacturerBySlug(slug);
@@ -94,7 +97,7 @@ async function ManufacturerContent({
     getAllProductsByManufacturerId({
       manufacturerId: manufacturer.id,
       page: currentPage,
-      pageSize: 20,
+      pageSize: Number(limit) || 20,
       search: searchQuery
     })
   ]);
@@ -144,11 +147,14 @@ async function ManufacturerContent({
       )}
 
       {/* Pagination */}
-      <Pagination
+      <div className="max-w-[600px] w-full mx-auto">
+        <Pagination
         currentPage={pagination.page}
         totalPages={pagination.totalPages}
         total={pagination.total}
+        limit={pagination.pageSize}
       />
+    </div>
     </div>
   );
 }
@@ -158,7 +164,7 @@ export default async function ManufacturerPage({
   searchParams, 
   params 
 }: GetProductsByManufacturerIdParams) {
-  const { page, search } = await searchParams;
+  const { page, search, limit} = await searchParams;
   const { slug } = await params;
   
   const currentPage = Number(page) || 1;
@@ -168,6 +174,7 @@ export default async function ManufacturerPage({
     <Suspense fallback={<ManufacturerPageSkeleton />}>
       <ManufacturerContent 
         slug={slug}
+        limit={limit}
         currentPage={currentPage}
         searchQuery={searchQuery}
       />

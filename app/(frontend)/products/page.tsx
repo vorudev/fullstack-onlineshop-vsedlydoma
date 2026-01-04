@@ -194,13 +194,11 @@ export default async function ProductsPage({ searchParams }: PageProps) {
     }
   });
 
-  // Получаем categoryId для ProductsGrid
   const data = await getCategoryWithNavigation(categorySlug);
   if (!data) notFound();
 
   return (
     <div className="flex flex-col px-[16px] gap-2 lg:px-6 text-black xl:max-w-[1400px] lg:max-w-[1000px] mx-auto">
-      {/* Заголовок загрузится быстро */}
       <Suspense fallback={
         <div className="flex flex-col gap-2">
           <div className="h-4 w-48 bg-gray-200 rounded animate-pulse"></div>
@@ -210,7 +208,6 @@ export default async function ProductsPage({ searchParams }: PageProps) {
         <ProductsHeader categorySlug={categorySlug} />
       </Suspense>
 
-      {/* Продукты будут стримиться */}
       <Suspense fallback={<ProductsGridSkeleton />}>
         <ProductsGrid 
           categoryId={data.category.id}

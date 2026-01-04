@@ -64,7 +64,7 @@ const rootCategories = buildCategoryTree(categories);
       {/* Кнопка для открытия меню */}
       <button
         onClick={() => setIsMenuOpen(!isMenuOpen)}
-        className=" bg-[#0000CD] text-white cursor-pointer text-[14px] 2xl:text-[16px] transition duration-300 font-semibold px-4 py-2 rounded-md hover:bg-blue-600"
+        className=" bg-[#0000CD] text-white cursor-pointer text-[14px] transition duration-300 font-semibold px-4 py-2 rounded-md hover:bg-blue-600"
       >
         {isMenuOpen ? 'Закрыть' : 'Каталог'}
       </button>

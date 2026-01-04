@@ -58,7 +58,7 @@ const items = [
     icon: ChartBarStacked,
   },
   {
-    title: "Контактная информация",
+    title: "Информация",
     url: "/dashboard/contact-us",
     icon: Info ,
   },

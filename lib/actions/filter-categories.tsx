@@ -2,7 +2,7 @@
 import { db } from "@/db/drizzle";
 import { filters, Filter } from "@/db/schema";
 import { filterCategories, FilterCategory } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
@@ -69,6 +69,60 @@ export async function getFilterCategoriesWithFiltersByProductCategory(productCat
             }
         }
         
+        return Array.from(categoriesMap.values());
+    } catch (error) {
+        console.error("Error fetching filter categories with filters by product category:", error);
+        throw new Error("Failed to fetch filter categories with filters by product category");
+    }
+}
+export async function getFilters(categoryIds: string[]){
+    try { 
+        const results = await db
+            .select({
+                id: filterCategories.id,
+                name: filterCategories.name,
+                slug: filterCategories.slug,
+                displayOrder: filterCategories.displayOrder,
+                filter: {
+                    id: filters.id,
+                    name: filters.name,
+                    slug: filters.slug,
+                    displayOrder: filters.displayOrder,
+                }
+            })
+            .from(filterCategories)
+            .leftJoin(filters, eq(filters.categoryId, filterCategories.id))
+            .where(inArray(filterCategories.productCategory, categoryIds))
+            .orderBy(filterCategories.displayOrder, filters.displayOrder);
+
+        // Группируем по имени категории (не по ID!)
+        const categoriesMap = new Map();
+        
+        for (const row of results) {
+            const categoryKey = row.name; // Используем имя как ключ
+            
+            if (!categoriesMap.has(categoryKey)) {
+                categoriesMap.set(categoryKey, {
+                    id: row.id,
+                    name: row.name,
+                    slug: row.slug,
+                    displayOrder: row.displayOrder,
+                    filters: []
+                });
+            }
+            
+            // Добавляем фильтр, если он существует и еще не добавлен
+            if (row.filter && row.filter.id) {
+                const category = categoriesMap.get(categoryKey);
+                // Проверяем по имени фильтра, чтобы избежать дубликатов
+                const filterExists = category.filters.some(f => f.name === row.filter.name);
+                
+                if (!filterExists) {
+                    category.filters.push(row.filter);
+                }
+            }
+        }
+
         return Array.from(categoriesMap.values());
     } catch (error) {
         console.error("Error fetching filter categories with filters by product category:", error);
