@@ -1,6 +1,6 @@
 'use server';
 import { db } from "@/db/drizzle";
-import { manufacturers, Manufacturer, products, productImages, reviews, ManufacturerImage, manufacturerImages } from "@/db/schema";
+import { manufacturers, Manufacturer, products, productImages, reviews, ManufacturerImage, manufacturerImages, productAttributes } from "@/db/schema";
 import { eq, ilike, or, and, sql, count, asc, inArray } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 import { NextResponse } from "next/server";
@@ -155,7 +155,7 @@ export const getAllProductsByManufacturerId = async ({
 
         const [{ count: totalCount }] = await countQuery;
 const productIds = getAllProductsByManufacturerIdResult.map(r => r.id);
-    const [images, ratings] = await Promise.all([
+    const [images, ratings, attributes] = await Promise.all([
   db.select()
     .from(productImages)
     .where(inArray(productImages.productId, productIds)),
@@ -168,7 +168,12 @@ const productIds = getAllProductsByManufacturerIdResult.map(r => r.id);
   })
   .from(reviews)
   .where(inArray(reviews.product_id, productIds))
-  .groupBy(reviews.product_id) // ← ВОТ ЭТО КЛЮЧЕВОЕ!
+  .groupBy(reviews.product_id), // ← ВОТ ЭТО КЛЮЧЕВОЕ!
+
+  db.query.productAttributes.findMany({
+    where: inArray(productAttributes.productId, productIds),
+    
+            })
 ]);
 
 
@@ -187,6 +192,7 @@ const productsWithDetails = getAllProductsByManufacturerIdResult.map(product => 
         return {
             products: productsWithDetails,
             images: images,
+            attributes: attributes,
             pagination: {
                 page,
                 pageSize,

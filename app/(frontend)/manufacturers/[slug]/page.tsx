@@ -92,7 +92,7 @@ async function ManufacturerContent({
   }
 
   // Параллельно загружаем изображение и продукты
-  const [featuredImage, { products, images, pagination }] = await Promise.all([
+  const [featuredImage, { products, images, attributes, pagination }] = await Promise.all([
     getFeaturedManufacturerImage(manufacturer.id),
     getAllProductsByManufacturerId({
       manufacturerId: manufacturer.id,
@@ -103,13 +103,11 @@ async function ManufacturerContent({
   ]);
 
   // Объединяем продукты с изображениями
-  const productsWithDetailAndImages = products?.map(product => {
-    const productImages = images?.filter(img => img.productId === product.id) || [];
-    return {
-      ...product,
-      images: productImages,
-    };
-  });
+  const productsWithDetails = products?.map(product => ({
+    ...product,
+    images: images?.filter(img => img.productId === product.id) || [],
+    attributes: attributes?.filter(attr => attr.productId === product.id) || []
+  }));
 
   return (
     <div className="flex flex-col px-[16px] gap-2 lg:px-6 text-black xl:max-w-[1400px] pb-30 lg:max-w-[1000px] min-h-screen mx-auto">
@@ -131,9 +129,9 @@ async function ManufacturerContent({
       <SearchBar />
 
       {/* Products grid */}
-      {productsWithDetailAndImages && productsWithDetailAndImages.length > 0 ? (
+      {productsWithDetails && productsWithDetails.length > 0 ? (
         <div className="grid grid-cols-1 pt-2 md:grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 lg:gap-6 gap-2">
-          {productsWithDetailAndImages.map(product => (
+          {productsWithDetails.map(product => (
             <ProductCard
               key={product.id}
               product={product}
