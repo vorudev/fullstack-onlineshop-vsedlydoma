@@ -140,8 +140,8 @@ const handleMainClick = () => {
          <div className="flex items-center flex-row pr-1 gap-3">
           
           
-           <AddToFavorite product={product}/>
-            <AddToCart product={product}/>
+           <AddToFavorite id={product.id}/>
+            <AddToCart id={product.id}/>
           </div>
           </div>
         </div>

@@ -3,63 +3,39 @@ import { useCart } from "@/app/context/cartcontext";
 import { CheckIcon } from "lucide-react";
 import { Minus, Plus, ShoppingCart, Check } from 'lucide-react';
 interface ProductUnited {
-   
-  product: {
-    averageRating: number;
-    reviewCount: number;
-    id: string;
-    categoryId: string | null;
-    inStock: string | null;
-    price: number;
-    slug: string;
-    title: string;
-    description: string;
-    manufacturerId: string | null;
-    createdAt: Date | null;
-    updatedAt: Date | null;
-    sku: string | null;
-    images: {
-        id: string;
-        productId: string;
-        imageUrl: string;
-        storageType: string;
-        storageKey: string | null;
-        order: number | null;
-        isFeatured: boolean | null;
-        createdAt: Date | null;
-    }[]
-}
+   id: string
 }
 
 
-export const AddToCart: React.FC<ProductUnited> = ({ product }) => {
+
+export const AddToCart: React.FC<ProductUnited> = ({  id }) => {
     const { addToCart, cart, removeFromCart, updateQuantity } = useCart();
     
-    const cartItem = cart.find((item) => item.id === product.id);
+    const cartItem = cart.find((item) => item.id === id);
     const isInCart = cartItem !== undefined;
     const quantity = cartItem?.quantity || 0;
 
     const handleIncrement = (e: React.MouseEvent) => {
         e.stopPropagation();
         if (isInCart) {
-            updateQuantity(product.id, quantity + 1);
+            updateQuantity(id, quantity + 1);
         } else {
-            addToCart(product.id);
+            addToCart(id);
         }
     };
 
     const handleDecrement = (e: React.MouseEvent) => {
         e.stopPropagation();
         if (quantity > 1) {
-            updateQuantity(product.id, quantity - 1);
+            updateQuantity(id, quantity - 1);
         } else if (quantity === 1) {
-            removeFromCart(product.id);
+            removeFromCart(id);
         }
     };
 
     const handleMainClick = () => {
         if (!isInCart) {
-            addToCart(product.id);
+            addToCart(id);
         }
     };
 
@@ -92,10 +68,10 @@ export const AddToCart: React.FC<ProductUnited> = ({ product }) => {
                 // Состояние: товар не в корзине
                 <button
                     onClick={handleMainClick}
-                    className="flex items-center justify-center gap-2 w-full xl:px-4 py-2 px-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white border border-blue-600 transition-colors"
+                    className="flex items-center  max-h-[38px] justify-center gap-2 w-full xl:px-4 py-2 px-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white border border-blue-600 transition-colors"
                 >
                     <ShoppingCart className="w-4 h-4 hidden xl:block" />
-                    <span>В корзину</span>
+                    <span className="text-[14px]">В корзину</span>
                 </button>
             )}
         </div>

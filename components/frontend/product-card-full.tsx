@@ -8,6 +8,7 @@ import { AddToFavorite } from "@/app/(frontend)/products/add-to-favorite-prop";
 import { ProductImage } from "@/db/schema";
 import ImagesSliderCardFull from "./images-slider-card-full";
 import Image from "next/image";
+import { useState } from "react";
 interface ProductUnited {
    
   product: {
@@ -35,10 +36,19 @@ interface ProductUnited {
         isFeatured: boolean | null;
         createdAt: Date | null;
     }[]
+    attributes: {
+      id: string;
+      name: string;
+      createdAt: Date | null;
+      value: string;
+      slug: string;
+      order: number | null;
+      productId: string;
+  }[];
 }
 }
 export default function ProductCard( { product}: ProductUnited) {
-  
+  const [maxVisible, setMaxVisible] = useState(3);
     const rounded = Math.round(product.averageRating);
  const getRatingColor = (rating: number) => {
   if (rating >= 4.5) return 'text-green-600';
@@ -71,21 +81,37 @@ function getReviewText(count: number): string {
   if (a.order !== null && b.order !== null) return a.order - b.order;
   return 0;
 });
-
+const visibleAttributes = product.attributes.slice(0, maxVisible) || [];
 
     return ( 
-        <div className="bg-white rounded-2xl lg:max-w-[450px]  transition-all duration-300 overflow-hidden  group lg:p-[12px] min-w-[300px]" key={product.id}> 
+        <div className="bg-white border-gray-100 border-2 rounded-2xl lg:max-w-[450px]  transition-all duration-300 overflow-hidden  group lg:p-[12px] min-w-[300px]" key={product.id}> 
         <div className="hidden lg:block flex flex-col  px-2 py-2">
         <Link className="relative overflow-hidden flex justify-center" href={`/product/${product.slug}`}>
           <Image src={sortedImages[0]?.imageUrl || "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM="} loading="lazy" alt={product.title} width={156} height={156} className="w-[156px]  h-[156px] object-contain transition-transform duration-300 " />
           </Link>
           <Link href={`/product/${product.slug}`}>
-          <h3 className="text-black min-h-[70px] text-[15px] line-clamp-3">
+          <h3 className="text-black  text-[15px] line-clamp-1">
             {product.title}
           </h3>
           
           </Link>
-          <div className="flex flex-row gap-2 pt-2 text-sm items-center">
+          <ul className="text-[12px] my-1 min-h-[54px]">
+
+  {visibleAttributes.map((attr: { id: string; name: string; value: string; order: number | null; slug: string; createdAt: Date | null; }) => ( 
+    <li key={attr.id} className="flex flex-row items-center">
+<span className="text-gray-600 pr-1">
+      {attr.name}:
+  </span>
+  <span className="text-black">
+      {attr.value}
+  </span>
+    </li>
+  ))}
+
+
+
+</ul>
+          <div className="flex flex-row gap-2 text-sm items-center">
             
           <div className="flex items-center py-1 rounded-lg">
           {rounded ? rounded && 
@@ -96,7 +122,7 @@ function getReviewText(count: number): string {
      {getReviewText(product.reviewCount)}
    </span>  
  
- </div> <div className={`${product.inStock === 'В наличии' ? 'bg-green-600/20' :  product.inStock === 'Наличие уточняйте' ? 'bg-yellow-600/20' : 'bg-red-600/20'} text-white px-2 py-1 rounded-md self-start`}>
+ </div> <div className={`${product.inStock === 'В наличии' ? 'bg-green-600/20' :  product.inStock === 'Наличие уточняйте' ? 'bg-yellow-600/20' : 'bg-red-600/20'} text-white px-2 py-1 mt-[2px] rounded-md self-start`}>
     <p className={`text-[12px] text-gray-600 ${product.inStock === 'В наличии' ? 'text-green-600' : product.inStock === 'Наличие уточняйте' ? 'text-yellow-600' : 'text-red-600'}`}>{product.inStock}</p>
     </div>
           </div>
@@ -111,8 +137,8 @@ function getReviewText(count: number): string {
          <div className="flex items-center flex-row pr-1 gap-3">
           
           
-           <AddToFavorite product={product}/>
-            <AddToCart product={product}/>
+           <AddToFavorite id={product.id}/>
+            <AddToCart id={product.id}/>
           </div>
           </div>
         </div>
@@ -154,8 +180,8 @@ function getReviewText(count: number): string {
   <h3 className="text-gray-900 font-semibold text-[16px]">Нет в наличии</h3>
 )}</div>
              <div className="w-1/2 flex flex-row  items-center justify-end gap-2"> 
-              <AddToFavorite product={product}/>
-              <AddToCart product={product}/>
+              <AddToFavorite id={product.id}/>
+              <AddToCart id={product.id}/>
 
               </div>
 

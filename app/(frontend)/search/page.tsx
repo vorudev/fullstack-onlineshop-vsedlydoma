@@ -49,15 +49,16 @@ export default async function SearchPage({searchParams}: SearchPageProps) {
     redirect(result?.redirect || '');
     return; // или другая логика
   }
-  const {items, filters, categories, images, availableManufacturers, pagination} = result 
+  const {items, filters, categories, images, attributes,  availableManufacturers, pagination} = result 
 
 const products = items?.map(product => ({
   ...product,
   images: images?.filter(img => img.productId === product.id) || [],
+  attributes: attributes?.filter(attr => attr.productId === product.id) || []
 }));
   return (
-      <main className="text-black min-h-screen xl:max-w-[1400px] pt-10 mx-auto lg:max-w-[1000px] pb-40 ">
-{/*<ProductList products={products}/> */}
+      <main className="text-black bg-white min-h-screen  pb-40 ">
+        <div className="xl:max-w-[1400px] pt-4 mx-auto lg:max-w-[1000px]">
 <FilterSidebar 
 filterCategories={filters}
 totalPages={pagination.totalPages}
@@ -67,13 +68,8 @@ page={pageNumber}
  productsWithDetails={products} 
  avaliableManufacturers={availableManufacturers}
  query={search}/>
- <div className="w-full max-w-[600px] mx-auto">
-{/*<Pagination
-                    currentPage={pagination.page}
-                    totalPages={pagination.totalPages}
-                    total={pagination.total}
-                    limit={pagination.pageSize}
-                  /> */}</div> 
+
+                  </div>
       </main>
   );
 }

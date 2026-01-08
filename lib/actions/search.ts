@@ -90,10 +90,14 @@ interface FilterParams {
           baseSearchCondition,
           eq(products.isActive, true),)); 
 
-      const [images, ratings] = await Promise.all([
-        db.select()
-          .from(productImages)
-          .where(inArray(productImages.productId, itemIds)),
+      const [images, ratings, attributes] = await Promise.all([
+        db.query.productImages.findMany({
+          where: inArray(productImages.productId, itemIds),
+          orderBy: (productImages, { desc }) => [
+            desc(productImages.isFeatured), 
+            desc(productImages.order)
+          ]
+        }),
         
         db.select({
           productId: reviews.product_id,
@@ -102,8 +106,14 @@ interface FilterParams {
         })
         .from(reviews)
         .where(inArray(reviews.product_id, itemIds))
-        .groupBy(reviews.product_id)
+        .groupBy(reviews.product_id),
+
+        db.query.productAttributes.findMany({
+          where: inArray(productAttributes.productId, itemIds),
+          
+                  })
       ]);
+       
       
     
       // Создаем Map для рейтингов
@@ -113,12 +123,20 @@ interface FilterParams {
           reviewCount: r.reviewCount 
         }])
       );
+      const imagesMap = new Map();
+images.forEach(img => {
+  if (!imagesMap.has(img.productId)) {
+    imagesMap.set(img.productId, img); // Берем первое (featured или с наибольшим order)
+  }
+});
+      
       
       // Объединяем все данные
       const productsWithDetails = items.map(item => ({
         ...item,
         averageRating: ratingsMap.get(item.id)?.averageRating || 0,
         reviewCount: ratingsMap.get(item.id)?.reviewCount || 0,
+      
       }));
       
       const categoryIds = [...new Set(items.map(item => item.categoryId))];
@@ -143,6 +161,7 @@ interface FilterParams {
       return { 
         items: productsWithDetails,
         images: images, 
+        attributes: attributes,
         filters: availableFilters, 
         categories: categoryIds,
         availableManufacturers,
@@ -248,39 +267,54 @@ interface FilterParams {
         .where(and(...whereConditions));
 
         const itemIds = items.map(r => r.id);
-        const [images, ratings] = await Promise.all([
-          db.select()
-            .from(productImages)
-            .where(inArray(productImages.productId, itemIds)),
-          
-          // ДОБАВЛЯЕМ GROUP BY product_id
-          db.select({
-            productId: reviews.product_id,
-            averageRating: sql<number>`AVG(${reviews.rating})`,
-            reviewCount: sql<number>`COUNT(${reviews.id})`,
-          })
-          .from(reviews)
-          .where(inArray(reviews.product_id, itemIds))
-          .groupBy(reviews.product_id) // ← ВОТ ЭТО КЛЮЧЕВОЕ!
-        ]);
+        const [images, ratings, attributes] = await Promise.all([
+          db.query.productImages.findMany({
+            where: inArray(productImages.productId, itemIds),
+            orderBy: (productImages, { desc }) => [
+              desc(productImages.isFeatured), 
+              desc(productImages.order)
+            ]
+          }),
+         
+         db.select({
+           productId: reviews.product_id,
+           averageRating: sql<number>`AVG(${reviews.rating})`,
+           reviewCount: sql<number>`COUNT(${reviews.id})`,
+         })
+         .from(reviews)
+         .where(inArray(reviews.product_id, itemIds))
+         .groupBy(reviews.product_id),
+ 
+         db.query.productAttributes.findMany({
+           where: inArray(productAttributes.productId, itemIds),
+           
+                   })
+       ]);
         const ratingsMap = new Map(
           ratings.map(r => [r.productId, { 
             averageRating: r.averageRating, 
             reviewCount: r.reviewCount 
           }])
         );
+        const attributesMap = new Map( 
+          attributes.map(r =>[r.productId, {
+            attributes
+          }])
+        )
         
         // Объединяем все данные
         const productsWithDetails = items.map(item => ({
           ...item,
           averageRating: ratingsMap.get(item.id)?.averageRating || 0,
           reviewCount: ratingsMap.get(item.id)?.reviewCount || 0,
+        
         }));
         const categoryIds = [...new Set(items.map(item => item.categoryId))];
       
         return { 
         items: productsWithDetails,
         images:images, 
+        attributes: attributes,
         pagination: {
           page,
           totalPages: Math.ceil(totalCount[0].count / limit),
@@ -306,21 +340,29 @@ interface FilterParams {
         .from(products)
         .where(and(...whereConditions)); 
 
-      const [images, ratings] = await Promise.all([
-        db.select()
-          .from(productImages)
-          .where(inArray(productImages.productId, itemIds)),
-        
-        // ДОБАВЛЯЕМ GROUP BY product_id
-        db.select({
-          productId: reviews.product_id,
-          averageRating: sql<number>`AVG(${reviews.rating})`,
-          reviewCount: sql<number>`COUNT(${reviews.id})`,
-        })
-        .from(reviews)
-        .where(inArray(reviews.product_id, itemIds))
-        .groupBy(reviews.product_id) // ← ВОТ ЭТО КЛЮЧЕВОЕ!
-      ]);
+        const [images, ratings, attributes] = await Promise.all([
+          db.query.productImages.findMany({
+            where: inArray(productImages.productId, itemIds),
+            orderBy: (productImages, { desc }) => [
+              desc(productImages.isFeatured), 
+              desc(productImages.order)
+            ]
+          }),
+         
+         db.select({
+           productId: reviews.product_id,
+           averageRating: sql<number>`AVG(${reviews.rating})`,
+           reviewCount: sql<number>`COUNT(${reviews.id})`,
+         })
+         .from(reviews)
+         .where(inArray(reviews.product_id, itemIds))
+         .groupBy(reviews.product_id),
+ 
+         db.query.productAttributes.findMany({
+           where: inArray(productAttributes.productId, itemIds), 
+
+                   })
+       ]);
       const ratingsMap = new Map(
         ratings.map(r => [r.productId, { 
           averageRating: r.averageRating, 
@@ -328,17 +370,20 @@ interface FilterParams {
         }])
       );
       
+      
       // Объединяем все данные
       const productsWithDetails = items.map(item => ({
         ...item,
         averageRating: ratingsMap.get(item.id)?.averageRating || 0,
         reviewCount: ratingsMap.get(item.id)?.reviewCount || 0,
+      
       }));
       const categoryIds = [...new Set(items.map(item => item.categoryId))];
     
       return { 
       items: productsWithDetails,
       images: images, 
+      attributes: attributes,
       pagination: {
         page,
         totalPages: Math.ceil(totalCount[0].count / limit),
