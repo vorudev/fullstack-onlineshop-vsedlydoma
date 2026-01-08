@@ -86,7 +86,7 @@ async function ProductsHeader({ categorySlug }: { categorySlug: string }) {
 
   return (
     <>
-      <nav className="text-sm px-[16px]  text-gray-600 pt-[20px]">
+      <nav className="text-sm lg:px-[16px]  px-[8px]  text-gray-600 pt-[20px]">
         {breadcrumbs.map((crumb, index) => (
           <span key={crumb.id}>
             <Link href={buildCategoryUrl(crumb.slug, breadcrumbs.slice(0, index + 1))}>
@@ -96,7 +96,7 @@ async function ProductsHeader({ categorySlug }: { categorySlug: string }) {
           </span>
         ))}
       </nav>
-      <h1 className="text-2xl px-[16px] pb-5 font-bold">{category.name}</h1>
+      <h1 className="text-2xl lg:px-[16px]  px-[8px] pb-5 font-bold">{category.name}</h1>
     </>
   );
 }
@@ -135,7 +135,7 @@ async function ProductsGrid({
 
   return (
     <>
-      <p className="text-gray-600 px-[16px] hidden lg:flex">{pagination.total} товаров</p>
+      <p className="text-gray-600 lg:px-[16px] px-[8px] hidden lg:flex">{pagination.total} товаров</p>
       <FilterSidebar 
         filterCategories={filterCategoriesWithFilters} 
         categorySlug={categorySlug}
@@ -154,7 +154,7 @@ function ProductsGridSkeleton() {
   return (
     <>
       <div className="h-5 w-32 bg-gray-200 rounded animate-pulse"></div>
-      <div className="flex gap-4">
+      <div className="flex gap-4 px-[16px]">
         <div className="w-64 hidden lg:block space-y-4">
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="h-32 bg-gray-200 rounded animate-pulse"></div>
@@ -202,7 +202,7 @@ export default async function ProductsPage({ searchParams }: PageProps) {
     <main className="bg-white">
     <div className="flex flex-col gap-2  text-black xl:max-w-[1400px] lg:max-w-[1000px] mx-auto">
       <Suspense fallback={
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col px-[16px] gap-2">
           <div className="h-4 w-48 bg-gray-200 rounded animate-pulse"></div>
           <div className="h-8 w-64 bg-gray-200 rounded animate-pulse"></div>
         </div>
