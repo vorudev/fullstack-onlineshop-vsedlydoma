@@ -92,8 +92,8 @@ const featuredImage = item.product.images.find(img => img.isFeatured) || item.pr
      <div className="flex items-center flex-row pr-1 gap-3">
       
       
-     <AddToFavorite product={item.product}/>
-        <AddToCart product={item.product}/>
+     <AddToFavorite id={item.product.id}/>
+        <AddToCart id={item.product.id}/>
       </div>
       </div>
     </div>
@@ -127,8 +127,8 @@ const featuredImage = item.product.images.find(img => img.isFeatured) || item.pr
              font-semibold text-gray-900 w-1/2">
               <h3>{item.product.price} руб</h3></div>
          <div className="w-1/2 flex flex-row  items-center justify-end gap-2"> 
-          <AddToFavorite product={item.product}/>
-          <AddToCart product={item.product}/>
+          <AddToFavorite id={item.product.id}/>
+          <AddToCart id={item.product.id}/>
 
           </div>
 
