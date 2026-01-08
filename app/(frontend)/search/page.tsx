@@ -1,5 +1,4 @@
 import { getAllProducts } from "@/lib/actions/product";
-import ProductList from "@/app/(frontend)/search/list";
 import { getSearchResults } from "@/lib/actions/search";
 import FilterSidebar from "./sidebar";
 import Pagination from "@/components/frontend/pagination-client";
