@@ -86,7 +86,7 @@ async function ProductsHeader({ categorySlug }: { categorySlug: string }) {
 
   return (
     <>
-      <nav className="text-sm text-gray-600 pt-[20px]">
+      <nav className="text-sm px-[16px]  text-gray-600 pt-[20px]">
         {breadcrumbs.map((crumb, index) => (
           <span key={crumb.id}>
             <Link href={buildCategoryUrl(crumb.slug, breadcrumbs.slice(0, index + 1))}>
@@ -96,7 +96,7 @@ async function ProductsHeader({ categorySlug }: { categorySlug: string }) {
           </span>
         ))}
       </nav>
-      <h1 className="text-2xl font-bold">{category.name}</h1>
+      <h1 className="text-2xl px-[16px] pb-5 font-bold">{category.name}</h1>
     </>
   );
 }
@@ -120,26 +120,27 @@ async function ProductsGrid({
   categorySlug: string;
 }) {
   const [
-    { productsWithDetails, pagination, availableManufacturers, images }, 
+    { productsWithDetails, pagination, availableManufacturers, images, attributes }, 
     filterCategoriesWithFilters,
   ] = await Promise.all([
     getFilteredProducts(categoryId, selectedFilters, page, limit, priceFrom, priceTo),
     getFilterCategoriesWithFiltersByProductCategory(categoryId),
   ]);
 
-  const productsWithDetailAndImages = productsWithDetails?.map(product => ({
+  const products = productsWithDetails?.map(product => ({
     ...product,
     images: images?.filter(img => img.productId === product.id) || [],
+    attributes: attributes?.filter(attr => attr.productId === product.id) || []
   }));
 
   return (
     <>
-      <p className="text-gray-600">{pagination.total} товаров</p>
+      <p className="text-gray-600 px-[16px] hidden lg:flex">{pagination.total} товаров</p>
       <FilterSidebar 
         filterCategories={filterCategoriesWithFilters} 
-        categorySlug={categorySlug} 
+        categorySlug={categorySlug}
         avaliableManufacturers={availableManufacturers}
-        productsWithDetails={productsWithDetailAndImages}
+        productsWithDetails={products}
         page={page}
         totalPages={pagination.totalPages}
         total={pagination.total}
@@ -198,7 +199,8 @@ export default async function ProductsPage({ searchParams }: PageProps) {
   if (!data) notFound();
 
   return (
-    <div className="flex flex-col px-[16px] gap-2 lg:px-6 text-black xl:max-w-[1400px] lg:max-w-[1000px] mx-auto">
+    <main className="bg-white">
+    <div className="flex flex-col gap-2  text-black xl:max-w-[1400px] lg:max-w-[1000px] mx-auto">
       <Suspense fallback={
         <div className="flex flex-col gap-2">
           <div className="h-4 w-48 bg-gray-200 rounded animate-pulse"></div>
@@ -220,5 +222,6 @@ export default async function ProductsPage({ searchParams }: PageProps) {
         />
       </Suspense>
     </div>
+    </main>
   );
 }

@@ -84,7 +84,7 @@ export async function getFilteredProducts(
         .from(products)
         .where(and(...whereConditions));
       const productIds = result.map(r => r.id);
-    const [images, ratings] = await Promise.all([
+    const [images, ratings, attributes] = await Promise.all([
   db.select()
     .from(productImages)
     .where(inArray(productImages.productId, productIds)),
@@ -97,7 +97,12 @@ export async function getFilteredProducts(
   })
   .from(reviews)
   .where(inArray(reviews.product_id, productIds))
-  .groupBy(reviews.product_id) // ← ВОТ ЭТО КЛЮЧЕВОЕ!
+  .groupBy(reviews.product_id), 
+   // ← ВОТ ЭТО КЛЮЧЕВОЕ!
+  db.query.productAttributes.findMany({
+    where: inArray(productAttributes.productId, productIds),
+    
+            })
 ]);
 
 
@@ -116,6 +121,7 @@ const productsWithDetails = result.map(product => ({
       return {
        productsWithDetails,
         images: images,
+        attributes: attributes,
         pagination: {
           page,
           totalPages: Math.ceil(totalCount[0].count / limit),
@@ -201,7 +207,7 @@ const productsWithDetails = result.map(product => ({
     .where(and(...whereConditions));
   
       const productIds = result.map(r => r.products.id);
-       const [images, ratings] = await Promise.all([
+       const [images, ratings, attributes] = await Promise.all([
   db.select()
     .from(productImages)
     .where(inArray(productImages.productId, productIds)),
@@ -214,7 +220,12 @@ const productsWithDetails = result.map(product => ({
   })
   .from(reviews)
   .where(inArray(reviews.product_id, productIds))
-  .groupBy(reviews.product_id) // ← ВОТ ЭТО КЛЮЧЕВОЕ!
+  .groupBy(reviews.product_id), // ← ВОТ ЭТО КЛЮЧЕВОЕ!
+
+  db.query.productAttributes.findMany({
+    where: inArray(productAttributes.productId, productIds),
+    
+            })
 ]);
 
 
@@ -237,6 +248,7 @@ const productsWithDetails = result.map(row => {
       return {
         productsWithDetails,
         images: images,
+        attributes: attributes,
         pagination: {
           page,
           totalPages: Math.ceil(count / limit),
@@ -266,7 +278,7 @@ const productsWithDetails = result.map(row => {
 
 
       const productIds = result.map(r => r.id);
-    const [images, ratings] = await Promise.all([
+    const [images, ratings, attributes] = await Promise.all([
   db.select()
     .from(productImages)
     .where(inArray(productImages.productId, productIds)),
@@ -279,7 +291,11 @@ const productsWithDetails = result.map(row => {
   })
   .from(reviews)
   .where(inArray(reviews.product_id, productIds))
-  .groupBy(reviews.product_id) // ← ВОТ ЭТО КЛЮЧЕВОЕ!
+  .groupBy(reviews.product_id),
+  db.query.productAttributes.findMany({
+    where: inArray(productAttributes.productId, productIds),
+    
+            }) // ← ВОТ ЭТО КЛЮЧЕВОЕ!
 ]);
 
 
@@ -299,6 +315,7 @@ const productsWithDetails = result.map(product => ({
       return {
         productsWithDetails,
         images: images,
+        attributes: attributes,
         pagination: {
           page,
           totalPages: Math.ceil(count / limit),
