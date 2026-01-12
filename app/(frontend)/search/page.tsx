@@ -19,26 +19,30 @@ interface SearchPageProps {
 // Скелетон для карточки продукта
 function ProductCardSkeleton() {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 lg:p-4 py-2 animate-pulse">
+    <div className="bg-white rounded-lg lg:border border-gray-200 lg:p-4 py-[18px] animate-pulse">
       {/* Изображение */}
-   <div className="flex flex-row lg:flex-col">
-    <div className="lg:w-full justify-center px-2 flex"> 
-      <div className="self-center lg:w-[156px] h-[100px] w-[100px] lg:h-[156px] bg-gray-200 rounded-lg lg:mb-3"></div> </div>
-      
+   <div className="flex flex-row gap-[18px] lg:gap-0 lg:flex-col">
+    <div className="lg:w-full flex-col gap-5 h-full items-between justify-center px-1 lg:px-2 flex"> 
+      <div className="self-center lg:w-[156px] h-[100px] w-[100px] lg:h-[156px] bg-gray-200 rounded-lg lg:mb-3"></div>
+      <div className="h-10 lg:hidden bg-gray-200 rounded w-full mb-2"></div>
+       </div>
+   
+
      <div>{/* Название */}
-      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-      <div className="h-3 bg-gray-200 rounded w-1/2 mb-3"></div>
+      <div className="h-[24px] bg-gray-200 rounded w-2/4 mb-2"></div>
+      <div className="h-4 bg-gray-200 rounded w-full lg:mb-3 mb-2"></div>
       
       {/* Характеристики */}
-      <div className="space-y-2 mb-3">
-        <div className="h-3 bg-gray-200 rounded w-full"></div>
+      <div className="space-y-2 lg:mb-3 mb-2 ">
+      <div className="h-3 bg-gray-200 rounded w-2/3"></div>
         <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+      
       </div>
       
       {/* Статус и цена */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="h-6 bg-gray-200 rounded w-20"></div>
-        <div className="h-6 bg-gray-200 rounded w-16"></div>
+      <div className="flex items-center w-36 justify-between lg:mb-3 mb-2">
+        <div className="h-5 bg-gray-200 rounded w-20"></div>
+        <div className="h-5 hidden lg:block bg-gray-200 rounded w-16"></div>
       </div>
       
       {/* Кнопка */}
@@ -76,14 +80,10 @@ function FilterSidebarSkeleton() {
       </div>
       
       {/* Другие секции фильтров */}
-      {[1, 2, 3, 4].map((section) => (
-        <div key={section} className="border-t pt-4">
-          <div className="h-5 bg-gray-200 rounded w-24 mb-3"></div>
-          <div className="space-y-2">
-            {[1, 2, 3].map((item) => (
-              <div key={item} className="h-4 bg-gray-200 rounded w-full"></div>
-            ))}
-          </div>
+      {[1, 2, 3, 4,  5, 6, 7].map((section) => (
+        <div key={section} className="border-t flex flex-row justify-between pt-4">
+          <div className="h-5 bg-gray-200 rounded w-40 mb-3"></div>
+          <div className="h-5 bg-gray-200 rounded w-5 mb-3"></div>
         </div>
       ))}
     </div>
@@ -96,14 +96,12 @@ function MobileFilterHeaderSkeleton() {
     <div className="lg:hidden mb-4 space-y-3 animate-pulse">
       {/* Кнопка сортировки */}
       <div className="flex items-center justify-between">
-        <div className="h-10 bg-gray-200 rounded w-32"></div>
-        <div className="h-10 bg-gray-200 rounded w-24"></div>
+        <div className="h-5 bg-gray-200 rounded w-32"></div>
+        <div className="h-5 bg-gray-200 rounded w-24"></div>
       </div>
       
       {/* Активные фильтры */}
       <div className="flex gap-2 overflow-x-auto">
-        <div className="h-8 bg-gray-200 rounded-full w-24 flex-shrink-0"></div>
-        <div className="h-8 bg-gray-200 rounded-full w-20 flex-shrink-0"></div>
       </div>
     </div>
   );
@@ -113,10 +111,10 @@ function MobileFilterHeaderSkeleton() {
 function SearchPageSkeleton() {
   return (
     <main className="text-black bg-white min-h-screen pb-40">
-      <div className="xl:max-w-[1400px] pt-4 mx-auto lg:max-w-[1000px] px-4">
+      <div className="xl:max-w-[1400px] pt-4 mx-auto lg:max-w-[1000px] lg:px-4 px-2">
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Десктоп сайдбар */}
-          <aside className="hidden lg:block">
+          <aside className="hidden pt-[16px] lg:block">
             <FilterSidebarSkeleton />
           </aside>
           
@@ -125,7 +123,7 @@ function SearchPageSkeleton() {
             <MobileFilterHeaderSkeleton />
             
             {/* Сетка продуктов */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 lg:gap-4 gap-0">
               {Array.from({ length: 6 }).map((_, i) => (
                 <ProductCardSkeleton key={i} />
               ))}
@@ -144,6 +142,8 @@ function SearchPageSkeleton() {
     </main>
   );
 }
+
+// Общий скелетон страницы
 
 // Компонент с данными (выносим логику загрузки)
 async function SearchResults({ searchParams }: any) {
@@ -186,10 +186,22 @@ async function SearchResults({ searchParams }: any) {
     images: images?.filter(img => img.productId === product.id) || [],
     attributes: attributes?.filter(attr => attr.productId === product.id) || []
   }));
+  console.log(items)
+  console.log(categories)
+  const itemCategoryIds = new Set(
+    items?.map(item => item.categoryId)
+  );
+
+  const extraCategories = categories?.filter(
+    categoryId => !itemCategoryIds.has(categoryId)
+  );
+  
+  console.log('Categories without items:', extraCategories);
   
   return (
     <FilterSidebar 
       filterCategories={filters}
+      categories={categories}
       totalPages={pagination.totalPages}
       total={pagination.total}
       limit={limitNumber}
