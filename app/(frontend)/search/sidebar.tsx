@@ -232,7 +232,7 @@ const VISIBLE_FILTERS_COUNT = 5;
     const params = new URLSearchParams(searchParams.toString());
 
     Array.from(params.keys()).forEach(key => {
-      if (key !== 'chain' && key !== 'category') {
+      if (key !== 'chain' && key !== 'category' && key !== 'page' && key !== 'search') {
         params.delete(key);
       }
     });
