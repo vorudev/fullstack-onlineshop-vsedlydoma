@@ -75,11 +75,11 @@ function buildWhereConditions({
     
     // Фильтр по цене
     if (priceFrom !== undefined) {
-        conditions.push(gte(products.price, priceFrom));
+        conditions.push(gte(products.priceRegional, priceFrom));
     }
     
     if (priceTo !== undefined) {
-        conditions.push(lte(products.price, priceTo));
+        conditions.push(lte(products.priceRegional, priceTo));
     }
     
     return conditions;
