@@ -85,7 +85,7 @@ ${(index + 1) % 2 === 0 ? 'md:border-r-0' : ''}
 </div>
     
     ) : (
-      <div className="grid grid-cols-1 lg:pt-5 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 " 
+      <div className="grid grid-cols-1 lg:pt-5 gap-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 " 
       style={{
    // gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
   }}>

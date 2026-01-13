@@ -186,17 +186,6 @@ async function SearchResults({ searchParams }: any) {
     images: images?.filter(img => img.productId === product.id) || [],
     attributes: attributes?.filter(attr => attr.productId === product.id) || []
   }));
-  console.log(items)
-  console.log(categories)
-  const itemCategoryIds = new Set(
-    items?.map(item => item.categoryId)
-  );
-
-  const extraCategories = categories?.filter(
-    categoryId => !itemCategoryIds.has(categoryId)
-  );
-  
-  console.log('Categories without items:', extraCategories);
   
   return (
     <FilterSidebar 
@@ -213,12 +202,25 @@ async function SearchResults({ searchParams }: any) {
   );
 }
 
+// Функция для создания уникального ключа из параметров поиска
+function createSearchKey(searchParams: any) {
+  // Сортируем ключи для стабильного результата
+  const sortedKeys = Object.keys(searchParams).sort();
+  return sortedKeys.map(key => `${key}=${searchParams[key]}`).join('&');
+}
+
 // Основной компонент страницы
 export default async function SearchPage({ searchParams }: SearchPageProps) {
+  const resolvedSearchParams = await searchParams;
+  
+  // Создаём уникальный ключ на основе всех параметров поиска
+  // При изменении любого параметра ключ изменится и Suspense покажет fallback
+  const searchKey = createSearchKey(resolvedSearchParams);
+  
   return (
     <main className="text-black bg-white min-h-screen pb-40">
       <div className="xl:max-w-[1400px] pt-4 mx-auto lg:max-w-[1000px]">
-        <Suspense fallback={<SearchPageSkeleton />}>
+        <Suspense key={searchKey} fallback={<SearchPageSkeleton />}>
           <SearchResults searchParams={searchParams} />
         </Suspense>
       </div>
