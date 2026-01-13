@@ -341,7 +341,7 @@ const VISIBLE_FILTERS_COUNT = 5;
         console.log(categories)
         const categoryIds = categories.filter((c): c is string => c !== null);
         
-        const response = await fetch('/api/filter/itemsCount', {
+        const response = await fetch('/api/search/itemsCount', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 

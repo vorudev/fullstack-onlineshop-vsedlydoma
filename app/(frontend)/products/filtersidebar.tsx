@@ -1,17 +1,12 @@
 // components/FilterSidebar.tsx
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Settings2, ChevronUp, ChevronDown, ArrowUpDown} from "lucide-react";
+import { X, Settings2, ChevronDown, ArrowUpDown} from "lucide-react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import FilterCategorySkeleton from "@/components/frontend/skeletons/filters-skeleton";
 import ProductList from "./sort";
-
-import type ProductUnited from "./page";
 import Pagination from "@/components/frontend/pagination-client";
-import { categoryImages } from "@/db/schema";
-
 
 type SortOption = 'default' | 'price-asc' | 'price-desc' | 'rating-desc' | 'rating-asc';
 interface Filter {
@@ -20,20 +15,6 @@ interface Filter {
   slug: string;
   displayOrder: number;
 }
-interface Review {
-  averageRating: {
-    averageRating: number;
-    reviewCount: number;
-  };
-  reviewCount: {
-    reviewCount: number;
-    averageRating: number;
-  }
-}
-
-// Сначала создайте отдельные типы для переиспользования
-
-  
 
 interface FilterCategoryWithFilters {
   id: string;
@@ -43,11 +24,11 @@ interface FilterCategoryWithFilters {
   filters: Filter[];
 }
 
-
 interface FilterSidebarProps {
 filterCategories: FilterCategoryWithFilters[] | undefined;
-categorySlug: string;
   page: number;
+  categorySlug: string;
+  categoryId: string;
   totalPages: number;
   total: number;
   limit: number;
@@ -89,8 +70,9 @@ productsWithDetails: {
 }[] | undefined
 }
 
+// Удачи тому кто сюда полез 
 
-export default function FilterSidebar({ filterCategories, categorySlug, page, totalPages, total, limit, avaliableManufacturers, productsWithDetails }: FilterSidebarProps) {
+export default function FilterSidebar({ filterCategories, categorySlug, page, categoryId, totalPages, total, limit, avaliableManufacturers, productsWithDetails }: FilterSidebarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [sortBy, setSortBy] = useState<SortOption>('default');
@@ -98,23 +80,53 @@ export default function FilterSidebar({ filterCategories, categorySlug, page, to
   const searchParams = useSearchParams();
   const [open, setOpen] = useState(false);
   const [openSort, setOpenSort] = useState(false);
-  
+  const [productCount, setProductCount] = useState(0)
+  const [loadingCount, setLoadingCount] = useState(false)
   const [expandedCategoriesMobile, setExpandedCategoriesMobile] = useState<Record<string, boolean>>({});
   const [priceFrom, setPriceFrom] = useState<number | undefined>(undefined);
   const [priceTo, setPriceTo] = useState<number | undefined>(undefined);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(
-  filterCategories?.[0]?.id || null
-);
-  // Инициализируем состояние из URL
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(filterCategories?.[0]?.id || null);
+  const applyPriceOnBlur = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    
+    Array.from(params.keys()).forEach(key => {
+      if (key !== 'chain' && key !== 'category' && key !== 'page' && key !== 'search') {
+        params.delete(key);
+      }
+    });
+    
+    Object.entries(selectedFilters).forEach(([slug, ids]) => {
+      if (ids.length > 0) {
+        params.set(slug, ids.join(','));
+      }
+    });
+    
+    if (priceFrom) params.set('priceFrom', priceFrom.toString());
+    if (priceTo) params.set('priceTo', priceTo.toString());
+    
+    router.push(`${pathname}?${params.toString()}`);
+    setAppliedFilters(selectedFilters);
+    setAppliedPriceFrom(priceFrom);
+    setAppliedPriceTo(priceTo);
+  };
+  
+  const handlePriceKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      applyPriceOnBlur();
+      (e.target as HTMLInputElement).blur(); // Убираем фокус
+    }
+  };
  const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>(() => {
     const initial: Record<string, string[]> = {};
     searchParams.forEach((value, key) => {
-      if (key !== 'chain' && key !== 'category') {
+      if (key !== 'chain' && key !== 'category' && key !== 'page' && key !== 'search') {
         initial[key] = value.split(',');
       }
     });
     return initial;
   });
+
+ 
   const sortOptions = [
     { value: 'default', label: 'По умолчанию' },
     { value: 'price-asc', label: 'Цена: по возрастанию' },
@@ -130,22 +142,22 @@ export default function FilterSidebar({ filterCategories, categorySlug, page, to
     setOpenSort(false);
   };
 const VISIBLE_FILTERS_COUNT = 5;
-  // Обработчик выбора фильтра
+
   const handleFilterChange = (filterSlug: string, filterId: string, checked: boolean) => {
     setSelectedFilters(prev => {
       const current = prev[filterSlug] || [];
       if (checked) {
-        // Добавляем фильтр
         return { ...prev, [filterSlug]: [...current, filterId] };
       } else {
         // Убираем фильтр
         const updated = current.filter(id => id !== filterId);
         if (updated.length === 0) {
           const { [filterSlug]: _, ...rest } = prev;
-          return rest; // ✅ Только возвращаем новое состояние
+          return rest; 
         }
-        return { ...prev, [filterSlug]: updated }; // ✅ Только возвращаем новое состояние
+        return { ...prev, [filterSlug]: updated }; 
       }
+      
     });
     
     
@@ -155,35 +167,30 @@ const VISIBLE_FILTERS_COUNT = 5;
     setSelectedFilters(prev => {
       const current = prev[filterSlug] || [];
       if (checked) {
-        // Добавляем фильтр
         return { ...prev, [filterSlug]: [...current, filterId] };
       } else {
-        // Убираем фильтр
         const updated = current.filter(id => id !== filterId);
         if (updated.length === 0) {
           const { [filterSlug]: _, ...rest } = prev;
-          return rest; // ✅ Только возвращаем новое состояние
+          return rest; 
         }
-        return { ...prev, [filterSlug]: updated }; // ✅ Только возвращаем новое состояние
+        return { ...prev, [filterSlug]: updated }; 
       }
     });
-    
-    // ✅ Вызываем навигацию ПОСЛЕ обновления состояния
+  
     applyFilters();
     router.refresh();
   };
-  // Применить фильтры
+
    const applyFilters = () => {
     const params = new URLSearchParams(searchParams.toString());
     
-    // Удаляем старые фильтры
     Array.from(params.keys()).forEach(key => {
-      if (key !== 'chain' && key !== 'category') {
+      if (key !== 'chain' && key !== 'category' && key !== 'page' && key !== 'search') {
         params.delete(key);
       }
     });
     
-    // Добавляем новые
     Object.entries(selectedFilters).forEach(([slug, ids]) => {
       if (ids.length > 0) {
         params.set(slug, ids.join(','));
@@ -196,6 +203,58 @@ const VISIBLE_FILTERS_COUNT = 5;
   setAppliedPriceFrom(priceFrom);
   setAppliedPriceTo(priceTo);
   };
+
+  const applyFiltersInstant = (filterSlug: string, filterId: string, checked: boolean) => { 
+    const current = selectedFilters[filterSlug] || [];
+    let newSelectedFilters: typeof selectedFilters;
+    
+    if (checked) {
+
+      newSelectedFilters = { 
+        ...selectedFilters, 
+        [filterSlug]: [...current, filterId] 
+      };
+    } else {
+      const updated = current.filter(id => id !== filterId);
+      if (updated.length === 0) {
+        const { [filterSlug]: _, ...rest } = selectedFilters;
+        newSelectedFilters = rest;
+      } else {
+        newSelectedFilters = { 
+          ...selectedFilters, 
+          [filterSlug]: updated 
+        };
+      }
+    }
+    
+    setSelectedFilters(newSelectedFilters);
+    
+    const params = new URLSearchParams(searchParams.toString());
+
+    Array.from(params.keys()).forEach(key => {
+      if (key !== 'chain' && key !== 'category' && key !== 'page' && key !== 'search') {
+        params.delete(key);
+      }
+    });
+    
+    Object.entries(newSelectedFilters).forEach(([slug, ids]) => {
+      if (ids.length > 0) {
+        params.set(slug, ids.join(','));
+      }
+    });
+    
+    if (priceFrom) params.set('priceFrom', priceFrom.toString());
+    if (priceTo) params.set('priceTo', priceTo.toString());
+
+    router.push(`${pathname}?${params.toString()}`);
+
+    setAppliedFilters(newSelectedFilters);
+    setAppliedPriceFrom(priceFrom);
+    setAppliedPriceTo(priceTo);
+  };
+
+
+
   const [appliedFilters, setAppliedFilters] = useState(selectedFilters);
   const [appliedPriceFrom, setAppliedPriceFrom] = useState(priceFrom);
   const [appliedPriceTo, setAppliedPriceTo] = useState(priceTo);
@@ -246,7 +305,7 @@ const VISIBLE_FILTERS_COUNT = 5;
           return productsCopy;
       }
     }, [productsWithDetails, sortBy]);
-
+   
      const toggleCategory = (categoryId: string) => {
     setExpandedCategories(prev => 
       prev.includes(categoryId)
@@ -255,6 +314,55 @@ const VISIBLE_FILTERS_COUNT = 5;
     );
   };
 
+  useEffect(() => {
+    const fetchCount = async () => {
+      const filtersBySlug: Record<string, string[]> = {};
+      
+      for (const [slug, filterIds] of Object.entries(selectedFilters)) {
+        const category = allFilterCategories.find(cat => 
+          cat.filters.some(f => f.slug === slug)
+        );
+        
+        if (category) {
+          const filterNames = category.filters
+            .filter(f => filterIds.includes(f.id))
+            .map(f => f.name);
+          
+          if (filterNames.length > 0) {
+            filtersBySlug[slug] = filterNames;
+          }
+        }
+      }
+      
+
+      setLoadingCount(true);
+      try {
+       
+        
+        const response = await fetch('/api/productCategory/itemsCount', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            filtersBySlug,
+            categoryId, 
+            priceFrom,
+            priceTo // ✅ Передаем отфильтрованные categoryIds
+          }),
+        });
+        
+        const data = await response.json();
+        console.log(data)
+        setProductCount(data.count);
+      } catch (error) {
+        console.error('Error fetching count:', error);
+      } finally {
+        setLoadingCount(false);
+      }
+    };
+
+    fetchCount();
+  }, [selectedFilters, priceFrom, priceTo])// ✅ Зависимость от selectedFilters, а не selectedCategory
+  
   useEffect(() => {
     if (openSort) {
       document.body.classList.add('overflow-hidden');
@@ -267,6 +375,7 @@ const VISIBLE_FILTERS_COUNT = 5;
     };
   }, [openSort]);
     
+  console.log(priceFrom)
   return (
     <>
     <div className={`lg:hidden flex flex-col gap-4 ${appliedFilters ? "mb-" :""}`}>
@@ -508,7 +617,33 @@ const VISIBLE_FILTERS_COUNT = 5;
           {/* Футер с кнопками */}
          <div className="flex flex-col  mt-2 gap-2 px-3 py-2 border-t border-gray-200">
          <div className="flex flex-wrap gap-2">
-       {Object.entries(selectedFilters).map(([slug, ids]) =>
+        
+     {Object.keys(selectedFilters).some(slug => selectedFilters[slug].length > 0) && (
+  <button
+    onClick={() => { 
+      resetFilters(); 
+      setOpen(false);
+    }}
+    className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-800 hover:bg-gray-300 rounded-full text-sm text-[12px] transition-colors"
+  >
+    <span>Сбросить</span>
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M6 18L18 6M6 6l12 12"
+      />
+    </svg>
+  </button>
+)}
+
+{Object.entries(selectedFilters).map(([slug, ids]) =>
   ids.map(id => {
     const filterGroup = allFilterCategories.find(f => (f as any).slug === slug);
     const filterItem = filterGroup?.filters?.find(f => f.id === id);
@@ -544,50 +679,38 @@ const VISIBLE_FILTERS_COUNT = 5;
 )}
       </div>
       <div className="flex flex-row gap-1">  
-  <AnimatePresence>
-    {(Object.keys(selectedFilters).length > 0 || priceFrom || priceTo) && (
-      <motion.button
-        key="reset-button"
-        initial={{ opacity: 0, scale: 0.5, width: 0 }}
-        animate={{ 
-          opacity: 1, 
-          scale: 1, 
-          width: 'auto',
-          transition: {
-            type: "spring",
-            stiffness: 400,
-            damping: 25
-          }
-        }}
-        exit={{ 
-          opacity: 0, 
-          scale: 0.5, 
-          width: 0,
-          transition: {
-            duration: 0.15
-          }
-        }}
-        onClick={() => { 
-          resetFilters(); 
-          setOpen(false);
-        }}
-        className="text-sm rounded-md min-w-1/4 px-3 py-2 bg-gray-200 text-gray-800 hover:bg-gray-300 whitespace-nowrap overflow-hidden"
-      >
-        Сбросить
-      </motion.button>
-    )}
-  </AnimatePresence>
+ 
   
-  <motion.button
-    layout
-    onClick={() => {
-      applyFilters();
-      setOpen(false);
-    }}
-    className="px-4 py-2 bg-blue-600 w-full text-white rounded-md hover:bg-blue-700 transition-colors"
-  >
-    Применить
-  </motion.button>
+  <button
+  onClick={() => {
+    applyFilters();
+    setOpen(false);
+  }}
+  className="px-4 py-2 min-h-[40px] bg-blue-600 w-full text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+  disabled={loadingCount}
+>
+{loadingCount ? (
+  <span className="flex items-center justify-center gap-2">
+    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>
+  </span>
+) : Object.keys(selectedFilters).length === 0 && priceFrom == undefined && priceTo == undefined? (
+  <span>Применить</span>
+) : productCount === 0 ? (
+  <span>Нет найденных товаров</span>
+) : (
+  <span>
+    Показать {productCount}{' '}
+    {productCount === 1 
+      ? 'товар' 
+      : productCount > 1 && productCount < 5 
+      ? 'товара' 
+      : 'товаров'}
+  </span>
+)}
+</button>
 </div>
           </div>
         </div>
@@ -674,6 +797,9 @@ const VISIBLE_FILTERS_COUNT = 5;
                       placeholder="От"
                       value={priceFrom || ''}
                       onChange={(e) => setPriceFrom(Number(e.target.value) || undefined)}
+    onBlur={applyPriceOnBlur}
+    onKeyDown={handlePriceKeyDown}
+
                       className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 transition-all duration-200 focus:ring-blue-600/50 focus:border-transparent"
                     />
                     <span className="text-gray-400">—</span>
@@ -682,6 +808,10 @@ const VISIBLE_FILTERS_COUNT = 5;
                       placeholder="До"
                       value={priceTo || ''}
                       onChange={(e) => setPriceTo(Number(e.target.value) || undefined)}
+                  
+                      onBlur={applyPriceOnBlur}
+                      onKeyDown={handlePriceKeyDown}
+                  
                       className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 transition-all duration-200 focus:ring-blue-600/50 focus:border-transparent"
                     />
                   </div>
@@ -713,29 +843,7 @@ const VISIBLE_FILTERS_COUNT = 5;
             className="overflow-hidden"
           >
             <div className="px-4 pb-4">
-              {category.id === 'price' ? (
-                // Фильтр цены
-                <div className="space-y-3 pt-2">
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="number"
-                      placeholder="От"
-                      value={priceFrom || ''}
-                      onChange={(e) => setPriceFrom(Number(e.target.value) || undefined)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 transition-all duration-200 focus:ring-blue-600/50 focus:border-transparent"
-                    />
-                    <span className="text-gray-400">—</span>
-                    <input
-                      type="number"
-                      placeholder="До"
-                      value={priceTo || ''}
-                      onChange={(e) => setPriceTo(Number(e.target.value) || undefined)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 transition-all duration-200 focus:ring-blue-600/50 focus:border-transparent"
-                    />
-                  </div>
-                </div>
-              ) : (
-                // Обычные чекбоксы
+            
                 <div className="space-y-2 pt-2 max-h-60 overflow-y-auto">
                   {category.filters?.map(filter => (
   <div key={filter.id}>
@@ -743,7 +851,7 @@ const VISIBLE_FILTERS_COUNT = 5;
     <input
       type="checkbox"
       checked={selectedFilters[filter.slug]?.includes(filter.id) || false}
-      onChange={(e) => handleFilterChange(filter.slug, filter.id, e.target.checked)}
+      onChange={(e) => applyFiltersInstant(filter.slug, filter.id, e.target.checked)}
       className="sr-only peer"
     />
     <div className="relative w-[18px] h-[18px] bg-gray-100 rounded-[5px] peer-checked:bg-blue-500 transition-colors flex items-center justify-center">
@@ -764,7 +872,7 @@ const VISIBLE_FILTERS_COUNT = 5;
 </div>
 ))}
                 </div>
-              )}
+              
             </div>
           </motion.div>
         )}
@@ -775,13 +883,7 @@ const VISIBLE_FILTERS_COUNT = 5;
 
 
       {/* Кнопка применения */}
-      <div className="p-4 border-t border-gray-200">
-        <button 
-         onClick={() => applyFilters()}
-         className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg transition-colors">
-          Применить фильтры
-        </button>
-      </div>
+      
     </div>
     
       <div className={`flex flex-col w-full gap-2 px-2 ${openSort ? "overflow-hidden" : ""}`}>
