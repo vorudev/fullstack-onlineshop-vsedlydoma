@@ -389,7 +389,6 @@ const VISIBLE_FILTERS_COUNT = 5;
     };
   }, [openSort]);
     
-  console.log(appliedPriceFrom)
   return (
     <>
     <div className={`lg:hidden flex flex-col gap-4 ${appliedFilters ? "mb-" :""}`}>
@@ -970,7 +969,7 @@ const VISIBLE_FILTERS_COUNT = 5;
         <span className="text-xs text-gray-500">Цена:</span>
         <span>
           {appliedPriceFrom && appliedPriceTo
-            ? `${appliedPriceFrom} - ${appliedPriceTo}`
+            ? `${appliedPriceFrom} - ${appliedPriceTo} руб`
             : appliedPriceFrom
             ? `от ${appliedPriceFrom} руб`
             : `до ${appliedPriceTo} руб`}
