@@ -90,7 +90,7 @@ export default function FilterSidebar({ filterCategories, categorySlug, page, ca
     const params = new URLSearchParams(searchParams.toString());
     
     Array.from(params.keys()).forEach(key => {
-      if (key !== 'chain' && key !== 'category' && key !== 'page' && key !== 'search') {
+      if (key !== 'chain' && key !== 'category' && key !== 'page') {
         params.delete(key);
       }
     });
@@ -119,7 +119,7 @@ export default function FilterSidebar({ filterCategories, categorySlug, page, ca
  const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>(() => {
     const initial: Record<string, string[]> = {};
     searchParams.forEach((value, key) => {
-      if (key !== 'chain' && key !== 'category' && key !== 'page' && key !== 'search') {
+      if (key !== 'chain' && key !== 'category' && key !== 'page') {
         initial[key] = value.split(',');
       }
     });
@@ -186,7 +186,7 @@ const VISIBLE_FILTERS_COUNT = 5;
     const params = new URLSearchParams(searchParams.toString());
     
     Array.from(params.keys()).forEach(key => {
-      if (key !== 'chain' && key !== 'category' && key !== 'page' && key !== 'search') {
+      if (key !== 'chain' && key !== 'category' && key !== 'page') {
         params.delete(key);
       }
     });
@@ -232,7 +232,7 @@ const VISIBLE_FILTERS_COUNT = 5;
     const params = new URLSearchParams(searchParams.toString());
 
     Array.from(params.keys()).forEach(key => {
-      if (key !== 'chain' && key !== 'category' && key !== 'page' && key !== 'search') {
+      if (key !== 'chain' && key !== 'category' && key !== 'page') {
         params.delete(key);
       }
     });

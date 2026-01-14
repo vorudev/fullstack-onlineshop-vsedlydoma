@@ -11,25 +11,20 @@ const searchSchema = z
   .string()
   .max(200, 'Поисковый запрос слишком длинный (максимум 200 символов)')
   .trim()
-  // Удаляем потенциально опасные символы
   .transform((val) => val.replace(/[<>{}]/g, ''))
-  // Проверяем на SQL-инъекции
   .refine(
     (val) => !/(union|select|insert|update|delete|drop|exec|script)/gi.test(val),
     'Поисковый запрос содержит недопустимые команды'
   )
-  // Проверяем на XSS
   .refine(
     (val) => !/<script|javascript:|onerror=|onload=/gi.test(val),
     'Поисковый запрос содержит недопустимый код'
   )
-  // Проверяем на path traversal
   .refine(
     (val) => !/\.\.\/|\.\.\\/.test(val),
     'Поисковый запрос содержит недопустимые символы'
   );
 
-type SearchSchema = z.infer<typeof searchSchema>;
 
 export default function SearchBar() {
   const router = useRouter();
@@ -42,7 +37,7 @@ export default function SearchBar() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    e.stopPropagation(); // Останавливаем всплытие события
+    e.stopPropagation(); 
     setError('');
 
     // Проверка на пустое значение (убираем пробелы)
@@ -62,7 +57,7 @@ export default function SearchBar() {
 
     // Используем валидированное значение
     const sanitizedSearch = result.data;
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams();
     
     params.set('search', sanitizedSearch);
     params.set('page', '1');
@@ -75,7 +70,7 @@ export default function SearchBar() {
   const handleClear = () => {
     setSearchValue('');
     setError('');
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams();
     params.delete('search');
     params.set('page', '1');
     

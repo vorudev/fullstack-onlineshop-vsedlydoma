@@ -96,7 +96,7 @@ async function ProductsHeader({ categorySlug }: { categorySlug: string }) {
           </span>
         ))}
       </nav>
-      <h1 className="text-2xl lg:px-[16px]  px-[8px] pb-5 font-bold">{category.name}</h1>
+      <h1 className="text-2xl lg:px-[16px]  px-[8px] font-bold">{category.name}</h1>
     </>
   );
 }

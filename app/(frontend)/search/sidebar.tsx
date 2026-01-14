@@ -70,7 +70,9 @@ productsWithDetails: {
 }[] | undefined
 }
 
-// Удачи тому кто сюда полез 
+// Удачи тому кто сюда полез
+// по сути это такой же сайдбар с фильтрами как в странице категории, за исключением моментов на строке 274 и функции для получени количества товаров к мобильной кнопке "Показать XX товаров"
+// и из за этих моментов я не сомг создать один универсальный сайдбар, я уверен это можно, но думаю это запутает и так запутанный код еще сильнее
 
 export default function FilterSidebar({ filterCategories, categories, query, page, totalPages, total, limit, avaliableManufacturers, productsWithDetails }: FilterSidebarProps) {
   const router = useRouter();
@@ -90,7 +92,7 @@ export default function FilterSidebar({ filterCategories, categories, query, pag
     const params = new URLSearchParams(searchParams.toString());
     
     Array.from(params.keys()).forEach(key => {
-      if (key !== 'chain' && key !== 'category' && key !== 'page' && key !== 'search') {
+      if (key !== 'page' && key !== 'search') {
         params.delete(key);
       }
     });
@@ -119,7 +121,7 @@ export default function FilterSidebar({ filterCategories, categories, query, pag
  const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>(() => {
     const initial: Record<string, string[]> = {};
     searchParams.forEach((value, key) => {
-      if (key !== 'chain' && key !== 'category' && key !== 'page' && key !== 'search') {
+      if (key !== 'page' && key !== 'search') {
         initial[key] = value.split(',');
       }
     });
@@ -186,7 +188,7 @@ const VISIBLE_FILTERS_COUNT = 5;
     const params = new URLSearchParams(searchParams.toString());
     
     Array.from(params.keys()).forEach(key => {
-      if (key !== 'chain' && key !== 'category' && key !== 'page' && key !== 'search') {
+      if (key !== 'page' && key !== 'search') {
         params.delete(key);
       }
     });
@@ -232,7 +234,7 @@ const VISIBLE_FILTERS_COUNT = 5;
     const params = new URLSearchParams(searchParams.toString());
 
     Array.from(params.keys()).forEach(key => {
-      if (key !== 'chain' && key !== 'category' && key !== 'page' && key !== 'search') {
+      if (key !== 'page' && key !== 'search') {
         params.delete(key);
       }
     });
@@ -254,11 +256,20 @@ const VISIBLE_FILTERS_COUNT = 5;
   };
 
 
-
-  const [appliedFilters, setAppliedFilters] = useState(selectedFilters);
-  const [appliedPriceFrom, setAppliedPriceFrom] = useState(priceFrom);
-  const [appliedPriceTo, setAppliedPriceTo] = useState(priceTo);
+  const priceFromParam = searchParams.get('priceFrom');
+  const priceToParam = searchParams.get('priceTo');
   
+  const parsedPriceFrom = priceFromParam ? Number(priceFromParam) : undefined;
+  const parsedPriceTo = priceToParam ? Number(priceToParam) : undefined;
+  
+  const [appliedFilters, setAppliedFilters] = useState(selectedFilters);
+  const [appliedPriceFrom, setAppliedPriceFrom] = useState<number | undefined>(
+    parsedPriceFrom
+  );
+  const [appliedPriceTo, setAppliedPriceTo] = useState<number | undefined>(
+    parsedPriceTo
+  );
+
 
 
   // Сбросить фильтры
@@ -314,6 +325,7 @@ const VISIBLE_FILTERS_COUNT = 5;
     );
   };
 
+  // запрос для получения количества товаров при выборе филтьтра на телефоне, для кнопки "показать XX товаров"
   useEffect(() => {
     const fetchCount = async () => {
       const filtersBySlug: Record<string, string[]> = {};
@@ -338,7 +350,7 @@ const VISIBLE_FILTERS_COUNT = 5;
       setLoadingCount(true);
       try {
         // ✅ Фильтруем null значения из categories
-        console.log(categories)
+
         const categoryIds = categories.filter((c): c is string => c !== null);
         
         const response = await fetch('/api/search/itemsCount', {
@@ -354,7 +366,6 @@ const VISIBLE_FILTERS_COUNT = 5;
         });
         
         const data = await response.json();
-        console.log(data)
         setProductCount(data.count);
       } catch (error) {
         console.error('Error fetching count:', error);
@@ -378,7 +389,7 @@ const VISIBLE_FILTERS_COUNT = 5;
     };
   }, [openSort]);
     
-  console.log(priceFrom)
+  console.log(appliedPriceFrom)
   return (
     <>
     <div className={`lg:hidden flex flex-col gap-4 ${appliedFilters ? "mb-" :""}`}>
@@ -394,17 +405,15 @@ const VISIBLE_FILTERS_COUNT = 5;
         </button>
         <button onClick={() => setOpen(!open)} className=" flex flex-row gap-1 items-center"><Settings2 className="w-5 h-5 text-gray-400"/>Фильтры</button>
     </div>
-    <div className="w-full overflow-x-auto scrollbar-hide px-2" 
-    >
-  <div className="flex gap-2 min-w-min ">
-    
+    <div className="w-full overflow-x-auto scrollbar-hide px-2">
+  <div className="flex gap-2 min-w-min">
+    {/* Существующие фильтры */}
     {Object.entries(appliedFilters).map(([slug, ids]) =>
       ids.map(id => {
         const filterGroup = allFilterCategories.find(f => (f as any).slug === slug);
         const filterItem = filterGroup?.filters?.find(f => f.id === id);
         if (!filterItem) return null;
         return (
-          
           <div
             key={`${slug}-${id}`}
             className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm whitespace-nowrap flex-shrink-0"
@@ -432,6 +441,46 @@ const VISIBLE_FILTERS_COUNT = 5;
           </div>
         );
       })
+    )}
+
+    {/* Фильтр по цене */}
+    {(appliedPriceFrom || appliedPriceTo) && (
+      <div
+        className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm whitespace-nowrap flex-shrink-0"
+      >
+        <span className="text-xs text-gray-500">Цена:</span>
+        <span>
+          {appliedPriceFrom && appliedPriceTo
+            ? `${appliedPriceFrom} - ${appliedPriceTo}`
+            : appliedPriceFrom
+            ? `от ${appliedPriceFrom} руб`
+            : `до ${appliedPriceTo} руб`}
+        </span>
+        <button
+          onClick={() => {
+            setAppliedPriceFrom(undefined);
+            setAppliedPriceTo(undefined);
+            // Если нужно сразу применить изменения:
+            // setPriceFrom('');
+            // setPriceTo('');
+          }}
+          className="hover:bg-blue-200 rounded-full p-0.5 transition-colors"
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
     )}
   </div>
 </div>
@@ -914,7 +963,44 @@ const VISIBLE_FILTERS_COUNT = 5;
       </svg>
     </button>
   )}
-  
+  {(appliedPriceFrom || appliedPriceTo) && (
+      <div
+        className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm whitespace-nowrap flex-shrink-0"
+      >
+        <span className="text-xs text-gray-500">Цена:</span>
+        <span>
+          {appliedPriceFrom && appliedPriceTo
+            ? `${appliedPriceFrom} - ${appliedPriceTo}`
+            : appliedPriceFrom
+            ? `от ${appliedPriceFrom} руб`
+            : `до ${appliedPriceTo} руб`}
+        </span>
+        <button
+          onClick={() => {
+            setAppliedPriceFrom(undefined);
+            setAppliedPriceTo(undefined);
+            // Если нужно сразу применить изменения:
+            // setPriceFrom('');
+            // setPriceTo('');
+          }}
+          className="hover:bg-blue-200 rounded-full p-0.5 transition-colors"
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+    )}
   {Object.entries(appliedFilters).map(([slug, ids]) =>
     ids.map(id => {
       const filterGroup = allFilterCategories.find(f => (f as any).slug === slug);
