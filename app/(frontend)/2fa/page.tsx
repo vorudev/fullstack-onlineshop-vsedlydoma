@@ -41,7 +41,7 @@ if (session != null) {
     redirect("/")
 }
     return (
-        <div className="px-4">
+        <div className="px-4 py-4">
  <Card className="w-full max-w-md mx-auto bg-white border-none shadow-none"> 
     <CardHeader className="text-center">
         <CardTitle className="text-black">Двухфакторная аутентификация</CardTitle>
