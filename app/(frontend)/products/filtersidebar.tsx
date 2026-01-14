@@ -253,13 +253,20 @@ const VISIBLE_FILTERS_COUNT = 5;
     setAppliedPriceTo(priceTo);
   };
 
-
-
-  const [appliedFilters, setAppliedFilters] = useState(selectedFilters);
-  const [appliedPriceFrom, setAppliedPriceFrom] = useState(priceFrom);
-  const [appliedPriceTo, setAppliedPriceTo] = useState(priceTo);
+  const priceFromParam = searchParams.get('priceFrom');
+  const priceToParam = searchParams.get('priceTo');
+  
+  const parsedPriceFrom = priceFromParam ? Number(priceFromParam) : undefined;
+  const parsedPriceTo = priceToParam ? Number(priceToParam) : undefined;
   
 
+  const [appliedFilters, setAppliedFilters] = useState(selectedFilters);
+  const [appliedPriceFrom, setAppliedPriceFrom] = useState<number | undefined>(
+    parsedPriceFrom
+  );
+  const [appliedPriceTo, setAppliedPriceTo] = useState<number | undefined>(
+    parsedPriceTo
+  );
 
   // Сбросить фильтры
   const resetFilters = () => {
@@ -394,7 +401,44 @@ const VISIBLE_FILTERS_COUNT = 5;
     <div className="w-full overflow-x-auto scrollbar-hide px-2" 
     >
   <div className="flex gap-2 min-w-min ">
-    
+  {(appliedPriceFrom || appliedPriceTo) && (
+      <div
+        className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm whitespace-nowrap flex-shrink-0"
+      >
+        <span className="text-xs text-gray-500">Цена:</span>
+        <span>
+          {appliedPriceFrom && appliedPriceTo
+            ? `${appliedPriceFrom} - ${appliedPriceTo}`
+            : appliedPriceFrom
+            ? `от ${appliedPriceFrom} руб`
+            : `до ${appliedPriceTo} руб`}
+        </span>
+        <button
+          onClick={() => {
+            setAppliedPriceFrom(undefined);
+            setAppliedPriceTo(undefined);
+            // Если нужно сразу применить изменения:
+            // setPriceFrom('');
+            // setPriceTo('');
+          }}
+          className="hover:bg-blue-200 rounded-full p-0.5 transition-colors"
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+    )}
     {Object.entries(appliedFilters).map(([slug, ids]) =>
       ids.map(id => {
         const filterGroup = allFilterCategories.find(f => (f as any).slug === slug);
@@ -911,7 +955,44 @@ const VISIBLE_FILTERS_COUNT = 5;
       </svg>
     </button>
   )}
-  
+      {(appliedPriceFrom || appliedPriceTo) && (
+      <div
+        className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm whitespace-nowrap flex-shrink-0"
+      >
+        <span className="text-xs text-gray-500">Цена:</span>
+        <span>
+          {appliedPriceFrom && appliedPriceTo
+            ? `${appliedPriceFrom} - ${appliedPriceTo}`
+            : appliedPriceFrom
+            ? `от ${appliedPriceFrom} руб`
+            : `до ${appliedPriceTo} руб`}
+        </span>
+        <button
+          onClick={() => {
+            setAppliedPriceFrom(undefined);
+            setAppliedPriceTo(undefined);
+            // Если нужно сразу применить изменения:
+            // setPriceFrom('');
+            // setPriceTo('');
+          }}
+          className="hover:bg-blue-200 rounded-full p-0.5 transition-colors"
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+    )}
   {Object.entries(appliedFilters).map(([slug, ids]) =>
     ids.map(id => {
       const filterGroup = allFilterCategories.find(f => (f as any).slug === slug);
